@@ -128,32 +128,32 @@ export class Client extends EventEmitter {
   messageSweeper(message: DiscordenoMessage) {
     // DM MESSAGES AREN'T NEEDED
     if (!message.guildId) return true;
-  
+
     // ONLY DELETE MESSAGES OLDER THAN 10 MINUTES
     return Date.now() - message.timestamp > 600000;
   }
-  
+
   memberSweeper(member: DiscordenoMember) {
     // DON'T SWEEP THE BOT ELSE STRANGE THINGS WILL HAPPEN
     if (member.id === this.botId) return false;
-  
+
     // ONLY SWEEP MEMBERS WHO WERE NOT ACTIVE THE LAST 30 MINUTES
     return member.cachedAt - Date.now() < 1800000;
   }
-  
+
   guildSweeper(guild: DiscordenoGuild) {
     // RESET ACTIVITY FOR NEXT INTERVAL
     if (!this.activeGuildIds.delete(guild.id)) return false;
-  
+
     guild.channels.forEach((channel) => {
       this.channels.delete(channel.id);
       this.dispatchedChannelIds.add(channel.id);
     });
-  
+
     // THIS IS INACTIVE GUILD. NOT A SIGNLE THING HAS HAPPENED FOR ATLEAST 30 MINUTES.
     // NOT A REACTION, NOT A MESSAGE, NOT ANY EVENT!
     this.dispatchedGuildIds.add(guild.id);
-  
+
     return true;
   }
 }
