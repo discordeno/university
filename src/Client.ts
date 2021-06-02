@@ -3,9 +3,11 @@ import {
   Collection,
   DiscordGatewayIntents,
   EventEmitter,
+  GetGatewayBot,
   getGatewayBot,
 } from "../deps.ts";
-import CacheManager from "./cache/Manager.ts";
+import CacheManager from "./utils/CacheManager.ts";
+import { GatewayManager } from "./ws/GatewayManager.ts";
 
 export class Client extends EventEmitter {
   /** The secret key is used to filter requests if you are using advanced options like proxies for ws/rest. */
@@ -18,16 +20,6 @@ export class Client extends EventEmitter {
   proxyWSURL = "";
   /** The bot's token */
   token: string;
-  /** The gateway intents used for connecting. */
-  intents: number;
-  /** The maximum number of shards allowed during this connection. */
-  maxShards: number;
-  /** The last shard id that will be connected. */
-  lastShardId: number;
-  /** The gateway version number to be used. */
-  gatewayVersion: number;
-  /** Whether or not the ready event has been emitted once all shards came online. */
-  isReady: boolean;
 
   // CACHE VALUES
 
@@ -52,7 +44,7 @@ export class Client extends EventEmitter {
         | PromiseLike<Collection<bigint, DiscordenoMember>>
     ) => void
   >;
-      /** The slash commands that were executed atleast once are cached here so they can be responded to using followups next time. */
+  /** The slash commands that were executed atleast once are cached here so they can be responded to using followups next time. */
   executedSlashCommands: Set<string>;
   /** Stores a list of guild ids that are active for the guild sweeper. */
   activeGuildIds: Set<bigint>;
@@ -62,17 +54,13 @@ export class Client extends EventEmitter {
   dispatchedChannelIds: Set<bigint>;
   /** The manager for editing the cached structures. */
   cache: CacheManager;
+  /** The manager for the gateway/sharding. */
+  gateway: GatewayManager;
 
   constructor(config: Omit<BotConfig, "eventHandlers">) {
     super();
 
-    // SET THE CONFIGS PROVIDED
     this.token = `Bot ${config.token}`;
-    this.intents = config.intents.reduce(
-      (bits, next) =>
-        (bits |= typeof next === "string" ? DiscordGatewayIntents[next] : next),
-      0
-    );
 
     // SET SOME DEFAULT VALUES
     this.secretKey = "";
@@ -102,24 +90,34 @@ export class Client extends EventEmitter {
     this.dispatchedGuildIds = new Set();
     this.dispatchedChannelIds = new Set();
     this.cache = new CacheManager(this);
+    this.gateway = new GatewayManager(this);
+    this.gateway.intents = config.intents.reduce(
+      (bits, next) =>
+        (bits |= typeof next === "string" ? DiscordGatewayIntents[next] : next),
+      0
+    );
+    this.gateway.compress = config.compress || false;
   }
 
   /** Begin the bot startup process. Connects to the discord gateway. */
   async connect() {
     // INITIAL API CONNECTION TO GET INFO ABOUT BOTS CONNECTION
-    const data = await getGatewayBot();
+    this.gateway.botGatewayData = await getGatewayBot();
+    this.gateway.botGatewayData.url += `?v=${this.gateway.version}&encoding=json`
     // IF DEFAULTS WERE NOT MODIFED, SET TO RECOMMENDED DISCORD DEFAULTS
-    if (!this.maxShards) this.maxShards = data.shards;
-    if (!this.lastShardId) this.lastShardId = data.shards - 1;
+    if (!this.gateway.maxShards)
+      this.gateway.maxShards = this.gateway.botGatewayData.shards;
+    if (!this.gateway.lastShardId)
+      this.gateway.lastShardId = this.gateway.botGatewayData.shards - 1;
 
-    this.spawnShards();
+    this.gateway.spawnShards();
   }
 
   /** The WSS URL that can be used for connecting to the gateway. */
   get wsUrl() {
     return (
       this.proxyWSURL ||
-      `wss://gateway.discord.gg/?v=${this.gatewayVersion}&encoding=json`
+      `wss://gateway.discord.gg/?v=${this.gateway.version}&encoding=json`
     );
   }
 
@@ -166,8 +164,45 @@ export class Client extends EventEmitter {
     return true;
   }
 
-  
+  // UTILS
+  loopObject<T = Record<string, unknown>>(
+    obj: Record<string, unknown>,
+    handler: (value: unknown, key: string) => unknown,
+    log: string
+  ) {
+    let res: Record<string, unknown> | unknown[] = {};
 
+    if (Array.isArray(obj)) {
+      res = [];
+
+      for (const o of obj) {
+        if (typeof o === "object" && !Array.isArray(o) && o !== null) {
+          // A nested object
+          res.push(this.loopObject(o as Record<string, unknown>, handler, log));
+        } else {
+          res.push(handler(o, "array"));
+        }
+      }
+    } else {
+      for (const [key, value] of Object.entries(obj)) {
+        this.emit("DEBUG", "LOOPING", log);
+
+        if (
+          typeof value === "object" &&
+          !Array.isArray(value) &&
+          value !== null &&
+          !(value instanceof Blob)
+        ) {
+          // A nested object
+          res[key] = this.loopObject(value as Record<string, unknown>, handler, log);
+        } else {
+          res[key] = handler(value, key);
+        }
+      }
+    }
+
+    return res as T;
+  }
 }
 
 export default Client;
