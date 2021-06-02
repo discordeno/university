@@ -5,6 +5,7 @@ import {
   EventEmitter,
   getGatewayBot,
 } from "../deps.ts";
+import CacheManager from "./cache/Manager.ts";
 
 export class Client extends EventEmitter {
   /** The secret key is used to filter requests if you are using advanced options like proxies for ws/rest. */
@@ -42,6 +43,7 @@ export class Client extends EventEmitter {
   unavailableGuilds: Collection<bigint, number>;
   /** All of the presence update objects received in PRESENCE_UPDATE gateway event, mapped by their user Id */
   presences: Collection<bigint, PresenceUpdate>;
+  /** The fetch member requests through the gateway are cached here until they are completed. */
   fetchAllMembersProcessingRequests: Collection<
     string,
     (
@@ -50,10 +52,16 @@ export class Client extends EventEmitter {
         | PromiseLike<Collection<bigint, DiscordenoMember>>
     ) => void
   >;
+      /** The slash commands that were executed atleast once are cached here so they can be responded to using followups next time. */
   executedSlashCommands: Set<string>;
+  /** Stores a list of guild ids that are active for the guild sweeper. */
   activeGuildIds: Set<bigint>;
+  /** Stores a list of.guild ids that have been removed by the guild sweeper and are waiting for dispatch. */
   dispatchedGuildIds: Set<bigint>;
+  /** Stores a list of channel ids that have been removed by the guild sweeper and are waiting for dispatch. */
   dispatchedChannelIds: Set<bigint>;
+  /** The manager for editing the cached structures. */
+  cache: CacheManager;
 
   constructor(config: Omit<BotConfig, "eventHandlers">) {
     super();
@@ -93,6 +101,7 @@ export class Client extends EventEmitter {
     this.activeGuildIds = new Set();
     this.dispatchedGuildIds = new Set();
     this.dispatchedChannelIds = new Set();
+    this.cache = new CacheManager(this);
   }
 
   /** Begin the bot startup process. Connects to the discord gateway. */
@@ -156,6 +165,9 @@ export class Client extends EventEmitter {
 
     return true;
   }
+
+  
+
 }
 
 export default Client;
