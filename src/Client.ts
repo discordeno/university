@@ -52,7 +52,7 @@ export class Client extends EventEmitter {
         | PromiseLike<Collection<bigint, DiscordenoMember>>
     ) => void
   >;
-      /** The slash commands that were executed atleast once are cached here so they can be responded to using followups next time. */
+  /** The slash commands that were executed atleast once are cached here so they can be responded to using followups next time. */
   executedSlashCommands: Set<string>;
   /** Stores a list of guild ids that are active for the guild sweeper. */
   activeGuildIds: Set<bigint>;
@@ -165,9 +165,6 @@ export class Client extends EventEmitter {
 
     return true;
   }
-
-  
-
 }
 
 export default Client;
