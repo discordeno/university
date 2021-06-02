@@ -103,7 +103,7 @@ export class Client extends EventEmitter {
   async connect() {
     // INITIAL API CONNECTION TO GET INFO ABOUT BOTS CONNECTION
     this.gateway.botGatewayData = await getGatewayBot();
-    this.gateway.botGatewayData.url += `?v=${this.gateway.version}&encoding=json`
+    this.gateway.botGatewayData.url += `?v=${this.gateway.version}&encoding=json`;
     // IF DEFAULTS WERE NOT MODIFED, SET TO RECOMMENDED DISCORD DEFAULTS
     if (!this.gateway.maxShards)
       this.gateway.maxShards = this.gateway.botGatewayData.shards;
@@ -194,7 +194,11 @@ export class Client extends EventEmitter {
           !(value instanceof Blob)
         ) {
           // A nested object
-          res[key] = this.loopObject(value as Record<string, unknown>, handler, log);
+          res[key] = this.loopObject(
+            value as Record<string, unknown>,
+            handler,
+            log
+          );
         } else {
           res[key] = handler(value, key);
         }
