@@ -128,32 +128,32 @@ export class Client extends EventEmitter {
   messageSweeper(message: DiscordenoMessage) {
     // DM messages aren't needed
     if (!message.guildId) return true;
-  
+
     // Only delete messages older than 10 minutes
     return Date.now() - message.timestamp > 600000;
   }
-  
+
   memberSweeper(member: DiscordenoMember) {
     // Don't sweep the bot else strange things will happen
     if (member.id === this.botId) return false;
-  
+
     // Only sweep members who were not active the last 30 minutes
     return member.cachedAt - Date.now() < 1800000;
   }
-  
+
   guildSweeper(guild: DiscordenoGuild) {
     // Reset activity for next interval
     if (!this.activeGuildIds.delete(guild.id)) return false;
-  
+
     guild.channels.forEach((channel) => {
       this.channels.delete(channel.id);
       this.dispatchedChannelIds.add(channel.id);
     });
-  
+
     // This is inactive guild. Not a single thing has happened for atleast 30 minutes.
     // Not a reaction, not a message, not any event!
     this.dispatchedGuildIds.add(guild.id);
-  
+
     return true;
   }
 }
