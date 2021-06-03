@@ -1,6 +1,7 @@
 // deno-lint-ignore-file require-await no-explicit-any
-import { Collection, TableName } from "../../deps.ts";
+import { Collection, PresenceUpdate, TableName } from "../../deps.ts";
 import Client from "../Client.ts";
+import DiscordenoChannel from "../Structures/DiscordenoChannel.ts";
 
 export class CacheManager {
   /** The client for whome this is managing. */

@@ -1,6 +1,6 @@
 import { decompressWith } from "https://deno.land/x/discordeno@11.0.0-rc.5/src/ws/deps.ts";
 import {
-camelize,
+  camelize,
   delay,
   DiscordGatewayCloseEventCodes,
   DiscordGatewayOpcodes,
@@ -23,8 +23,6 @@ export class Shard {
   bucketId: number;
   /** The websocket for this shard. */
   socket: WebSocket;
-  /** The amount of milliseconds to wait between heartbeats. */
-  resumeInterval: number;
   /** The session id important for resuming connections. */
   sessionId: string;
   /** The previous sequence number, important for resuming connections. */
@@ -74,7 +72,6 @@ export class Shard {
     this.bucketId = bucketId;
     this.socket = this.createWebSocket();
 
-    this.resumeInterval = 0;
     this.sessionId = "";
     this.previousSequenceNumber = 0;
     this.resuming = false;
@@ -129,7 +126,6 @@ export class Shard {
 
     // RESET DEFAULTS
     this.socket = this.createWebSocket();
-    this.resumeInterval = 0;
     this.resuming = false;
     this.ready = false;
     this.unavailableGuildIds = new Set();
@@ -350,7 +346,7 @@ export class Shard {
         );
         break;
       case DiscordGatewayOpcodes.Hello:
-        this.heartbeat((messageData.d as Hello).heartbeatInterval);
+        this.sendHeartbeat((messageData.d as Hello).heartbeatInterval);
         break;
       case DiscordGatewayOpcodes.HeartbeatACK:
         this.heartbeat.acknowledged = true;
@@ -401,7 +397,8 @@ export class Shard {
         // Update the sequence number if it is present
         if (messageData.s) this.previousSequenceNumber = messageData.s;
 
-        if (this.client.proxyWSURL) await this.handleDiscordPayload(messageData);
+        if (this.client.proxyWSURL)
+          await this.handleDiscordPayload(messageData);
         else {
           this.client.emit("raw", messageData);
           this.client.emit("dispatchRequirements", messageData, this.id);
@@ -412,12 +409,97 @@ export class Shard {
 
           const handler = this.events[messageData.t];
           if (!handler) return this.events.missing(messageData.t, messageData);
-          
+
           return this.events[messageData.t]?.(camelize(messageData), this.id);
         }
 
         break;
     }
+  }
+
+  async sendHeartbeat(interval: number) {
+    this.client.emit("DEBUG", "HEARTBEATING_STARTED", {
+      shardId: this.id,
+      interval,
+    });
+
+    this.client.emit("DEBUG", "HEARTBEATING_DETAILS", {
+      shardId: this.id,
+      interval,
+      shard: this,
+    });
+
+    // The first heartbeat is special so we send it without setInterval: https://discord.com/developers/docs/topics/gateway#heartbeating
+    await delay(Math.floor(this.heartbeat.interval * Math.random()));
+
+    if (this.socket.readyState !== WebSocket.OPEN) return;
+
+    this.socket.send(
+      JSON.stringify({
+        op: DiscordGatewayOpcodes.Heartbeat,
+        d: this.previousSequenceNumber,
+      })
+    );
+
+    this.heartbeat.keepAlive = true;
+    this.heartbeat.acknowledged = false;
+    this.heartbeat.lastSentAt = Date.now();
+    this.heartbeat.interval = interval;
+
+    this.heartbeat.intervalId = setInterval(() => {
+      this.client.emit(
+        "DEBUG",
+        "DEBUG",
+        `Running setInterval in heartbeat file.`
+      );
+
+      this.client.emit("DEBUG", "HEARTBEATING", {
+        shardId: this.id,
+        shard: this,
+      });
+
+      if (
+        this.socket.readyState === WebSocket.CLOSED ||
+        !this.heartbeat.keepAlive
+      ) {
+        this.client.emit("DEBUG", "HEARTBEATING_CLOSED", {
+          shardId: this.id,
+          shard: this,
+        });
+
+        // STOP THE HEARTBEAT
+        return clearInterval(this.heartbeat.intervalId);
+      }
+
+      if (!this.heartbeat.acknowledged) {
+        this.closeWS(3066, "Did not receive an ACK in time.");
+        return this.identify();
+      }
+
+      if (this.socket.readyState !== WebSocket.OPEN) return;
+
+      this.heartbeat.acknowledged = false;
+
+      this.socket.send(
+        JSON.stringify({
+          op: DiscordGatewayOpcodes.Heartbeat,
+          d: this.previousSequenceNumber,
+        })
+      );
+    }, this.heartbeat.interval);
+  }
+
+  async handleDiscordPayload(data: DiscordGatewayPayload) {
+    await fetch(this.client.wsUrl, {
+      headers: {
+        authorization: this.client.secretKey,
+      },
+      method: "post",
+      body: JSON.stringify({
+        shardId: this.id,
+        data,
+      }),
+    }).catch(console.error);
   }
 }
 

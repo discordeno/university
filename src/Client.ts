@@ -1,11 +1,14 @@
 import {
   BotConfig,
   Collection,
+  delay,
   DiscordGatewayIntents,
+  endpoints,
   EventEmitter,
-  GetGatewayBot,
   getGatewayBot,
 } from "../deps.ts";
+import DiscordenoChannel from "./Structures/DiscordenoChannel.ts";
+import RestManager from "./Structures/RestManager.ts";
 import CacheManager from "./utils/CacheManager.ts";
 import { GatewayManager } from "./ws/GatewayManager.ts";
 
@@ -56,6 +59,8 @@ export class Client extends EventEmitter {
   cache: CacheManager;
   /** The manager for the gateway/sharding. */
   gateway: GatewayManager;
+  /** The rest manager for the api. */
+  rest: RestManager;
 
   constructor(config: Omit<BotConfig, "eventHandlers">) {
     super();
@@ -66,10 +71,6 @@ export class Client extends EventEmitter {
     this.secretKey = "";
     this.botId = 0n;
     this.applicationId = 0n;
-    this.maxShards = 0;
-    this.lastShardId = 0;
-    this.gatewayVersion = 9;
-    this.isReady = false;
     this.guilds = new Collection([], {
       sweeper: { filter: this.guildSweeper, interval: 3600000 },
     });
@@ -91,6 +92,7 @@ export class Client extends EventEmitter {
     this.dispatchedChannelIds = new Set();
     this.cache = new CacheManager(this);
     this.gateway = new GatewayManager(this);
+    this.rest = new RestManager(this);
     this.gateway.intents = config.intents.reduce(
       (bits, next) =>
         (bits |= typeof next === "string" ? DiscordGatewayIntents[next] : next),
@@ -206,6 +208,30 @@ export class Client extends EventEmitter {
     }
 
     return res as T;
+  }
+
+  /** Delete a message with the channel id and message id only. */
+  async deleteMessage(
+    channelId: bigint,
+    messageId: bigint,
+    reason?: string,
+    delayMilliseconds = 0
+  ) {
+    const message = await this.cache.get("messages", messageId);
+
+    if (message && message.authorId !== this.botId) {
+      await requireBotChannelPermissions(message.channelId, [
+        "MANAGE_MESSAGES",
+      ]);
+    }
+
+    if (delayMilliseconds) await delay(delayMilliseconds);
+
+    return await this.rest.runMethod<undefined>(
+      "delete",
+      endpoints.CHANNEL_MESSAGE(channelId, messageId),
+      { reason }
+    );
   }
 }
 

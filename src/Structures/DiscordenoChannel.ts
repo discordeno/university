@@ -6,7 +6,6 @@ import {
   ThreadMember,
   Channel,
   snowflakeToBigint,
-  cache,
   Collection,
   CreateMessage,
   Overwrite,
@@ -70,7 +69,7 @@ export class DiscordenoChannel extends Base {
   constructor(client: Client, payload: Channel, guildId = "") {
     super(client, payload.id);
 
-    this.guildId = snowflakeToBigint(guildId);
+    this.guildId = snowflakeToBigint(guildId || payload.guildId || "");
     this.ownerId = payload.ownerId
       ? snowflakeToBigint(payload.ownerId)
       : undefined;
@@ -118,12 +117,12 @@ export class DiscordenoChannel extends Base {
 
   /** Gets the guild object for this channel */
   get guild() {
-    return cache.guilds.get(this.guildId!);
+    return this.client.guilds.get(this.guildId!);
   }
 
   /** Gets the messages from cache that were sent in this channel */
   get messages() {
-    return cache.messages.filter((m) => m.channelId === this.id);
+    return this.client.messages.filter((m) => m.channelId === this.id);
   }
 
   /** The mention of the channel */
@@ -144,7 +143,7 @@ export class DiscordenoChannel extends Base {
     if (!voiceStates) return undefined;
 
     return new Collection(
-      voiceStates.map((vs) => [vs.userId, cache.members.get(vs.userId)])
+      voiceStates.map((vs) => [vs.userId, this.client.members.get(vs.userId)])
     );
   }
 
