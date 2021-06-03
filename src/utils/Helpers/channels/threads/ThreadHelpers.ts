@@ -8,7 +8,7 @@ import {
 } from "../../../deps.ts";
 import Client from "../../Client.ts";
 
-export class ChannelHelpers {
+export class ThreadHelpers {
   /** The client itself. */
   client: Client;
 
@@ -143,4 +143,4 @@ export class ChannelHelpers {
   }
 }
 
-export default ChannelHelpers;
+export default ThreadHelpers;

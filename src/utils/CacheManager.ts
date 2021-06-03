@@ -2,6 +2,9 @@
 import { Collection, PresenceUpdate, TableName } from "../../deps.ts";
 import Client from "../Client.ts";
 import DiscordenoChannel from "../Structures/DiscordenoChannel.ts";
+import DiscordenoGuild from "../Structures/DiscordenoGuild.ts";
+import DiscordenoMember from "../Structures/DiscordenoMember.ts";
+import DiscordenoMessage from "../Structures/DiscordenoMessage.ts";
 
 export class CacheManager {
   /** The client for whome this is managing. */

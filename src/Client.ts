@@ -1,15 +1,24 @@
 import {
   BotConfig,
   Collection,
-  delay,
+  DiscordBitwisePermissionFlags,
   DiscordGatewayIntents,
-  endpoints,
+Emoji,
+  Errors,
   EventEmitter,
   getGatewayBot,
+  Overwrite,
+  PermissionStrings,
+PresenceUpdate,
 } from "../deps.ts";
 import DiscordenoChannel from "./Structures/DiscordenoChannel.ts";
-import RestManager from "./Structures/RestManager.ts";
+import DiscordenoGuild from "./Structures/DiscordenoGuild.ts";
+import DiscordenoMember from "./Structures/DiscordenoMember.ts";
+import DiscordenoMessage from "./Structures/DiscordenoMessage.ts";
+import DiscordenoRole from "./Structures/DiscordenoRole.ts";
 import CacheManager from "./utils/CacheManager.ts";
+import HelperManager from "./utils/Helpers/HelperManager.ts";
+import RestManager from "./utils/RestManager.ts";
 import { GatewayManager } from "./ws/GatewayManager.ts";
 
 export class Client extends EventEmitter {
@@ -101,6 +110,7 @@ export class Client extends EventEmitter {
       0
     );
     this.gateway.compress = config.compress || false;
+    this.helpers = new HelperManager(this);
   }
 
   /** Begin the bot startup process. Connects to the discord gateway. */
@@ -129,6 +139,7 @@ export class Client extends EventEmitter {
     return new Collection<bigint, Emoji>(
       this.guilds.reduce(
         (a, b) => [...a, ...b.emojis.map((e) => [e.id, e])],
+        // deno-lint-ignore no-explicit-any
         [] as any[]
       )
     );
@@ -212,27 +223,386 @@ export class Client extends EventEmitter {
     return res as T;
   }
 
-  /** Delete a message with the channel id and message id only. */
-  async deleteMessage(
-    channelId: bigint,
-    messageId: bigint,
-    reason?: string,
-    delayMilliseconds = 0
+  async getCached(
+    table: "guilds",
+    key: bigint | DiscordenoGuild
+  ): Promise<DiscordenoGuild | undefined>;
+  async getCached(
+    table: "channels",
+    key: bigint | DiscordenoChannel
+  ): Promise<DiscordenoChannel | undefined>;
+  async getCached(
+    table: "members",
+    key: bigint | DiscordenoMember
+  ): Promise<DiscordenoMember | undefined>;
+  async getCached(
+    table: "guilds" | "channels" | "members",
+    key: bigint | DiscordenoGuild | DiscordenoChannel | DiscordenoMember
   ) {
-    const message = await this.cache.get("messages", messageId);
+    const cached =
+      typeof key === "bigint"
+        ? // @ts-ignore TS is wrong here
+          await cacheHandlers.get(table, key)
+        : key;
 
-    if (message && message.authorId !== this.botId) {
-      await requireBotChannelPermissions(message.channelId, [
-        "MANAGE_MESSAGES",
-      ]);
+    return typeof cached === "bigint" ? undefined : cached;
+  }
+
+  /** Calculates the permissions this member has in the given guild */
+  async calculateBasePermissions(
+    guildOrId: bigint | DiscordenoGuild,
+    memberOrId: bigint | DiscordenoMember
+  ) {
+    const guild = await this.getCached("guilds", guildOrId);
+    const member = await this.getCached("members", memberOrId);
+
+    if (!guild || !member) return 8n;
+
+    let permissions = 0n;
+    // Calculate the role permissions bits, @everyone role is not in memberRoleIds so we need to pass guildId manualy
+    permissions |=
+      [...(member.guilds.get(guild.id)?.roles || []), guild.id]
+        .map((id) => guild.roles.get(id)?.permissions)
+        // Removes any edge case undefined
+        .filter((perm) => perm)
+        .reduce((bits, perms) => {
+          bits! |= perms?.bits!;
+          return bits;
+        }, 0n) || 0n;
+
+    // If the memberId is equal to the guild ownerId he automatically has every permission so we add ADMINISTRATOR permission
+    if (guild.ownerId === member.id) permissions |= 8n;
+    // Return the members permission bits as a string
+    return permissions;
+  }
+
+  /** Calculates the permissions this member has for the given Channel */
+  async calculateChannelOverwrites(
+    channelOrId: bigint | DiscordenoChannel,
+    memberOrId: bigint | DiscordenoMember
+  ) {
+    const channel = await this.getCached("channels", channelOrId);
+
+    // This is a DM channel so return ADMINISTRATOR permission
+    if (!channel?.guildId) return 8n;
+
+    const member = await this.getCached("members", memberOrId);
+
+    if (!channel || !member) return 8n;
+
+    // Get all the role permissions this member already has
+    let permissions = await this.calculateBasePermissions(
+      channel.guildId,
+      member
+    );
+
+    // First calculate @everyone overwrites since these have the lowest priority
+    const overwriteEveryone = channel.permissionOverwrites?.find(
+      (overwrite) => overwrite.id === channel.guildId
+    );
+    if (overwriteEveryone) {
+      // First remove denied permissions since denied < allowed
+      permissions &= ~overwriteEveryone.deny;
+      permissions |= overwriteEveryone.allow;
     }
 
-    if (delayMilliseconds) await delay(delayMilliseconds);
+    const overwrites = channel.permissionOverwrites;
 
-    return await this.rest.runMethod<undefined>(
-      "delete",
-      endpoints.CHANNEL_MESSAGE(channelId, messageId),
-      { reason }
+    // In order to calculate the role permissions correctly we need to temporarily save the allowed and denied permissions
+    let allow = 0n;
+    let deny = 0n;
+    const memberRoles = member.guilds.get(channel.guildId)?.roles || [];
+    // Second calculate members role overwrites since these have middle priority
+    for (const overwrite of overwrites || []) {
+      if (!memberRoles.includes(overwrite.id)) continue;
+
+      deny |= overwrite.deny;
+      allow |= overwrite.allow;
+    }
+    // After role overwrite calculate save allowed permissions first we remove denied permissions since "denied < allowed"
+    permissions &= ~deny;
+    permissions |= allow;
+
+    // Third calculate member specific overwrites since these have the highest priority
+    const overwriteMember = overwrites?.find(
+      (overwrite) => overwrite.id === member.id
+    );
+    if (overwriteMember) {
+      permissions &= ~overwriteMember.deny;
+      permissions |= overwriteMember.allow;
+    }
+
+    return permissions;
+  }
+
+  /** Checks if the given permission bits are matching the given permissions. `ADMINISTRATOR` always returns `true` */
+  validatePermissions(
+    permissionBits: bigint,
+    permissions: PermissionStrings[]
+  ) {
+    if (permissionBits & 8n) return true;
+
+    return permissions.every(
+      (permission) =>
+        // Check if permission is in permissionBits
+        permissionBits & BigInt(DiscordBitwisePermissionFlags[permission])
+    );
+  }
+
+  /** Checks if the given member has these permissions in the given guild */
+  async hasGuildPermissions(
+    guild: bigint | DiscordenoGuild,
+    member: bigint | DiscordenoMember,
+    permissions: PermissionStrings[]
+  ) {
+    // First we need the role permission bits this member has
+    const basePermissions = await this.calculateBasePermissions(guild, member);
+    // Second use the validatePermissions function to check if the member has every permission
+    return this.validatePermissions(basePermissions, permissions);
+  }
+
+  /** Checks if the bot has these permissions in the given guild */
+  botHasGuildPermissions(
+    guild: bigint | DiscordenoGuild,
+    permissions: PermissionStrings[]
+  ) {
+    // Since Bot is a normal member we can use the hasRolePermissions() function
+    return this.hasGuildPermissions(guild, this.botId, permissions);
+  }
+
+  /** Checks if the given member has these permissions for the given channel */
+  async hasChannelPermissions(
+    channel: bigint | DiscordenoChannel,
+    member: bigint | DiscordenoMember,
+    permissions: PermissionStrings[]
+  ) {
+    // First we need the overwrite bits this member has
+    const channelOverwrites = await this.calculateChannelOverwrites(
+      channel,
+      member
+    );
+    // Second use the validatePermissions function to check if the member has every permission
+    return this.validatePermissions(channelOverwrites, permissions);
+  }
+
+  /** Checks if the bot has these permissions f0r the given channel */
+  botHasChannelPermissions(
+    channel: bigint | DiscordenoChannel,
+    permissions: PermissionStrings[]
+  ) {
+    // Since Bot is a normal member we can use the hasRolePermissions() function
+    return this.hasChannelPermissions(channel, this.botId, permissions);
+  }
+
+  /** Returns the permissions that are not in the given permissionBits */
+  missingPermissions(permissionBits: bigint, permissions: PermissionStrings[]) {
+    if (permissionBits & 8n) return [];
+
+    return permissions.filter(
+      (permission) =>
+        !(permissionBits & BigInt(DiscordBitwisePermissionFlags[permission]))
+    );
+  }
+
+  /** Get the missing Guild permissions this member has */
+  async getMissingGuildPermissions(
+    guild: bigint | DiscordenoGuild,
+    member: bigint | DiscordenoMember,
+    permissions: PermissionStrings[]
+  ) {
+    // First we need the role permission bits this member has
+    const permissionBits = await this.calculateBasePermissions(guild, member);
+    // Second return the members missing permissions
+    return this.missingPermissions(permissionBits, permissions);
+  }
+
+  /** Get the missing Channel permissions this member has */
+  async getMissingChannelPermissions(
+    channel: bigint | DiscordenoChannel,
+    member: bigint | DiscordenoMember,
+    permissions: PermissionStrings[]
+  ) {
+    // First we need the role permissino bits this member has
+    const permissionBits = await this.calculateChannelOverwrites(
+      channel,
+      member
+    );
+    // Second returnn the members missing permissions
+    return this.missingPermissions(permissionBits, permissions);
+  }
+
+  /** Throws an error if this member has not all of the given permissions */
+  async requireGuildPermissions(
+    guild: bigint | DiscordenoGuild,
+    member: bigint | DiscordenoMember,
+    permissions: PermissionStrings[]
+  ) {
+    const missing = await this.getMissingGuildPermissions(
+      guild,
+      member,
+      permissions
+    );
+    if (missing.length) {
+      // If the member is missing a permission throw an Error
+      throw new Error(`Missing Permissions: ${missing.join(" & ")}`);
+    }
+  }
+
+  /** Throws an error if the bot does not have all permissions */
+  requireBotGuildPermissions(
+    guild: bigint | DiscordenoGuild,
+    permissions: PermissionStrings[]
+  ) {
+    // Since Bot is a normal member we can use the throwOnMissingGuildPermission() function
+    return this.requireGuildPermissions(guild, this.botId, permissions);
+  }
+
+  /** Throws an error if this member has not all of the given permissions */
+  async requireChannelPermissions(
+    channel: bigint | DiscordenoChannel,
+    member: bigint | DiscordenoMember,
+    permissions: PermissionStrings[]
+  ) {
+    const missing = await this.getMissingChannelPermissions(
+      channel,
+      member,
+      permissions
+    );
+    if (missing.length) {
+      // If the member is missing a permission throw an Error
+      throw new Error(`Missing Permissions: ${missing.join(" & ")}`);
+    }
+  }
+
+  /** Throws an error if the bot has not all of the given channel permissions */
+  requireBotChannelPermissions(
+    channel: bigint | DiscordenoChannel,
+    permissions: PermissionStrings[]
+  ) {
+    // Since Bot is a normal member we can use the throwOnMissingChannelPermission() function
+    return this.requireChannelPermissions(channel, this.botId, permissions);
+  }
+
+  /** This function converts a bitwise string to permission strings */
+  calculatePermissions(permissionBits: bigint) {
+    return Object.keys(DiscordBitwisePermissionFlags).filter((permission) => {
+      // Since Object.keys() not only returns the permission names but also the bit values we need to return false if it is a Number
+      if (Number(permission)) return false;
+      // Check if permissionBits has this permission
+      return (
+        permissionBits &
+        BigInt(DiscordBitwisePermissionFlags[permission as PermissionStrings])
+      );
+    }) as PermissionStrings[];
+  }
+
+  /** This function converts an array of permissions into the bitwise string. */
+  calculateBits(permissions: PermissionStrings[]) {
+    return permissions
+      .reduce((bits, perm) => {
+        bits |= BigInt(DiscordBitwisePermissionFlags[perm]);
+        return bits;
+      }, 0n)
+      .toString();
+  }
+
+  /** Internal function to check if the bot has the permissions to set these overwrites */
+  async requireOverwritePermissions(
+    guildOrId: bigint | DiscordenoGuild,
+    overwrites: Overwrite[]
+  ) {
+    let requiredPerms: Set<PermissionStrings> = new Set(["MANAGE_CHANNELS"]);
+
+    overwrites?.forEach((overwrite) => {
+      overwrite.allow.forEach(requiredPerms.add, requiredPerms);
+      overwrite.deny.forEach(requiredPerms.add, requiredPerms);
+    });
+
+    // MANAGE_ROLES permission can only be set by administrators
+    if (requiredPerms.has("MANAGE_ROLES")) {
+      requiredPerms = new Set<PermissionStrings>(["ADMINISTRATOR"]);
+    }
+
+    await this.requireGuildPermissions(guildOrId, this.botId, [
+      ...requiredPerms,
+    ]);
+  }
+
+  /** Gets the highest role from the member in this guild */
+  async highestRole(
+    guildOrId: bigint | DiscordenoGuild,
+    memberOrId: bigint | DiscordenoMember
+  ) {
+    const guild = await this.getCached("guilds", guildOrId);
+
+    if (!guild) throw new Error(Errors.GUILD_NOT_FOUND);
+
+    // Get the roles from the member
+    const memberRoles = (
+      await this.getCached("members", memberOrId)
+    )?.guilds.get(guild.id)?.roles;
+    // This member has no roles so the highest one is the @everyone role
+    if (!memberRoles) return guild.roles.get(guild.id)!;
+
+    let memberHighestRole: DiscordenoRole | undefined;
+
+    for (const roleId of memberRoles) {
+      const role = guild.roles.get(roleId);
+      // Rare edge case handling if undefined
+      if (!role) continue;
+
+      // If memberHighestRole is still undefined we want to assign the role,
+      // else we want to check if the current role position is higher than the current memberHighestRole
+      if (
+        !memberHighestRole ||
+        memberHighestRole.position < role.position ||
+        memberHighestRole.position === role.position
+      ) {
+        memberHighestRole = role;
+      }
+    }
+
+    // The member has at least one role so memberHighestRole must exist
+    return memberHighestRole!;
+  }
+
+  /** Checks if the first role is higher than the second role */
+  async higherRolePosition(
+    guildOrId: bigint | DiscordenoGuild,
+    roleId: bigint,
+    otherRoleId: bigint
+  ) {
+    const guild = await this.getCached("guilds", guildOrId);
+
+    if (!guild) return true;
+
+    const role = guild.roles.get(roleId);
+    const otherRole = guild.roles.get(otherRoleId);
+    if (!role || !otherRole) throw new Error(Errors.ROLE_NOT_FOUND);
+
+    // Rare edge case handling
+    if (role.position === otherRole.position) {
+      return role.id < otherRole.id;
+    }
+
+    return role.position > otherRole.position;
+  }
+
+  /** Checks if the member has a higher position than the given role */
+  async isHigherPosition(
+    guildOrId: bigint | DiscordenoGuild,
+    memberId: bigint,
+    compareRoleId: bigint
+  ) {
+    const guild = await this.getCached("guilds", guildOrId);
+
+    if (!guild || guild.ownerId === memberId) return true;
+
+    const memberHighestRole = await this.highestRole(guild, memberId);
+    return this.higherRolePosition(
+      guild.id,
+      memberHighestRole.id,
+      compareRoleId
     );
   }
 }

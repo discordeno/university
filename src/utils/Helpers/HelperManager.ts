@@ -1,5 +1,5 @@
 import Client from "../../Client.ts";
-import ChannelHelpers from "./ChannelHelpers.ts";
+import ChannelHelpers from "./channels/ChannelHelpers.ts";
 
 export class HelperManager {
   /** The client itself. */
