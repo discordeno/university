@@ -1188,7 +1188,11 @@ export class GatewayEvents {
   async THREAD_CREATE(data: DiscordGatewayPayload) {
     const payload = data.d as Channel;
 
-    const discordenoChannel = new DiscordenoChannel(this.client, payload, payload.guildId);
+    const discordenoChannel = new DiscordenoChannel(
+      this.client,
+      payload,
+      payload.guildId
+    );
     await this.client.cache.set(
       "channels",
       discordenoChannel.id,
@@ -1292,7 +1296,11 @@ export class GatewayEvents {
     );
     if (!oldChannel) return;
 
-    const discordenoChannel = new DiscordenoChannel(this.client, payload, payload.guildId);
+    const discordenoChannel = new DiscordenoChannel(
+      this.client,
+      payload,
+      payload.guildId
+    );
     await this.client.cache.set(
       "channels",
       discordenoChannel.id,
