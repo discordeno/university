@@ -5,6 +5,7 @@ import {
   DiscordGatewayCloseEventCodes,
   DiscordGatewayOpcodes,
   DiscordGatewayPayload,
+GatewayPayload,
   Hello,
   Ready,
   WebSocketRequest,
@@ -106,9 +107,49 @@ export class Shard {
     // Need to clear the old heartbeat interval
     const oldShard = this.gateway.get(this.id);
     if (oldShard) {
+      console.log("asfd", 1);
       oldShard.closeWS(3065, "Reidentifying closure of old shard");
       clearInterval(oldShard.heartbeat.intervalId);
     }
+
+    this.client.gateway.set(this.id, this);
+
+    this.socket.onopen = () => {
+      this.sendShardMessage(
+        {
+          op: DiscordGatewayOpcodes.Identify,
+          d: {
+            token: this.client.token,
+            compress: false,
+            properties: {
+              $os: "linux",
+              $browser: "Discordeno",
+              $device: "Discordeno",
+            },
+            intents: this.client.gateway.intents,
+            shard: [this.id, this.client.gateway.maxShards],
+          },
+        },
+        true
+      );
+    };
+
+    return new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        reject(
+          `[Identify Failure] Shard ${this.id} has not received READY event in over a minute.`
+        );
+      }, 600000);
+
+      this.client.gateway.loadingShards.set(this.id, {
+        shardId: this.id,
+        resolve: (args: unknown) => {
+          clearTimeout(timeout);
+          resolve(args);
+        },
+        startedAt: Date.now(),
+      });
+    });
   }
 
   resume() {
@@ -325,7 +366,7 @@ export class Shard {
 
     if (typeof message !== "string") return;
 
-    const messageData = JSON.parse(message) as DiscordGatewayPayload;
+    const messageData = camelize(JSON.parse(message)) as GatewayPayload;
     this.client.emit("DEBUG", "RAW", {
       shardId: this.id,
       payload: messageData,
@@ -449,13 +490,12 @@ export class Shard {
     this.heartbeat.intervalId = setInterval(() => {
       this.client.emit(
         "DEBUG",
-        "DEBUG",
+        "loop",
         `Running setInterval in heartbeat file.`
       );
 
       this.client.emit("DEBUG", "HEARTBEATING", {
         shardId: this.id,
-        shard: this,
       });
 
       if (

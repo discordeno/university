@@ -130,7 +130,6 @@ export class GatewayManager extends Collection<number, Shard> {
     bucketId: number
   ): void | Promise<void> {
     const shard = new Shard(this.client, shardId, clusterId, bucketId);
-    this.set(shardId, shard);
     shard.identify();
   }
 }

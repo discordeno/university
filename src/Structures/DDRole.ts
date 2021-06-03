@@ -38,6 +38,8 @@ export class DDRole extends Base {
     super(client, payload.id);
     this.client = client;
     this.guildId = guildId;
+    this.bitfield = new RoleBitField(0n);
+    this.permissions = new Permissions(BigInt(payload.permissions));
 
     this.update(payload);
   }

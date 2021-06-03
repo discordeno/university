@@ -310,80 +310,80 @@ export class DDGuild extends Base {
     return this.bitfield.animatedSplash;
   }
 
-  /** The banner url for this server */
-  async bannerURL(size?: DiscordImageSize, format?: DiscordImageFormat) {
-    return await this.client.guildBannerURL(this.id, {
-      banner: this.banner!,
-      size,
-      format,
-      animated: this.animatedBanner!,
-    });
-  }
+  // /** The banner url for this server */
+  // async bannerURL(size?: DiscordImageSize, format?: DiscordImageFormat) {
+  //   return await this.client.guildBannerURL(this.id, {
+  //     banner: this.banner!,
+  //     size,
+  //     format,
+  //     animated: this.animatedBanner!,
+  //   });
+  // }
 
-  /** The splash url for this server */
-  splashURL(size?: DiscordImageSize, format?: DiscordImageFormat) {
-    return this.client.guildSplashURL(this.id, {
-      splash: this.splash,
-      size,
-      format,
-      animated: this.animatedSplash,
-    });
-  }
+  // /** The splash url for this server */
+  // splashURL(size?: DiscordImageSize, format?: DiscordImageFormat) {
+  //   return this.client.guildSplashURL(this.id, {
+  //     splash: this.splash,
+  //     size,
+  //     format,
+  //     animated: this.animatedSplash,
+  //   });
+  // }
 
-  /** Delete a guild permanently. User must be owner. Returns 204 No Content on success. Fires a Guild Delete Gateway event. */
-  async delete() {
-    return await this.client.deleteGuild(this.id);
-  }
+  // /** Delete a guild permanently. User must be owner. Returns 204 No Content on success. Fires a Guild Delete Gateway event. */
+  // async delete() {
+  //   return await this.client.deleteGuild(this.id);
+  // }
 
-  /** Edit the server. Requires the MANAGE_GUILD permission. */
-  async edit(options: ModifyGuild) {
-    return await this.client.editGuild(this.id, options);
-  }
+  // /** Edit the server. Requires the MANAGE_GUILD permission. */
+  // async edit(options: ModifyGuild) {
+  //   return await this.client.editGuild(this.id, options);
+  // }
 
-  /** Returns the audit logs for the guild. Requires VIEW AUDIT LOGS permission */
-  async auditLogs(options: Partial<GetGuildAuditLog>) {
-    return await this.client.getAuditLogs(this.id, options);
-  }
+  // /** Returns the audit logs for the guild. Requires VIEW AUDIT LOGS permission */
+  // async auditLogs(options: Partial<GetGuildAuditLog>) {
+  //   return await this.client.getAuditLogs(this.id, options);
+  // }
 
-  /** Returns a ban object for the given user or a 404 not found if the ban cannot be found. Requires the BAN_MEMBERS permission. */
-  async getBan(memberId: bigint) {
-    return await this.client.getBan(this.id, memberId);
-  }
+  // /** Returns a ban object for the given user or a 404 not found if the ban cannot be found. Requires the BAN_MEMBERS permission. */
+  // async getBan(memberId: bigint) {
+  //   return await this.client.getBan(this.id, memberId);
+  // }
 
-  /** Returns a list of ban objects for the users banned from this guild. Requires the BAN_MEMBERS permission. */
-  async bans() {
-    return await this.client.getBans(this.id);
-  }
+  // /** Returns a list of ban objects for the users banned from this guild. Requires the BAN_MEMBERS permission. */
+  // async bans() {
+  //   return await this.client.getBans(this.id);
+  // }
 
-  /** Ban a user from the guild and optionally delete previous messages sent by the user. Requires the BAN_MEMBERS permission. */
-  async ban(memberId: bigint, options: CreateGuildBan) {
-    return await this.client.banMember(this.id, memberId, options);
-  }
+  // /** Ban a user from the guild and optionally delete previous messages sent by the user. Requires the BAN_MEMBERS permission. */
+  // async ban(memberId: bigint, options: CreateGuildBan) {
+  //   return await this.client.banMember(this.id, memberId, options);
+  // }
 
-  /** Remove the ban for a user. Requires BAN_MEMBERS permission */
-  async unban(memberId: bigint) {
-    return await this.client.unbanMember(this.id, memberId);
-  }
+  // /** Remove the ban for a user. Requires BAN_MEMBERS permission */
+  // async unban(memberId: bigint) {
+  //   return await this.client.unbanMember(this.id, memberId);
+  // }
 
-  /** Get all the invites for this guild. Requires MANAGE_GUILD permission */
-  async invites() {
-    return await this.client.getInvites(this.id);
-  }
+  // /** Get all the invites for this guild. Requires MANAGE_GUILD permission */
+  // async invites() {
+  //   return await this.client.getInvites(this.id);
+  // }
 
-  /** The full URL of the icon from Discords CDN. Undefined when no icon is set. */
-  iconURL(size?: DiscordImageSize, format?: DiscordImageFormat) {
-    return this.client.guildIconURL(this.id, {
-      icon: this.icon,
-      size,
-      format,
-      animated: this.animatedIcon!,
-    });
-  }
+  // /** The full URL of the icon from Discords CDN. Undefined when no icon is set. */
+  // iconURL(size?: DiscordImageSize, format?: DiscordImageFormat) {
+  //   return this.client.guildIconURL(this.id, {
+  //     icon: this.icon,
+  //     size,
+  //     format,
+  //     animated: this.animatedIcon!,
+  //   });
+  // }
 
-  /** Leave a guild */
-  async leave() {
-    return await this.client.leaveGuild(this.id);
-  }
+  // /** Leave a guild */
+  // async leave() {
+  //   return await this.client.leaveGuild(this.id);
+  // }
 
   // await Promise.all(
   //   [...channels, ...threads].map(async (channel) => {

@@ -90,13 +90,13 @@ export class DDMember extends Base {
     });
   }
 
-  /** The avatar url using the default format and size. */
-  get avatarURL() {
-    return this.client.avatarURL(this.id, this.discriminator, {
-      avatar: this.avatar,
-      animated: this.animatedAvatar,
-    });
-  }
+  // /** The avatar url using the default format and size. */
+  // get avatarURL() {
+  //   return this.client.avatarURL(this.id, this.discriminator, {
+  //     avatar: this.avatar,
+  //     animated: this.animatedAvatar,
+  //   });
+  // }
 
   /** The mention string for this member */
   get mention() {
@@ -133,65 +133,65 @@ export class DDMember extends Base {
     return this.bitfield.animatedAvatar;
   }
 
-  /** Returns the avatar url for this member and can be dynamically modified with a size or format */
-  makeAvatarURL(options: {
-    avatar?: string | bigint;
-    size?: DiscordImageSize;
-    format?: DiscordImageFormat;
-    animated?: boolean;
-  }) {
-    return this.client.avatarURL(this.id, this.discriminator, {
-      avatar: this.avatar!,
-      size: options?.size,
-      format: options?.format,
-      animated: this.animatedAvatar!,
-    });
-  }
+  // /** Returns the avatar url for this member and can be dynamically modified with a size or format */
+  // makeAvatarURL(options: {
+  //   avatar?: string | bigint;
+  //   size?: DiscordImageSize;
+  //   format?: DiscordImageFormat;
+  //   animated?: boolean;
+  // }) {
+  //   return this.client.avatarURL(this.id, this.discriminator, {
+  //     avatar: this.avatar!,
+  //     size: options?.size,
+  //     format: options?.format,
+  //     animated: this.animatedAvatar!,
+  //   });
+  // }
 
-  /** Returns the guild for this guildId */
-  guild(guildId: bigint) {
-    return this.client.guilds.get(guildId);
-  }
+  // /** Returns the guild for this guildId */
+  // guild(guildId: bigint) {
+  //   return this.client.guilds.get(guildId);
+  // }
 
-  /** Get the nickname or the username if no nickname */
-  name(guildId: bigint) {
-    return this.guildMember(guildId)?.nick || this.username;
-  }
+  // /** Get the nickname or the username if no nickname */
+  // name(guildId: bigint) {
+  //   return this.guildMember(guildId)?.nick || this.username;
+  // }
 
-  /** Get the guild member object for the specified guild */
-  guildMember(guildId: bigint) {
-    return this.guilds?.get(guildId);
-  }
+  // /** Get the guild member object for the specified guild */
+  // guildMember(guildId: bigint) {
+  //   return this.guilds?.get(guildId);
+  // }
 
-  /** Send a direct message to the user is possible */
-  async sendDM(content: string | CreateMessage) {
-    return await this.client.sendDirectMessage(this.id, content);
-  }
+  // /** Send a direct message to the user is possible */
+  // async sendDM(content: string | CreateMessage) {
+  //   return await this.client.sendDirectMessage(this.id, content);
+  // }
 
-  /** Kick the member from a guild */
-  async kick(guildId: bigint, reason?: string) {
-    return await this.client.kickMember(guildId, this.id, reason);
-  }
+  // /** Kick the member from a guild */
+  // async kick(guildId: bigint, reason?: string) {
+  //   return await this.client.kickMember(guildId, this.id, reason);
+  // }
 
-  /** Edit the member in a guild */
-  async edit(guildId: bigint, options: ModifyGuildMember) {
-    return await this.client.editMember(guildId, this.id, options);
-  }
+  // /** Edit the member in a guild */
+  // async edit(guildId: bigint, options: ModifyGuildMember) {
+  //   return await this.client.editMember(guildId, this.id, options);
+  // }
 
-  /** Ban a member in a guild */
-  async ban(guildId: bigint, options: CreateGuildBan) {
-    return await this.client.banMember(guildId, this.id, options);
-  }
+  // /** Ban a member in a guild */
+  // async ban(guildId: bigint, options: CreateGuildBan) {
+  //   return await this.client.banMember(guildId, this.id, options);
+  // }
 
-  /** Add a role to the member */
-  async addRole(guildId: bigint, roleId: bigint, reason?: string) {
-    return await this.client.addRole(guildId, this.id, roleId, reason);
-  }
+  // /** Add a role to the member */
+  // async addRole(guildId: bigint, roleId: bigint, reason?: string) {
+  //   return await this.client.addRole(guildId, this.id, roleId, reason);
+  // }
 
-  /** Remove a role from the member */
-  async removeRole(guildId: bigint, roleId: bigint, reason?: string) {
-    return await this.client.removeRole(guildId, this.id, roleId, reason);
-  }
+  // /** Remove a role from the member */
+  // async removeRole(guildId: bigint, roleId: bigint, reason?: string) {
+  //   return await this.client.removeRole(guildId, this.id, roleId, reason);
+  // }
 
   toJSON() {
     return (this.guilds?.map((g) => ({
