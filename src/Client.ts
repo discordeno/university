@@ -61,6 +61,8 @@ export class Client extends EventEmitter {
   gateway: GatewayManager;
   /** The rest manager for the api. */
   rest: RestManager;
+  /** All the helper methods */
+  helpers: HelperManager;
 
   constructor(config: Omit<BotConfig, "eventHandlers">) {
     super();
