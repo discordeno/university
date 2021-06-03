@@ -22,6 +22,8 @@ export class DDVoiceState {
   constructor(client: Client, guildId: bigint, data: VoiceState) {
     this.client = client;
     this.guildId = guildId;
+    this.bitfield = new VoiceStateBitField(0n);
+
     this.update(data);
   }
 
