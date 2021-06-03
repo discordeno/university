@@ -5,7 +5,7 @@ import {
   DiscordGatewayCloseEventCodes,
   DiscordGatewayOpcodes,
   DiscordGatewayPayload,
-GatewayPayload,
+  GatewayPayload,
   Hello,
   Ready,
   WebSocketRequest,
