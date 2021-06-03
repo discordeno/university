@@ -3,13 +3,13 @@ import {
   Collection,
   DiscordBitwisePermissionFlags,
   DiscordGatewayIntents,
-Emoji,
+  Emoji,
   Errors,
   EventEmitter,
   getGatewayBot,
   Overwrite,
   PermissionStrings,
-PresenceUpdate,
+  PresenceUpdate,
 } from "../deps.ts";
 import DiscordenoChannel from "./Structures/DiscordenoChannel.ts";
 import DiscordenoGuild from "./Structures/DiscordenoGuild.ts";

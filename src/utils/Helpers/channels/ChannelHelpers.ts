@@ -123,7 +123,10 @@ export class ChannelHelpers {
     reason?: string
   ) {
     if (options?.permissionOverwrites) {
-      await this.client.requireOverwritePermissions(guildId, options.permissionOverwrites);
+      await this.client.requireOverwritePermissions(
+        guildId,
+        options.permissionOverwrites
+      );
     }
 
     // BITRATES ARE IN THOUSANDS SO IF USER PROVIDES 32 WE CONVERT TO 32000
@@ -413,7 +416,9 @@ export class ChannelHelpers {
 
   /** Follow a News Channel to send messages to a target channel. Requires the `MANAGE_WEBHOOKS` permission in the target channel. Returns the webhook id. */
   async followChannel(sourceChannelId: bigint, targetChannelId: bigint) {
-    await this.client.requireBotChannelPermissions(targetChannelId, ["MANAGE_WEBHOOKS"]);
+    await this.client.requireBotChannelPermissions(targetChannelId, [
+      "MANAGE_WEBHOOKS",
+    ]);
 
     const data = await this.client.rest.post(
       endpoints.CHANNEL_FOLLOW(sourceChannelId),
@@ -452,7 +457,9 @@ export class ChannelHelpers {
 
   /** Gets the webhooks for this channel. Requires MANAGE_WEBHOOKS */
   async getChannelWebhooks(channelId: bigint) {
-    await this.client.requireBotChannelPermissions(channelId, ["MANAGE_WEBHOOKS"]);
+    await this.client.requireBotChannelPermissions(channelId, [
+      "MANAGE_WEBHOOKS",
+    ]);
 
     const result = (await this.client.rest.get(
       endpoints.CHANNEL_WEBHOOKS(channelId)
@@ -563,9 +570,10 @@ export class ChannelHelpers {
         throw new Error(Errors.CHANNEL_NOT_TEXT_BASED);
       }
 
-      const hasSendMessagesPerm = await this.client.botHasChannelPermissions(channelId, [
-        "SEND_MESSAGES",
-      ]);
+      const hasSendMessagesPerm = await this.client.botHasChannelPermissions(
+        channelId,
+        ["SEND_MESSAGES"]
+      );
       if (!hasSendMessagesPerm) {
         throw new Error(Errors.MISSING_SEND_MESSAGES);
       }

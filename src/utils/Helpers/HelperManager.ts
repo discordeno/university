@@ -6,7 +6,7 @@ export class HelperManager {
   client: Client;
   /** The channel helpers */
   channels: ChannelHelpers;
-  
+
   constructor(client: Client) {
     this.client = client;
     this.channels = new ChannelHelpers(client);
