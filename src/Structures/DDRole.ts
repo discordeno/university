@@ -6,14 +6,13 @@ import {
   CreateGuildRole,
   editRole,
   Errors,
-  highestRole,
 } from "../../deps.ts";
 import Client from "../Client.ts";
 import Base from "./Base.ts";
 import Permissions from "./BitFields/Permissions.ts";
 import RoleBitField, { roleToggles } from "./BitFields/Role.ts";
 
-export class DiscordenoRole extends Base {
+export class DDRole extends Base {
   /** The client itself. */
   client: Client;
   /** The name of the role. */
@@ -166,7 +165,7 @@ export class DiscordenoRole extends Base {
 
     if (guild.ownerId === memberId) return false;
 
-    const memberHighestRole = await highestRole(guild, memberId);
+    const memberHighestRole = await this.client.highestRole(guild, memberId);
     return this.higherThanRole!(
       memberHighestRole.id,
       memberHighestRole.position
@@ -193,4 +192,4 @@ export class DiscordenoRole extends Base {
   }
 }
 
-export default DiscordenoRole;
+export default DDRole;

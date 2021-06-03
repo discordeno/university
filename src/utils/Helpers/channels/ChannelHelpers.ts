@@ -29,8 +29,8 @@ import {
   Message,
 } from "../../../../deps.ts";
 import Client from "../../../Client.ts";
-import DiscordenoChannel from "../../../Structures/DiscordenoChannel.ts";
-import DiscordenoMessage from "../../../Structures/DiscordenoMessage.ts";
+import DDChannel from "../../../Structures/DDChannel.ts";
+import DDMessage from "../../../Structures/DDMessage.ts";
 import { ThreadHelpers } from "./mod.ts";
 
 export class ChannelHelpers {
@@ -123,7 +123,10 @@ export class ChannelHelpers {
     reason?: string
   ) {
     if (options?.permissionOverwrites) {
-      await this.client.requireOverwritePermissions(guildId, options.permissionOverwrites);
+      await this.client.requireOverwritePermissions(
+        guildId,
+        options.permissionOverwrites
+      );
     }
 
     // BITRATES ARE IN THOUSANDS SO IF USER PROVIDES 32 WE CONVERT TO 32000
@@ -143,7 +146,7 @@ export class ChannelHelpers {
       })
     );
 
-    const discordenoChannel = new DiscordenoChannel(this.client, result);
+    const discordenoChannel = new DDChannel(this.client, result);
     await this.client.cache.set(
       "channels",
       discordenoChannel.id,
@@ -344,7 +347,7 @@ export class ChannelHelpers {
       })
     );
 
-    return new DiscordenoChannel(this.client, result);
+    return new DDChannel(this.client, result);
   }
 
   processEditChannelQueue() {
@@ -413,7 +416,9 @@ export class ChannelHelpers {
 
   /** Follow a News Channel to send messages to a target channel. Requires the `MANAGE_WEBHOOKS` permission in the target channel. Returns the webhook id. */
   async followChannel(sourceChannelId: bigint, targetChannelId: bigint) {
-    await this.client.requireBotChannelPermissions(targetChannelId, ["MANAGE_WEBHOOKS"]);
+    await this.client.requireBotChannelPermissions(targetChannelId, [
+      "MANAGE_WEBHOOKS",
+    ]);
 
     const data = await this.client.rest.post(
       endpoints.CHANNEL_FOLLOW(sourceChannelId),
@@ -434,7 +439,7 @@ export class ChannelHelpers {
       endpoints.CHANNEL_BASE(channelId)
     );
 
-    const discordenoChannel = new DiscordenoChannel(
+    const discordenoChannel = new DDChannel(
       this.client,
       result,
       result.guildId
@@ -447,12 +452,14 @@ export class ChannelHelpers {
       );
     }
 
-    return discordenoChannel;
+    return DDChannel;
   }
 
   /** Gets the webhooks for this channel. Requires MANAGE_WEBHOOKS */
   async getChannelWebhooks(channelId: bigint) {
-    await this.client.requireBotChannelPermissions(channelId, ["MANAGE_WEBHOOKS"]);
+    await this.client.requireBotChannelPermissions(channelId, [
+      "MANAGE_WEBHOOKS",
+    ]);
 
     const result = (await this.client.rest.get(
       endpoints.CHANNEL_WEBHOOKS(channelId)
@@ -474,7 +481,7 @@ export class ChannelHelpers {
       (
         await Promise.all(
           result.map(async (res) => {
-            const discordenoChannel = new DiscordenoChannel(
+            const discordenoChannel = new DDChannel(
               this.client,
               res,
               guildId.toString()
@@ -500,9 +507,7 @@ export class ChannelHelpers {
       endpoints.CHANNEL_PINS(channelId)
     )) as Message[];
 
-    return Promise.all(
-      result.map((res) => new DiscordenoMessage(this.client, res))
-    );
+    return Promise.all(result.map((res) => new DDMessage(this.client, res)));
   }
 
   /** Gets the stage instance associated with the Stage channel, if it exists. */
@@ -563,9 +568,10 @@ export class ChannelHelpers {
         throw new Error(Errors.CHANNEL_NOT_TEXT_BASED);
       }
 
-      const hasSendMessagesPerm = await this.client.botHasChannelPermissions(channelId, [
-        "SEND_MESSAGES",
-      ]);
+      const hasSendMessagesPerm = await this.client.botHasChannelPermissions(
+        channelId,
+        ["SEND_MESSAGES"]
+      );
       if (!hasSendMessagesPerm) {
         throw new Error(Errors.MISSING_SEND_MESSAGES);
       }

@@ -3,19 +3,18 @@ import {
   Collection,
   DiscordBitwisePermissionFlags,
   DiscordGatewayIntents,
-Emoji,
+  Emoji,
   Errors,
   EventEmitter,
-  getGatewayBot,
   Overwrite,
   PermissionStrings,
-PresenceUpdate,
+  PresenceUpdate,
 } from "../deps.ts";
-import DiscordenoChannel from "./Structures/DiscordenoChannel.ts";
-import DiscordenoGuild from "./Structures/DiscordenoGuild.ts";
-import DiscordenoMember from "./Structures/DiscordenoMember.ts";
-import DiscordenoMessage from "./Structures/DiscordenoMessage.ts";
-import DiscordenoRole from "./Structures/DiscordenoRole.ts";
+import DDChannel from "./Structures/DDChannel.ts";
+import DDGuild from "./Structures/DDGuild.ts";
+import DDMember from "./Structures/DDMember.ts";
+import DDMessage from "./Structures/DDMessage.ts";
+import DDRole from "./Structures/DDRole.ts";
 import CacheManager from "./utils/CacheManager.ts";
 import HelperManager from "./utils/Helpers/HelperManager.ts";
 import RestManager from "./utils/RestManager.ts";
@@ -36,13 +35,13 @@ export class Client extends EventEmitter {
   // CACHE VALUES
 
   /** All of the guild objects the bot has access to, mapped by their Ids */
-  guilds: Collection<bigint, DiscordenoGuild>;
+  guilds: Collection<bigint, DDGuild>;
   /** All of the channel objects the bot has access to, mapped by their Ids */
-  channels: Collection<bigint, DiscordenoChannel>;
+  channels: Collection<bigint, DDChannel>;
   /** All of the message objects the bot has cached since the bot acquired `READY` state, mapped by their Ids */
-  messages: Collection<bigint, DiscordenoMessage>;
+  messages: Collection<bigint, DDMessage>;
   /** All of the member objects that have been cached since the bot acquired `READY` state, mapped by their Ids */
-  members: Collection<bigint, DiscordenoMember>;
+  members: Collection<bigint, DDMember>;
   /** All of the unavailable guilds, mapped by their Ids (id, timestamp) */
   unavailableGuilds: Collection<bigint, number>;
   /** All of the presence update objects received in PRESENCE_UPDATE gateway event, mapped by their user Id */
@@ -52,8 +51,8 @@ export class Client extends EventEmitter {
     string,
     (
       value:
-        | Collection<bigint, DiscordenoMember>
-        | PromiseLike<Collection<bigint, DiscordenoMember>>
+        | Collection<bigint, DDMember>
+        | PromiseLike<Collection<bigint, DDMember>>
     ) => void
   >;
   /** The slash commands that were executed atleast once are cached here so they can be responded to using followups next time. */
@@ -116,7 +115,7 @@ export class Client extends EventEmitter {
   /** Begin the bot startup process. Connects to the discord gateway. */
   async connect() {
     // INITIAL API CONNECTION TO GET INFO ABOUT BOTS CONNECTION
-    this.gateway.botGatewayData = await getGatewayBot();
+    this.gateway.botGatewayData = await this.helpers.getGatewayBot();
     this.gateway.botGatewayData.url += `?v=${this.gateway.version}&encoding=json`;
     // IF DEFAULTS WERE NOT MODIFED, SET TO RECOMMENDED DISCORD DEFAULTS
     if (!this.gateway.maxShards)
@@ -135,6 +134,11 @@ export class Client extends EventEmitter {
     );
   }
 
+  /** The bot user itself. */
+  get bot() {
+    return this.members.get(this.botId);
+  }
+
   get emojis() {
     return new Collection<bigint, Emoji>(
       this.guilds.reduce(
@@ -147,7 +151,7 @@ export class Client extends EventEmitter {
 
   // METHODS
 
-  messageSweeper(message: DiscordenoMessage) {
+  messageSweeper(message: DDMessage) {
     // DM MESSAGES AREN'T NEEDED
     if (!message.guildId) return true;
 
@@ -155,7 +159,7 @@ export class Client extends EventEmitter {
     return Date.now() - message.timestamp > 600000;
   }
 
-  memberSweeper(member: DiscordenoMember) {
+  memberSweeper(member: DDMember) {
     // DON'T SWEEP THE BOT ELSE STRANGE THINGS WILL HAPPEN
     if (member.id === this.botId) return false;
 
@@ -163,7 +167,7 @@ export class Client extends EventEmitter {
     return member.cachedAt - Date.now() < 1800000;
   }
 
-  guildSweeper(guild: DiscordenoGuild) {
+  guildSweeper(guild: DDGuild) {
     // RESET ACTIVITY FOR NEXT INTERVAL
     if (!this.activeGuildIds.delete(guild.id)) return false;
 
@@ -225,19 +229,19 @@ export class Client extends EventEmitter {
 
   async getCached(
     table: "guilds",
-    key: bigint | DiscordenoGuild
-  ): Promise<DiscordenoGuild | undefined>;
+    key: bigint | DDGuild
+  ): Promise<DDGuild | undefined>;
   async getCached(
     table: "channels",
-    key: bigint | DiscordenoChannel
-  ): Promise<DiscordenoChannel | undefined>;
+    key: bigint | DDChannel
+  ): Promise<DDChannel | undefined>;
   async getCached(
     table: "members",
-    key: bigint | DiscordenoMember
-  ): Promise<DiscordenoMember | undefined>;
+    key: bigint | DDMember
+  ): Promise<DDMember | undefined>;
   async getCached(
     table: "guilds" | "channels" | "members",
-    key: bigint | DiscordenoGuild | DiscordenoChannel | DiscordenoMember
+    key: bigint | DDGuild | DDChannel | DDMember
   ) {
     const cached =
       typeof key === "bigint"
@@ -250,8 +254,8 @@ export class Client extends EventEmitter {
 
   /** Calculates the permissions this member has in the given guild */
   async calculateBasePermissions(
-    guildOrId: bigint | DiscordenoGuild,
-    memberOrId: bigint | DiscordenoMember
+    guildOrId: bigint | DDGuild,
+    memberOrId: bigint | DDMember
   ) {
     const guild = await this.getCached("guilds", guildOrId);
     const member = await this.getCached("members", memberOrId);
@@ -278,8 +282,8 @@ export class Client extends EventEmitter {
 
   /** Calculates the permissions this member has for the given Channel */
   async calculateChannelOverwrites(
-    channelOrId: bigint | DiscordenoChannel,
-    memberOrId: bigint | DiscordenoMember
+    channelOrId: bigint | DDChannel,
+    memberOrId: bigint | DDMember
   ) {
     const channel = await this.getCached("channels", channelOrId);
 
@@ -351,8 +355,8 @@ export class Client extends EventEmitter {
 
   /** Checks if the given member has these permissions in the given guild */
   async hasGuildPermissions(
-    guild: bigint | DiscordenoGuild,
-    member: bigint | DiscordenoMember,
+    guild: bigint | DDGuild,
+    member: bigint | DDMember,
     permissions: PermissionStrings[]
   ) {
     // First we need the role permission bits this member has
@@ -363,7 +367,7 @@ export class Client extends EventEmitter {
 
   /** Checks if the bot has these permissions in the given guild */
   botHasGuildPermissions(
-    guild: bigint | DiscordenoGuild,
+    guild: bigint | DDGuild,
     permissions: PermissionStrings[]
   ) {
     // Since Bot is a normal member we can use the hasRolePermissions() function
@@ -372,8 +376,8 @@ export class Client extends EventEmitter {
 
   /** Checks if the given member has these permissions for the given channel */
   async hasChannelPermissions(
-    channel: bigint | DiscordenoChannel,
-    member: bigint | DiscordenoMember,
+    channel: bigint | DDChannel,
+    member: bigint | DDMember,
     permissions: PermissionStrings[]
   ) {
     // First we need the overwrite bits this member has
@@ -387,7 +391,7 @@ export class Client extends EventEmitter {
 
   /** Checks if the bot has these permissions f0r the given channel */
   botHasChannelPermissions(
-    channel: bigint | DiscordenoChannel,
+    channel: bigint | DDChannel,
     permissions: PermissionStrings[]
   ) {
     // Since Bot is a normal member we can use the hasRolePermissions() function
@@ -406,8 +410,8 @@ export class Client extends EventEmitter {
 
   /** Get the missing Guild permissions this member has */
   async getMissingGuildPermissions(
-    guild: bigint | DiscordenoGuild,
-    member: bigint | DiscordenoMember,
+    guild: bigint | DDGuild,
+    member: bigint | DDMember,
     permissions: PermissionStrings[]
   ) {
     // First we need the role permission bits this member has
@@ -418,8 +422,8 @@ export class Client extends EventEmitter {
 
   /** Get the missing Channel permissions this member has */
   async getMissingChannelPermissions(
-    channel: bigint | DiscordenoChannel,
-    member: bigint | DiscordenoMember,
+    channel: bigint | DDChannel,
+    member: bigint | DDMember,
     permissions: PermissionStrings[]
   ) {
     // First we need the role permissino bits this member has
@@ -433,8 +437,8 @@ export class Client extends EventEmitter {
 
   /** Throws an error if this member has not all of the given permissions */
   async requireGuildPermissions(
-    guild: bigint | DiscordenoGuild,
-    member: bigint | DiscordenoMember,
+    guild: bigint | DDGuild,
+    member: bigint | DDMember,
     permissions: PermissionStrings[]
   ) {
     const missing = await this.getMissingGuildPermissions(
@@ -450,7 +454,7 @@ export class Client extends EventEmitter {
 
   /** Throws an error if the bot does not have all permissions */
   requireBotGuildPermissions(
-    guild: bigint | DiscordenoGuild,
+    guild: bigint | DDGuild,
     permissions: PermissionStrings[]
   ) {
     // Since Bot is a normal member we can use the throwOnMissingGuildPermission() function
@@ -459,8 +463,8 @@ export class Client extends EventEmitter {
 
   /** Throws an error if this member has not all of the given permissions */
   async requireChannelPermissions(
-    channel: bigint | DiscordenoChannel,
-    member: bigint | DiscordenoMember,
+    channel: bigint | DDChannel,
+    member: bigint | DDMember,
     permissions: PermissionStrings[]
   ) {
     const missing = await this.getMissingChannelPermissions(
@@ -476,7 +480,7 @@ export class Client extends EventEmitter {
 
   /** Throws an error if the bot has not all of the given channel permissions */
   requireBotChannelPermissions(
-    channel: bigint | DiscordenoChannel,
+    channel: bigint | DDChannel,
     permissions: PermissionStrings[]
   ) {
     // Since Bot is a normal member we can use the throwOnMissingChannelPermission() function
@@ -508,7 +512,7 @@ export class Client extends EventEmitter {
 
   /** Internal function to check if the bot has the permissions to set these overwrites */
   async requireOverwritePermissions(
-    guildOrId: bigint | DiscordenoGuild,
+    guildOrId: bigint | DDGuild,
     overwrites: Overwrite[]
   ) {
     let requiredPerms: Set<PermissionStrings> = new Set(["MANAGE_CHANNELS"]);
@@ -530,8 +534,8 @@ export class Client extends EventEmitter {
 
   /** Gets the highest role from the member in this guild */
   async highestRole(
-    guildOrId: bigint | DiscordenoGuild,
-    memberOrId: bigint | DiscordenoMember
+    guildOrId: bigint | DDGuild,
+    memberOrId: bigint | DDMember
   ) {
     const guild = await this.getCached("guilds", guildOrId);
 
@@ -544,7 +548,7 @@ export class Client extends EventEmitter {
     // This member has no roles so the highest one is the @everyone role
     if (!memberRoles) return guild.roles.get(guild.id)!;
 
-    let memberHighestRole: DiscordenoRole | undefined;
+    let memberHighestRole: DDRole | undefined;
 
     for (const roleId of memberRoles) {
       const role = guild.roles.get(roleId);
@@ -568,7 +572,7 @@ export class Client extends EventEmitter {
 
   /** Checks if the first role is higher than the second role */
   async higherRolePosition(
-    guildOrId: bigint | DiscordenoGuild,
+    guildOrId: bigint | DDGuild,
     roleId: bigint,
     otherRoleId: bigint
   ) {
@@ -590,7 +594,7 @@ export class Client extends EventEmitter {
 
   /** Checks if the member has a higher position than the given role */
   async isHigherPosition(
-    guildOrId: bigint | DiscordenoGuild,
+    guildOrId: bigint | DDGuild,
     memberId: bigint,
     compareRoleId: bigint
   ) {

@@ -26,7 +26,7 @@ import Client from "../Client.ts";
 import Base from "./Base.ts";
 import MessageBitField from "./BitFields/Message.ts";
 
-export class DiscordenoMessage extends Base {
+export class DDMessage extends Base {
   /** Id of the guild which the massage has been send in. */
   guildId?: bigint;
   /** id of the channel the message was sent in */
@@ -238,10 +238,7 @@ export class DiscordenoMessage extends Base {
 
   /** Edit the message */
   async edit(content: string | EditMessage) {
-    return await this.client.editMessage(
-      this as unknown as DiscordenoMessage,
-      content
-    );
+    return await this.client.editMessage(this as unknown as DDMessage, content);
   }
 
   /** Pins the message in the channel */
@@ -431,4 +428,4 @@ export class DiscordenoMessage extends Base {
   }
 }
 
-export default DiscordenoMessage;
+export default DDMessage;

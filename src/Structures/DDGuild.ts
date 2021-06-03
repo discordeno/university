@@ -15,7 +15,6 @@ import {
   Emoji,
   Guild,
   snowflakeToBigint,
-  cache,
   DiscordImageSize,
   DiscordImageFormat,
   ModifyGuild,
@@ -27,10 +26,11 @@ import {
 import Client from "../Client.ts";
 import Base from "./Base.ts";
 import GuildBitField from "./BitFields/Guild.ts";
-import DiscordenoRole from "./DiscordenoRole.ts";
-import DiscordenoVoiceState from "./DiscordenoVoiceState.ts";
+import DDMember from "./DDMember.ts";
+import DDRole from "./DDRole.ts";
+import DDVoiceState from "./DDVoiceState.ts";
 
-export class DiscordenoGuild extends Base {
+export class DDGuild extends Base {
   /** The id of the shard this guild is bound to */
   shardId: number;
   /** Guild name (2-100 characaters, excluding trailing and leading whitespace) */
@@ -58,7 +58,7 @@ export class DiscordenoGuild extends Base {
   /** Explicit content filter level */
   explicitContentFilter!: DiscordExplicitContentFilterLevels;
   /** Roles in the guild */
-  roles: Collection<bigint, DiscordenoRole>;
+  roles: Collection<bigint, DDRole>;
   /** Enabled guild features */
   features!: DiscordGuildFeatures[];
   /** Required MFA level for the guild */
@@ -68,9 +68,9 @@ export class DiscordenoGuild extends Base {
   /** When this guild was joined at */
   joinedAt?: string;
   /** Total number of members in this guild */
-  memberCount?: number;
+  memberCount: number;
   /** States of members currently in voice channels; lacks the guild_id key */
-  voiceStates: Collection<bigint, DiscordenoVoiceState>;
+  voiceStates: Collection<bigint, DDVoiceState>;
   // TODO: check if need to omit
   /** All active threads in the guild that the current user has permission to view */
   threads?: Channel[];
@@ -134,6 +134,7 @@ export class DiscordenoGuild extends Base {
     this.voiceStates = new Collection();
     this.emojis = new Collection();
     this.presences = new Collection();
+    this.memberCount = 0;
 
     this.update(payload);
   }
@@ -182,14 +183,14 @@ export class DiscordenoGuild extends Base {
     for (const role of payload.roles) {
       this.roles.set(
         snowflakeToBigint(role.id),
-        new DiscordenoRole(this.client, role, this.id)
+        new DDRole(this.client, role, this.id)
       );
     }
 
     for (const voiceState of payload.voiceStates || []) {
       this.voiceStates.set(
         snowflakeToBigint(voiceState.userId),
-        new DiscordenoVoiceState(this.client, this.id, voiceState)
+        new DDVoiceState(this.client, this.id, voiceState)
       );
     }
 
@@ -197,8 +198,8 @@ export class DiscordenoGuild extends Base {
       const user = member.user;
       if (!user) continue;
 
-      // @ts-ignore find a better way to do this
-      cache.members.set(
+      this.client.cache.set(
+        "members",
         snowflakeToBigint(user.id),
         new DDMember(this.client, { ...member, user }, this.id)
       );
@@ -215,7 +216,7 @@ export class DiscordenoGuild extends Base {
 
   /** Members in the guild that are cached. */
   get members() {
-    return cache.members.filter((m) => m.guilds.has(this.id));
+    return this.client.members.filter((m) => m.guilds.has(this.id));
   }
 
   /** Channels in this guild. */
@@ -257,7 +258,7 @@ export class DiscordenoGuild extends Base {
 
   /** The bots voice state if there is one in this guild */
   get botVoice() {
-    return this.voiceStates?.get(this.client.id);
+    return this.voiceStates?.get(this.client.botId);
   }
 
   /** The owner of this server. */
@@ -386,7 +387,7 @@ export class DiscordenoGuild extends Base {
 
   // await Promise.all(
   //   [...channels, ...threads].map(async (channel) => {
-  //     const discordenoChannel = await structures.createDiscordenoChannel(channel, guildId);
+  //     const DDChannel = await structures.createDDChannel(channel, guildId);
 
   //     return await cacheHandlers.set("channels", discordenoChannel.id, discordenoChannel);
   //   })
@@ -462,4 +463,4 @@ export class DiscordenoGuild extends Base {
   }
 }
 
-export default DiscordenoGuild;
+export default DDGuild;

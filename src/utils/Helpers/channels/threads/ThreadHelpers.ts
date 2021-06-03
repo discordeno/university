@@ -1,12 +1,12 @@
 import {
   ChannelTypes,
-  Errors,
   endpoints,
+  Errors,
   ListPublicArchivedThreads,
   snakelize,
   StartThread,
-} from "../../../deps.ts";
-import Client from "../../Client.ts";
+} from "../../../../../deps.ts";
+import Client from "../../../../Client.ts";
 
 export class ThreadHelpers {
   /** The client itself. */

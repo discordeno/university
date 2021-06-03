@@ -15,7 +15,7 @@ import {
 import Client from "../Client.ts";
 import Base from "./Base.ts";
 
-export class DiscordenoChannel extends Base {
+export class DDChannel extends Base {
   /** The type of channel */
   type!: DiscordChannelTypes;
   /** Sorting position of the channel */
@@ -143,7 +143,10 @@ export class DiscordenoChannel extends Base {
     if (!voiceStates) return undefined;
 
     return new Collection(
-      voiceStates.map((vs) => [vs.userId, this.client.members.get(vs.userId)])
+      voiceStates.map((vs) => [
+        vs.memberId,
+        this.client.members.get(vs.memberId),
+      ])
     );
   }
 
@@ -241,4 +244,4 @@ export class DiscordenoChannel extends Base {
   }
 }
 
-export default DiscordenoChannel;
+export default DDChannel;

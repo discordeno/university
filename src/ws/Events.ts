@@ -1,3 +1,4 @@
+import { memberToggles } from "https://deno.land/x/discordeno@11.0.0-rc.5/src/structures/member.ts";
 import {
   ApplicationCommandCreateUpdateDelete,
   bigintToSnowflake,
@@ -26,7 +27,6 @@ import {
   Interaction,
   InviteCreate,
   InviteDelete,
-  memberToggles,
   Message,
   MessageDelete,
   MessageDeleteBulk,
@@ -38,7 +38,6 @@ import {
   Ready,
   snowflakeToBigint,
   StageInstance,
-  structures,
   ThreadListSync,
   ThreadMember,
   ThreadMembersUpdate,
@@ -50,7 +49,12 @@ import {
   WebhookUpdate,
 } from "../../deps.ts";
 import Client from "../Client.ts";
-import DiscordenoChannel from "../Structures/DiscordenoChannel.ts";
+import DDChannel from "../Structures/DDChannel.ts";
+import DDGuild from "../Structures/DDGuild.ts";
+import DDMember from "../Structures/DDMember.ts";
+import DDMessage from "../Structures/DDMessage.ts";
+import DDRole from "../Structures/DDRole.ts";
+import DDVoiceState from "../Structures/DDVoiceState.ts";
 import Shard from "./Shard.ts";
 
 export class GatewayEvents {
@@ -144,7 +148,7 @@ export class GatewayEvents {
   async CHANNEL_CREATE(data: DiscordGatewayPayload) {
     const payload = data.d as Channel;
 
-    const discordenoChannel = new DiscordenoChannel(
+    const discordenoChannel = new DDChannel(
       this.client,
       payload,
       payload.guildId
@@ -184,7 +188,7 @@ export class GatewayEvents {
             // Since this channel was deleted all voice states for this channel should be deleted
             guild.voiceStates.delete(key);
 
-            const member = await this.client.cache.get("members", vs.userId);
+            const member = await this.client.cache.get("members", vs.memberId);
             if (!member) return;
 
             this.client.emit("voiceChannelLeave", member, vs.channelId);
@@ -251,7 +255,7 @@ export class GatewayEvents {
     );
     if (!cachedChannel) return;
 
-    const discordenoChannel = new DiscordenoChannel(
+    const discordenoChannel = new DDChannel(
       this.client,
       payload,
       payload.guildId
@@ -322,7 +326,7 @@ export class GatewayEvents {
     if (await this.client.cache.has("guilds", snowflakeToBigint(payload.id)))
       return;
 
-    const guild = await structures.createDiscordenoGuild(payload, shardId);
+    const guild = new DDGuild(this.client, payload, shardId);
     await this.client.cache.set("guilds", guild.id, guild);
 
     const shard = this.client.gateway.get(shardId);
@@ -440,17 +444,14 @@ export class GatewayEvents {
     if (!guild) return;
 
     guild.memberCount++;
-    const discordenoMember = await structures.createDiscordenoMember(
-      payload,
-      guild.id
-    );
+    const discordenoMember = new DDMember(this.client, payload, guild.id);
     await this.client.cache.set(
       "members",
       discordenoMember.id,
       discordenoMember
     );
 
-    this.client.emit("guildMemberAdd", guild, discordenoMember);
+    this.client.emit("guildMemberAdd", guild, DDMember);
   }
 
   async GUILD_MEMBER_REMOVE(data: DiscordGatewayPayload) {
@@ -496,10 +497,7 @@ export class GatewayEvents {
       mute: guildMember?.mute || false,
       roles: payload.roles,
     };
-    const discordenoMember = await structures.createDiscordenoMember(
-      newMemberData,
-      guild.id
-    );
+    const discordenoMember = new DDMember(this.client, newMemberData, guild.id);
     await this.client.cache.set(
       "members",
       discordenoMember.id,
@@ -511,14 +509,14 @@ export class GatewayEvents {
         this.client.emit(
           "nicknameUpdate",
           guild,
-          discordenoMember,
+          DDMember,
           payload.nick!,
           guildMember.nick ?? undefined
         );
       }
 
       if (payload.pending === false && guildMember.pending === true) {
-        this.client.emit("membershipScreeningPassed", guild, discordenoMember);
+        this.client.emit("membershipScreeningPassed", guild, DDMember);
       }
 
       const roleIds = guildMember.roles || [];
@@ -530,7 +528,7 @@ export class GatewayEvents {
           `1. Running forEach loop in GUILD_MEMBER_UPDATE file.`
         );
         if (!payload.roles.includes(bigintToSnowflake(id))) {
-          this.client.emit("roleLost", guild, discordenoMember, id);
+          this.client.emit("roleLost", guild, DDMember, id);
         }
       });
 
@@ -544,19 +542,14 @@ export class GatewayEvents {
           this.client.emit(
             "roleGained",
             guild,
-            discordenoMember,
+            DDMember,
             snowflakeToBigint(id)
           );
         }
       });
     }
 
-    this.client.emit(
-      "guildMemberUpdate",
-      guild,
-      discordenoMember,
-      cachedMember
-    );
+    this.client.emit("guildMemberUpdate", guild, DDMember, cachedMember);
   }
 
   async GUILD_MEMBERS_CHUNK(data: DiscordGatewayPayload) {
@@ -566,10 +559,7 @@ export class GatewayEvents {
 
     const members = await Promise.all(
       payload.members.map(async (member) => {
-        const discordenoMember = await structures.createDiscordenoMember(
-          member,
-          guildId
-        );
+        const discordenoMember = new DDMember(this.client, member, guildId);
         await this.client.cache.set(
           "members",
           discordenoMember.id,
@@ -611,10 +601,7 @@ export class GatewayEvents {
     );
     if (!guild) return;
 
-    const role = await structures.createDiscordenoRole({
-      ...payload,
-      guildId: guild.id,
-    });
+    const role = new DDRole(this.client, payload.role, guild.id);
     guild.roles = guild.roles.set(snowflakeToBigint(payload.role.id), role);
     await this.client.cache.set("guilds", guild.id, guild);
 
@@ -672,10 +659,7 @@ export class GatewayEvents {
     const cachedRole = guild.roles.get(snowflakeToBigint(payload.role.id));
     if (!cachedRole) return;
 
-    const role = await structures.createDiscordenoRole({
-      ...payload,
-      guildId: guild.id,
-    });
+    const role = new DDRole(this.client, payload.role, guild.id);
     guild.roles.set(snowflakeToBigint(payload.role.id), role);
     await this.client.cache.set("guilds", guild.id, guild);
 
@@ -699,7 +683,7 @@ export class GatewayEvents {
       "emojis",
     ];
 
-    const newGuild = await structures.createDiscordenoGuild(payload, shardId);
+    const newGuild = new DDGuild(this.client, payload, shardId);
 
     const changes = Object.entries(newGuild)
       .map(([key, value]) => {
@@ -732,7 +716,8 @@ export class GatewayEvents {
   async INTERACTION_CREATE(data: DiscordGatewayPayload) {
     const payload = data.d as Interaction;
     const discordenoMember = payload.guildId
-      ? await structures.createDiscordenoMember(
+      ? new DDMember(
+          this.client,
           payload.member as GuildMemberWithUser,
           snowflakeToBigint(payload.guildId)
         )
@@ -776,7 +761,8 @@ export class GatewayEvents {
 
     if (payload.member && guild) {
       // If in a guild cache the author as a member
-      const discordenoMember = await structures.createDiscordenoMember(
+      const discordenoMember = new DDMember(
+        this.client,
         { ...payload.member, user: payload.author } as GuildMemberWithUser,
         guild.id
       );
@@ -789,10 +775,11 @@ export class GatewayEvents {
 
     if (payload.mentions && guild) {
       await Promise.all(
-        payload.mentions.map(async (mention) => {
+        payload.mentions.map((mention) => {
           // Cache the member if its a valid member
           if (mention.member) {
-            const discordenoMember = await structures.createDiscordenoMember(
+            const discordenoMember = new DDMember(
+              this.client,
               { ...mention.member, user: mention } as GuildMemberWithUser,
               guild.id
             );
@@ -807,7 +794,7 @@ export class GatewayEvents {
       );
     }
 
-    const message = await structures.createDiscordenoMessage(data.d as Message);
+    const message = new DDMessage(this.client, data.d as Message);
     // Cache the message
     await this.client.cache.set(
       "messages",
@@ -894,7 +881,8 @@ export class GatewayEvents {
         snowflakeToBigint(payload.guildId)
       );
       if (guild) {
-        const discordenoMember = await structures.createDiscordenoMember(
+        const discordenoMember = new DDMember(
+          this.client,
           payload.member,
           guild.id
         );
@@ -917,7 +905,7 @@ export class GatewayEvents {
     );
 
     if (message?.reactions) {
-      message.reactions = undefined;
+      message.reactions = [];
 
       await this.client.cache.set(
         "messages",
@@ -948,7 +936,7 @@ export class GatewayEvents {
           )
       );
 
-      if (!message.reactions.length) message.reactions = undefined;
+      if (!message.reactions.length) message.reactions = [];
 
       await this.client.cache.set("messages", message.id, message);
     }
@@ -982,7 +970,7 @@ export class GatewayEvents {
         if (reaction.count === 0) {
           message.reactions = message.reactions?.filter((r) => r.count !== 0);
         }
-        if (!message.reactions?.length) message.reactions = undefined;
+        if (!message.reactions?.length) message.reactions = [];
 
         await this.client.cache.set("messages", message.id, message);
       }
@@ -1010,7 +998,7 @@ export class GatewayEvents {
       return;
     }
 
-    const message = await structures.createDiscordenoMessage(payload);
+    const message = new DDMessage(this.client, payload);
 
     await this.client.cache.set(
       "messages",
@@ -1062,8 +1050,8 @@ export class GatewayEvents {
     // Update the avatar
     member.avatar = hash?.bigint || 0n;
     // Update the animated status if its animated
-    if (hash?.animated) member.bitfield |= memberToggles.animatedAvatar;
-    else member.bitfield &= ~memberToggles.animatedAvatar;
+    if (hash?.animated) member.bitfield.bits |= memberToggles.animatedAvatar;
+    else member.bitfield.bits &= ~memberToggles.animatedAvatar;
 
     member.flags = userData.flags;
     member.premiumType = userData.premiumType;
@@ -1101,7 +1089,7 @@ export class GatewayEvents {
     if (!guild) return;
 
     const member = payload.member
-      ? await structures.createDiscordenoMember(payload.member, guild.id)
+      ? new DDMember(this.client, payload.member, guild.id)
       : await this.client.cache.get(
           "members",
           snowflakeToBigint(payload.userId)
@@ -1115,7 +1103,7 @@ export class GatewayEvents {
 
     guild.voiceStates.set(
       snowflakeToBigint(payload.userId),
-      await structures.createDiscordenoVoiceState(guild.id, payload)
+      new DDVoiceState(this.client, guild.id, payload)
     );
 
     await this.client.cache.set("guilds", guild.id, guild);
@@ -1188,7 +1176,7 @@ export class GatewayEvents {
   async THREAD_CREATE(data: DiscordGatewayPayload) {
     const payload = data.d as Channel;
 
-    const discordenoChannel = new DiscordenoChannel(
+    const discordenoChannel = new DDChannel(
       this.client,
       payload,
       payload.guildId
@@ -1199,7 +1187,7 @@ export class GatewayEvents {
       discordenoChannel
     );
 
-    this.client.emit("threadCreate", discordenoChannel);
+    this.client.emit("threadCreate", DDChannel);
   }
 
   async THREAD_DELETE(data: DiscordGatewayPayload) {
@@ -1231,7 +1219,7 @@ export class GatewayEvents {
 
     const discordenoChannels = await Promise.all(
       payload.threads.map(async (thread) => {
-        const discordenoChannel = new DiscordenoChannel(
+        const discordenoChannel = new DDChannel(
           this.client,
           thread,
           payload.guildId
@@ -1247,7 +1235,7 @@ export class GatewayEvents {
       })
     );
 
-    const threads = new Collection<bigint, DiscordenoChannel>(
+    const threads = new Collection<bigint, DDChannel>(
       discordenoChannels.map((t) => [t.id, t])
     );
 
@@ -1296,7 +1284,7 @@ export class GatewayEvents {
     );
     if (!oldChannel) return;
 
-    const discordenoChannel = new DiscordenoChannel(
+    const discordenoChannel = new DDChannel(
       this.client,
       payload,
       payload.guildId

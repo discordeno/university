@@ -17,7 +17,7 @@ import Client from "../Client.ts";
 import Base from "./Base.ts";
 import MemberBitField from "./BitFields/Member.ts";
 
-export class DiscordenoMember extends Base {
+export class DDMember extends Base {
   /** The username of the member */
   username!: string;
   /** The user's 4-digit discord-tag */
@@ -44,6 +44,7 @@ export class DiscordenoMember extends Base {
   flags?: DiscordUserFlags;
   premiumType?: DiscordPremiumTypes;
   publicFlags?: DiscordUserFlags;
+  cachedAt: number;
 
   constructor(client: Client, payload: GuildMemberWithUser, guildId: bigint) {
     super(client, payload.user.id);
@@ -51,6 +52,7 @@ export class DiscordenoMember extends Base {
     this.bitfield = new MemberBitField(0n);
     this.guilds = new Collection();
     this.avatar = 0n;
+    this.cachedAt = Date.now();
 
     this.update(payload, guildId);
   }
@@ -219,4 +221,4 @@ export class DiscordenoMember extends Base {
   }
 }
 
-export default DiscordenoMember;
+export default DDMember;
