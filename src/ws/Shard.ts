@@ -238,7 +238,7 @@ export class Shard {
               : Array.isArray(value)
               ? value.map((v) => (typeof v === "bigint" ? v.toString() : v))
               : value,
-          `Running forEach loop in ws.processQueue function for changing bigints to strings.`
+          `Running forEach loop in shard.processQueue function for changing bigints to strings.`
         );
       }
 

@@ -758,7 +758,6 @@ export class GatewayEvents {
           snowflakeToBigint(payload.guildId)
         )
       : undefined;
-
     if (payload.member && guild) {
       // If in a guild cache the author as a member
       const discordenoMember = new DDMember(
@@ -793,7 +792,6 @@ export class GatewayEvents {
         })
       );
     }
-
     const message = new DDMessage(this.client, data.d as Message);
     // Cache the message
     await this.client.cache.set(
