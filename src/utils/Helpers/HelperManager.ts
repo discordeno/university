@@ -9,16 +9,64 @@ import {
 } from "../../../deps.ts";
 import Client from "../../Client.ts";
 import ChannelHelpers from "./channels/ChannelHelpers.ts";
+import DiscoveryHelpers from "./Discovery.ts";
+import EmojiHelpers from "./Emoji.ts";
+import GuildHelpers from "./Guilds.ts";
+import IntegrationHelpers from "./Integrations.ts";
+import InteractionHelpers from "./Interactions.ts";
+import InviteHelpers from "./Invite.ts";
+import MemberHelpers from "./Members.ts";
+import MessageHelpers from "./Message.ts";
+import RoleHelpers from "./Roles.ts";
+import TemplateHelpers from "./Templates.ts";
+import TypeGuardHelpers from "./TypeGuards.ts";
+import WebhookHelpers from "./Webhooks.ts";
 
 export class HelperManager {
   /** The client itself. */
   client: Client;
   /** The channel helpers */
   channels: ChannelHelpers;
+  /** The server discovery related helpers. */
+  discovery: DiscoveryHelpers;
+  /** The custom server emoji helpers. */
+  emojis: EmojiHelpers;
+  /** The guild related helpers. */
+  guilds: GuildHelpers;
+  /** The guild integration related helpers. */
+  integrations: IntegrationHelpers;
+  /** The interaction related helpers. */
+  interactions: InteractionHelpers;
+  /** The guild invites related helpers. */
+  invites: InviteHelpers;
+  /** The guild members related helpers. */
+  members: MemberHelpers;
+  /** The message related helpers. */
+  messages: MessageHelpers;
+  /** The guild roles related helpers */
+  roles: RoleHelpers;
+  /** The guild template related helpers. */
+  templates: TemplateHelpers;
+  /** The type guard helpers. */
+  typeGuards: TypeGuardHelpers;
+  /** The webhook related helpers. */
+  webhooks: WebhookHelpers;
 
   constructor(client: Client) {
     this.client = client;
     this.channels = new ChannelHelpers(client);
+    this.discovery = new DiscoveryHelpers(client);
+    this.emojis = new EmojiHelpers(client);
+    this.guilds = new GuildHelpers(client);
+    this.integrations = new IntegrationHelpers(client);
+    this.interactions = new InteractionHelpers(client);
+    this.invites = new InviteHelpers(client);
+    this.members = new MemberHelpers(client);
+    this.messages = new MessageHelpers(client);
+    this.roles = new RoleHelpers(client);
+    this.templates = new TemplateHelpers(client);
+    this.typeGuards = new TypeGuardHelpers(client);
+    this.webhooks = new WebhookHelpers(client);
   }
 
   /** Get the bots Gateway metadata that can help during the operation of large or sharded bots. */

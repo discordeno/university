@@ -25,7 +25,7 @@ import Client from "../../Client.ts";
 import DDChannel from "../../Structures/DDChannel.ts";
 import DDMember from "../../Structures/DDMember.ts";
 
-export class MembersHelpers {
+export class MemberHelpers {
   /** The client itself. */
   client: Client;
 
@@ -440,4 +440,4 @@ export class MembersHelpers {
   }
 }
 
-export default MembersHelpers;
+export default MemberHelpers;

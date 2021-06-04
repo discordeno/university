@@ -8,7 +8,7 @@ import {
 } from "../../../deps.ts";
 import Client from "../../Client.ts";
 
-export class Discovery {
+export class DiscoveryHelpers {
   /** The client itself. */
   client: Client;
 
@@ -71,4 +71,4 @@ export class Discovery {
   }
 }
 
-export default Discovery;
+export default DiscoveryHelpers;

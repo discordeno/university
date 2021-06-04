@@ -20,7 +20,7 @@ import {
 import Client from "../../Client.ts";
 import DDMessage from "../../Structures/DDMessage.ts";
 
-export class InteractionsHelpers {
+export class InteractionHelpers {
   /** The client itself. */
   client: Client;
 
@@ -368,7 +368,7 @@ export class InteractionsHelpers {
   }
 }
 
-export default InteractionsHelpers;
+export default InteractionHelpers;
 
 export interface VerifySignatureOptions {
   publicKey: string;

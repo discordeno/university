@@ -6,7 +6,7 @@ import {
 } from "../../../deps.ts";
 import Client from "../../Client.ts";
 
-export class TypeGuards {
+export class TypeGuardHelpers {
   /** The client itself. */
   client: Client;
 
@@ -27,4 +27,4 @@ export class TypeGuards {
   }
 }
 
-export default TypeGuards;
+export default TypeGuardHelpers;
