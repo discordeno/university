@@ -2,13 +2,13 @@
 
 <img align="right" src="https://raw.githubusercontent.com/discordeno/guide/main/src/.vuepress/public/logo.png" height="150px">
 
-Class based version of [discorddeno](https://github.com/discordeno/discordeno)
+Class based version of [discordeno](https://github.com/discordeno/discordeno)
 
 University follows [Semantic Versioning](https://semver.org/)
 
-[![Discord](https://img.shields.io/discord/785384884197392384?color=7289da&logo=discord&logoColor=dark)](https://discord.com/invite/5vBgXk3UcZ)
-![Lint](https://github.com/discordeno/discordeno/workflows/Lint/badge.svg)
-![Test](https://github.com/discordeno/discordeno/workflows/Test/badge.svg)
+[![Discord](https://img.shields.io/discord/785384884197392384?color=7289da&logo=discord&logoColor=dark)](https://discord.com/invite/deno)
+![Lint](https://github.com/discordeno/university/workflows/Lint/badge.svg)
+![Test](https://github.com/discordeno/university/workflows/Test/badge.svg)
 
 ## Getting Started
 
@@ -37,7 +37,7 @@ bot.connect();
 
 ## Links
 
-- [Discord](https://discord.com/invite/5vBgXk3UcZ)
+- [Discord](https://discord.com/invite/deno)
 - [Raw](https://github.com/discordeno/university/raw/main/mod.ts)
 
 ## Contributing

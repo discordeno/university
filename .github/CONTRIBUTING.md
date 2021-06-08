@@ -1,7 +1,7 @@
 # Contributing
 
 - Read the [style guide](#style-guide).
-- Ask for help on the [official Discord server](https://discord.gg/5vBgXk3UcZ)
+- Ask for help on the [official Discord server](https://discord.gg/deno)
 - If you are going to work on an issue, mention so in the issue comments before
   you start working on the issue.
 - If you are going to work on a new feature, create an issue and discuss with
@@ -15,9 +15,6 @@
 - Ensure there is a related issue and it is referenced in the pull request text.
 - Ensure there are tests that cover the changes.
 - Ensure all of the checks (lint and test) are passing.
-
-## Style Guide
-
 - Use underscores as a separator in filenames.
 - Comply with
   [these guidelines for inclusive code](https://chromium.googlesource.com/chromium/src/+/master/styleguide/inclusive_code.md).
@@ -27,11 +24,5 @@
   exported entity.
 - Every exported entity must be accompanied by a Typedoc (JSDoc without explicit
   types) comment block. Ideally, we prefer single line comment block.
-- Top-level functions should not use arrow syntax.
-- Minimize dependencies; do not make circular imports.
-- Utilize functional API wherever possible and avoid usage of ES6 classes.
-- Follow
-  [Convention Over Configuration](https://en.wikipedia.org/wiki/Convention_over_configuration)
-  wherever possible.
 - Please follow the
   [guidelines for inclusive code](https://chromium.googlesource.com/chromium/src/+/master/styleguide/inclusive_code.md).
