@@ -183,6 +183,21 @@ export class Client extends EventEmitter {
     return true;
   }
 
+  // MESSAGE METHODS
+  deleteMessage(
+    channelId: bigint,
+    messageId: bigint,
+    reason?: string,
+    delayMilliseconds?: number
+  ) {
+    return this.helpers.messages.deleteMessage(
+      channelId,
+      messageId,
+      reason,
+      delayMilliseconds
+    );
+  }
+
   // UTILS
   loopObject<T = Record<string, unknown>>(
     obj: Record<string, unknown>,

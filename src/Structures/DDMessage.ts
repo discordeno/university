@@ -226,15 +226,15 @@ export class DDMessage extends Base {
       : [];
   }
 
-  // /** Delete the message */
-  // async delete(reason?: string, delayMilliseconds?: number) {
-  //   return await this.client.deleteMessage(
-  //     this.channelId,
-  //     this.id,
-  //     reason,
-  //     delayMilliseconds
-  //   );
-  // }
+  /** Delete the message */
+  async delete(reason?: string, delayMilliseconds?: number) {
+    return await this.client.deleteMessage(
+      this.channelId,
+      this.id,
+      reason,
+      delayMilliseconds
+    );
+  }
 
   // /** Edit the message */
   // async edit(content: string | EditMessage) {
