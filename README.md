@@ -37,7 +37,7 @@ bot.connect();
 
 ## Links
 
-- [Discord](https://discord.com/invite/deno)
+- [Discord](https://discord.gg/ddeno)
 - [Raw](https://github.com/discordeno/university/raw/main/mod.ts)
 
 ## Contributing
