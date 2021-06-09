@@ -6,7 +6,7 @@ Class based version of [discordeno](https://github.com/discordeno/discordeno)
 
 University follows [Semantic Versioning](https://semver.org/)
 
-[![Discord](https://img.shields.io/discord/785384884197392384?color=7289da&logo=discord&logoColor=dark)](https://discord.com/invite/deno)
+[![Discord](https://img.shields.io/discord/785384884197392384?color=7289da&logo=discord&logoColor=dark)](https://discord.com/ddeno)
 ![Lint](https://github.com/discordeno/university/workflows/Lint/badge.svg)
 ![Test](https://github.com/discordeno/university/workflows/Test/badge.svg)
 
