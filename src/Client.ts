@@ -221,7 +221,11 @@ export class Client extends EventEmitter {
 
   /** Delete a channel Overwrite */
   async deleteChannelOverwrite(guildId: bigint, channelId: bigint, id: bigint) {
-    return await this.helpers.channels.deleteChannelOverwrite(guildId, channelId, id);
+    return await this.helpers.channels.deleteChannelOverwrite(
+      guildId,
+      channelId,
+      id
+    );
   }
 
   /** Checks if a channel overwrite for a user id or a role id has permission in this channel */
