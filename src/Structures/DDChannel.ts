@@ -151,61 +151,61 @@ export class DDChannel extends Base {
   }
 
   /** Send a message to the channel. Requires SEND_MESSAGES permission. */
-  // async send(content: string | CreateMessage) {
-  //   return await this.client.sendMessage(this.id, content);
-  // }
+  async send(content: string | CreateMessage) {
+    return await this.client.sendMessage(this.id, content);
+  }
 
-  // /** Disconnect a member from a voice channel. Requires MOVE_MEMBERS permission. */
-  // async disconnect(memberId: bigint) {
-  //   return await this.client.disconnectMember(this.guildId!, memberId);
-  // }
+  /** Disconnect a member from a voice channel. Requires MOVE_MEMBERS permission. */
+  async disconnect(memberId: bigint) {
+    return await this.client.disconnectMember(this.guildId!, memberId);
+  }
 
-  // /** Delete the channel */
-  // async delete(reason?: string) {
-  //   return await this.client.deleteChannel(this.id, reason);
-  // }
+  /** Delete the channel */
+  async delete(reason?: string) {
+    return await this.client.deleteChannel(this.id, reason);
+  }
 
-  // /** Edit a channel Overwrite */
-  // async editOverwrite(overwriteId: bigint, options: Omit<Overwrite, "id">) {
-  //   return await this.client.editChannelOverwrite(
-  //     this.guildId!,
-  //     this.id,
-  //     overwriteId,
-  //     options
-  //   );
-  // }
+  /** Edit a channel Overwrite */
+  async editOverwrite(overwriteId: bigint, options: Omit<Overwrite, "id">) {
+    return await this.client.editChannelOverwrite(
+      this.guildId,
+      this.id,
+      overwriteId,
+      options
+    );
+  }
 
-  // /** Delete a channel Overwrite */
-  // async deleteOverwrite(id: bigint) {
-  //   return await this.client.deleteChannelOverwrite(this.guildId!, this.id, id);
-  // }
+  /** Delete a channel Overwrite */
+  async deleteOverwrite(id: bigint) {
+    return await this.client.deleteChannelOverwrite(this.guildId!, this.id, id);
+  }
 
-  // /** Checks if a channel overwrite for a user id or a role id has permission in this channel */
-  // hasPermission(
-  //   overwrites: (Omit<DiscordOverwrite, "id" | "allow" | "deny"> & {
-  //     id: bigint;
-  //     allow: bigint;
-  //     deny: bigint;
-  //   })[],
-  //   permissions: PermissionStrings[]
-  // ) {
-  //   return this.client.channelOverwriteHasPermission(
-  //     this.guildId!,
-  //     this.id,
-  //     overwrites,
-  //     permissions
-  //   );
-  // }
+  /** Checks if a channel overwrite for a user id or a role id has permission in this channel */
+  hasPermission(
+    overwrites: (Omit<DiscordOverwrite, "id" | "allow" | "deny"> & {
+      id: bigint;
+      allow: bigint;
+      deny: bigint;
+    })[],
+    permissions: PermissionStrings[]
+  ) {
+    return this.client.channelOverwriteHasPermission(
+      this.guildId!,
+      this.id,
+      overwrites,
+      permissions
+    );
+  }
 
-  // /** Edit the channel */
-  // async edit(options: ModifyChannel, reason?: string) {
-  //   return await this.client.editChannel(this.id, options, reason);
-  // }
+  /** Edit the channel */
+  async edit(options: ModifyChannel, reason?: string) {
+    return await this.client.editChannel(this.id, options, reason);
+  }
 
-  // /** Create a new channel with the same properties */
-  // async clone(reason?: string) {
-  //   return await this.client.cloneChannel(this.id, reason);
-  // }
+  /** Create a new channel with the same properties */
+  async clone(reason?: string) {
+    return await this.client.cloneChannel(this.id, reason);
+  }
 
   toJSON() {
     return {

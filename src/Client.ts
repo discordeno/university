@@ -16,6 +16,8 @@ import {
   PermissionStrings,
   PresenceUpdate,
   CreateMessage,
+  DiscordOverwrite,
+  ModifyChannel,
 } from "../deps.ts";
 import DDChannel from "./Structures/DDChannel.ts";
 import DDGuild from "./Structures/DDGuild.ts";
@@ -188,6 +190,67 @@ export class Client extends EventEmitter {
     this.dispatchedGuildIds.add(guild.id);
 
     return true;
+  }
+
+  // CHANNEL METHODS
+
+  /** Disconnect a member from a voice channel. Requires MOVE_MEMBERS permission. */
+  async disconnectMember(guildId: bigint, memberId: bigint) {
+    return await this.helpers.members.disconnectMember(guildId, memberId);
+  }
+
+  /** Delete the channel */
+  async deleteChannel(id: bigint, reason?: string) {
+    return await this.helpers.channels.deleteChannel(id, reason);
+  }
+
+  /** Edit a channel Overwrite */
+  async editChannelOverwrite(
+    id: bigint,
+    guildId: bigint,
+    overwriteId: bigint,
+    options: Omit<Overwrite, "id">
+  ) {
+    return await this.helpers.channels.editChannelOverwrite(
+      guildId,
+      id,
+      overwriteId,
+      options
+    );
+  }
+
+  /** Delete a channel Overwrite */
+  async deleteChannelOverwrite(guildId: bigint, channelId: bigint, id: bigint) {
+    return await this.helpers.channels.deleteChannelOverwrite(guildId, channelId, id);
+  }
+
+  /** Checks if a channel overwrite for a user id or a role id has permission in this channel */
+  channelOverwriteHasPermission(
+    guildId: bigint,
+    id: bigint,
+    overwrites: (Omit<DiscordOverwrite, "id" | "allow" | "deny"> & {
+      id: bigint;
+      allow: bigint;
+      deny: bigint;
+    })[],
+    permissions: PermissionStrings[]
+  ) {
+    return this.helpers.channels.channelOverwriteHasPermission(
+      guildId,
+      id,
+      overwrites,
+      permissions
+    );
+  }
+
+  /** Edit the channel */
+  async editChannel(id: bigint, options: ModifyChannel, reason?: string) {
+    return await this.helpers.channels.editChannel(id, options, reason);
+  }
+
+  /** Create a new channel with the same properties */
+  async cloneChannel(id: bigint, reason?: string) {
+    return await this.helpers.channels.cloneChannel(id, reason);
   }
 
   // GUILD METHODS
