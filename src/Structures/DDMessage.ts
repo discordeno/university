@@ -236,30 +236,30 @@ export class DDMessage extends Base {
     );
   }
 
-  // /** Edit the message */
-  // async edit(content: string | EditMessage) {
-  //   return await this.client.editMessage(this as unknown as DDMessage, content);
-  // }
+   /** Edit the message */
+   async edit(content: string | EditMessage) {
+     return await this.client.editMessage(this as unknown as DDMessage, content);
+   }
 
-  // /** Pins the message in the channel */
-  // async pin() {
-  //   return await this.client.pinMessage(this.channelId, this.id);
-  // }
+   /** Pins the message in the channel */
+   async pin() {
+     return await this.client.pinMessage(this.channelId, this.id);
+   }
 
-  // /** Add a reaction to the message */
-  // async addReaction(reaction: string) {
-  //   return await this.client.addReaction(this.channelId, this.id, reaction);
-  // }
+   /** Add a reaction to the message */
+   async addReaction(reaction: string) {
+     return await this.client.addReaction(this.channelId, this.id, reaction);
+   }
 
-  // /** Add multiple reactions to the message without or without order. */
-  // async addReactions(reactions: string[], ordered?: boolean) {
-  //   return await this.client.addReactions(
-  //     this.channelId,
-  //     this.id,
-  //     reactions,
-  //     ordered
-  //   );
-  // }
+   /** Add multiple reactions to the message without or without order. */
+   async addReactions(reactions: string[], ordered?: boolean) {
+     return await this.client.addReactions(
+       this.channelId,
+       this.id,
+       reactions,
+       ordered
+     );
+   }
 
   // /** Send a inline reply to this message */
   // async reply(content: string | CreateMessage) {
@@ -331,10 +331,10 @@ export class DDMessage extends Base {
   //   );
   // }
 
-  // /** Removes all reactions for all emojis on this message */
-  // async removeAllReactions() {
-  //   return await this.client.removeAllReactions(this.channelId, this.id);
-  // }
+   /** Removes all reactions for all emojis on this message */
+   async removeAllReactions() {
+     return await this.client.removeAllReactions(this.channelId, this.id);
+   }
 
   // /** Removes all reactions for a single emoji on this message */
   // async removeReactionEmoji(reaction: string) {
