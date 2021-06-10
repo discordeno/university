@@ -262,13 +262,13 @@ export class DDMessage extends Base {
   }
 
    /** Send a inline reply to this message */
-   async reply(content: string | CreateMessage) {
+   async reply(content: string | CreateMessage, mentionUser = true) {
      const contentWithMention: CreateMessage =
        typeof content === "string"
          ? {
              content,
              allowedMentions: {
-               repliedUser: true,
+               repliedUser: mentionUser,
              },
              messageReference: {
                messageId: bigintToSnowflake(this.id!),
@@ -279,7 +279,7 @@ export class DDMessage extends Base {
              ...content,
              allowedMentions: {
                ...(content.allowedMentions || {}),
-               repliedUser: true,
+               repliedUser: mentionUser,
              },
              messageReference: {
                messageId: bigintToSnowflake(this.id!),
