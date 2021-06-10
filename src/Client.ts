@@ -12,8 +12,10 @@ import {
   GetGuildAuditLog,
   ModifyGuild,
   Overwrite,
+  EditMessage,
   PermissionStrings,
   PresenceUpdate,
+  CreateMessage,
 } from "../deps.ts";
 import DDChannel from "./Structures/DDChannel.ts";
 import DDGuild from "./Structures/DDGuild.ts";
@@ -296,6 +298,48 @@ export class Client extends EventEmitter {
       reason,
       delayMilliseconds
     );
+  }
+
+  editMessage(
+    channelId: bigint,
+    messageId: bigint,
+    content: string | EditMessage
+  ) {
+    return this.helpers.messages.editMessage(channelId, messageId, content);
+  }
+
+  pinMessage(channelId: bigint, messageId: bigint) {
+    return this.helpers.messages.pin(channelId, messageId);
+  }
+
+  addReaction(channelId: bigint, messageId: bigint, reaction: string) {
+    return this.helpers.messages.addReaction(channelId, messageId, reaction);
+  }
+
+  addReactions(
+    channelId: bigint,
+    messageId: bigint,
+    reactions: string[],
+    ordered?: boolean
+  ) {
+    return this.helpers.messages.addReactions(
+      channelId,
+      messageId,
+      reactions,
+      ordered
+    );
+  }
+
+  sendMessage(channelId: bigint, content: string | CreateMessage) {
+    return this.helpers.messages.sendMessage(channelId, content);
+  }
+
+  removeAllReactions(channelId: bigint, messageId: bigint) {
+    return this.helpers.messages.removeAllReactions(channelId, messageId);
+  }
+
+  sendDirectMessage(memberId: bigint, content: string | CreateMessage) {
+    return this.helpers.members.sendDirectMessage(memberId, content);
   }
 
   // UTILS

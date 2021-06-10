@@ -236,105 +236,105 @@ export class DDMessage extends Base {
     );
   }
 
-  // /** Edit the message */
-  // async edit(content: string | EditMessage) {
-  //   return await this.client.editMessage(this as unknown as DDMessage, content);
-  // }
+  /** Edit the message */
+  async edit(content: string | EditMessage) {
+    return await this.client.editMessage(this.channelId, this.id, content);
+  }
 
-  // /** Pins the message in the channel */
-  // async pin() {
-  //   return await this.client.pinMessage(this.channelId, this.id);
-  // }
+  /** Pins the message in the channel */
+  async pin() {
+    return await this.client.pinMessage(this.channelId, this.id);
+  }
 
-  // /** Add a reaction to the message */
-  // async addReaction(reaction: string) {
-  //   return await this.client.addReaction(this.channelId, this.id, reaction);
-  // }
+  /** Add a reaction to the message */
+  async addReaction(reaction: string) {
+    return await this.client.addReaction(this.channelId, this.id, reaction);
+  }
 
-  // /** Add multiple reactions to the message without or without order. */
-  // async addReactions(reactions: string[], ordered?: boolean) {
-  //   return await this.client.addReactions(
-  //     this.channelId,
-  //     this.id,
-  //     reactions,
-  //     ordered
-  //   );
-  // }
+  /** Add multiple reactions to the message without or without order. */
+  async addReactions(reactions: string[], ordered?: boolean) {
+    return await this.client.addReactions(
+      this.channelId,
+      this.id,
+      reactions,
+      ordered
+    );
+  }
 
-  // /** Send a inline reply to this message */
-  // async reply(content: string | CreateMessage) {
-  //   const contentWithMention: CreateMessage =
-  //     typeof content === "string"
-  //       ? {
-  //           content,
-  //           allowedMentions: {
-  //             repliedUser: true,
-  //           },
-  //           messageReference: {
-  //             messageId: bigintToSnowflake(this.id!),
-  //             failIfNotExists: false,
-  //           },
-  //         }
-  //       : {
-  //           ...content,
-  //           allowedMentions: {
-  //             ...(content.allowedMentions || {}),
-  //             repliedUser: true,
-  //           },
-  //           messageReference: {
-  //             messageId: bigintToSnowflake(this.id!),
-  //             failIfNotExists:
-  //               content.messageReference?.failIfNotExists === true,
-  //           },
-  //         };
+  /** Send a inline reply to this message */
+  async reply(content: string | CreateMessage, mentionUser = true) {
+    const contentWithMention: CreateMessage =
+      typeof content === "string"
+        ? {
+            content,
+            allowedMentions: {
+              repliedUser: mentionUser,
+            },
+            messageReference: {
+              messageId: bigintToSnowflake(this.id!),
+              failIfNotExists: false,
+            },
+          }
+        : {
+            ...content,
+            allowedMentions: {
+              ...(content.allowedMentions || {}),
+              repliedUser: mentionUser,
+            },
+            messageReference: {
+              messageId: bigintToSnowflake(this.id!),
+              failIfNotExists:
+                content.messageReference?.failIfNotExists === true,
+            },
+          };
 
-  //   if (this.guildId)
-  //     return await this.client.sendMessage(this.channelId!, contentWithMention);
-  //   return await this.client.sendDirectMessage(
-  //     this.authorId!,
-  //     contentWithMention
-  //   );
-  // }
+    if (this.guildId)
+      return await this.client.sendMessage(this.channelId!, contentWithMention);
+    return await this.client.sendDirectMessage(
+      this.authorId!,
+      contentWithMention
+    );
+  }
 
-  // /** Send a message to this channel where this message is */
-  // async send(content: string | CreateMessage) {
-  //   if (this.guildId)
-  //     return await this.client.sendMessage(this.channelId!, content);
-  //   return await this.client.sendDirectMessage(this.authorId!, content);
-  // }
+  /** Send a message to this channel where this message is */
+  async send(content: string | CreateMessage) {
+    if (this.guildId)
+      return await this.client.sendMessage(this.channelId!, content);
+    return await this.client.sendDirectMessage(this.authorId!, content);
+  }
 
-  // /** Send a message to this channel and then delete it after a bit. By default it will delete after 10 seconds async with no reason provided. */
-  // async alert(content: string | CreateMessage, timeout = 10, reason?: string) {
-  //   if (this.guildId) {
-  //     return await this.client
-  //       .sendMessage(this.channelId!, content)
-  //       .then((response) => {
-  //         response.delete(reason, timeout * 1000).catch(console.error);
-  //       });
-  //   }
+  /** Send a message to this channel and then delete it after a bit. By default it will delete after 10 seconds async with no reason provided. */
+  async alert(content: string | CreateMessage, timeout = 10, reason?: string) {
+    if (this.guildId) {
+      return await this.client
+        .sendMessage(this.channelId!, content)
+        .then((response) => {
+          response.delete(reason, timeout * 1000).catch(console.error);
+        });
+    }
 
-  //   return await this.client
-  //     .sendDirectMessage(this.authorId!, content)
-  //     .then((response) => {
-  //       response.delete(reason, timeout * 1000).catch(console.error);
-  //     });
-  // }
+    return await this.client
+      .sendDirectMessage(this.authorId!, content)
+      .then((response) => {
+        response.delete(reason, timeout * 1000).catch(console.error);
+      });
+  }
 
   /** Send a inline reply to this message but then delete it after a bit. By default it will delete after 10 seconds with no reason provided.  */
-  // async alertReply(
-  //   content: string | CreateMessage,
-  //   timeout = 10,
-  //   reason?: string
-  // ) {
-  //   return await this.reply(content).then((response) =>
-  //     response.delete(reason, timeout * 1000).catch(console.error)
-  //   );
-  // }
+  async alertReply(
+    content: string | CreateMessage,
+    timeout = 10,
+    reason?: string
+  ) {
+    return await this.reply(content).then((response) =>
+      response.delete(reason, timeout * 1000).catch(console.error)
+    );
+  }
 
-  // /** Removes all reactions for all emojis on this message */
-  // async removeAllReactions() {
-  //   return await this.client.removeAllReactions(this.channelId, this.id);
-  // }
+  /** Removes all reactions for all emojis on this message */
+  async removeAllReactions() {
+    return await this.client.removeAllReactions(this.channelId, this.id);
+  }
 
   // /** Removes all reactions for a single emoji on this message */
   // async removeReactionEmoji(reaction: string) {
