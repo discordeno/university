@@ -213,7 +213,7 @@ export class Client extends EventEmitter {
   }
   
   addReactions(channelId: bigint, messageId: bigint, reactions: string[], ordered?: boolean) {
-    return this.helpers.messages.addReactions(channelId, messageId, reactions; ordered)
+    return this.helpers.messages.addReactions(channelId, messageId, reactions, ordered)
   }
   
   sendMessage(channelId: bigint, content: string | CreateMessage) {
