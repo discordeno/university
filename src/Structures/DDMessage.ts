@@ -336,21 +336,24 @@ export class DDMessage extends Base {
     return await this.client.removeAllReactions(this.channelId, this.id);
   }
 
-  // /** Removes all reactions for a single emoji on this message */
-  // async removeReactionEmoji(reaction: string) {
-  //   return await this.client.removeReactionEmoji(
-  //     this.channelId,
-  //     this.id,
-  //     reaction
-  //   );
-  // }
+  /** Removes all reactions for a single emoji on this message */
+  async removeReactionEmoji(reaction: string) {
+    return await this.client.removeReactionEmoji(
+      this.channelId,
+      this.id,
+      reaction
+    );
+  }
 
-  // /** Removes a reaction from the given user on this message, defaults to bot */
-  // async removeReaction(reaction: string, userId?: bigint) {
-  //   return await this.client.removeReaction(this.channelId, this.id, reaction, {
-  //     userId,
-  //   });
-  // }
+  /** Removes a reaction from the given user on this message, defaults to bot */
+  async removeReaction(reaction: string, userId?: bigint) {
+    return await this.client.removeReaction(
+      this.channelId,
+      this.id,
+      reaction,
+      userId
+    );
+  }
 
   toJSON() {
     const mentions: (User & { member?: Partial<GuildMember> })[] = [];

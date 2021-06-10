@@ -455,6 +455,27 @@ export class Client extends EventEmitter {
     return this.helpers.messages.removeAllReactions(channelId, messageId);
   }
 
+  /** Removes all reactions for a single emoji on this message */
+  async removeReactionEmoji(channelId: bigint, id: bigint, reaction: string) {
+    return await this.helpers.messages.removeReactionEmoji(
+      channelId,
+      id,
+      reaction
+    );
+  }
+
+  /** Removes a reaction from the given user on this message, defaults to bot */
+  async removeReaction(
+    channelId: bigint,
+    id: bigint,
+    reaction: string,
+    userId?: bigint
+  ) {
+    return await this.helpers.messages.removeReaction(channelId, id, reaction, {
+      userId,
+    });
+  }
+
   sendDirectMessage(memberId: bigint, content: string | CreateMessage) {
     return this.helpers.members.sendDirectMessage(memberId, content);
   }
