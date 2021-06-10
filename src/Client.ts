@@ -18,6 +18,8 @@ import {
   CreateMessage,
   DiscordOverwrite,
   ModifyChannel,
+  ModifyGuildMember,
+  CreateGuildRole,
 } from "../deps.ts";
 import DDChannel from "./Structures/DDChannel.ts";
 import DDGuild from "./Structures/DDGuild.ts";
@@ -221,7 +223,11 @@ export class Client extends EventEmitter {
 
   /** Delete a channel Overwrite */
   async deleteChannelOverwrite(guildId: bigint, channelId: bigint, id: bigint) {
-    return await this.helpers.channels.deleteChannelOverwrite(guildId, channelId, id);
+    return await this.helpers.channels.deleteChannelOverwrite(
+      guildId,
+      channelId,
+      id
+    );
   }
 
   /** Checks if a channel overwrite for a user id or a role id has permission in this channel */
@@ -348,6 +354,54 @@ export class Client extends EventEmitter {
     return await this.helpers.guilds.leaveGuild(guildId);
   }
 
+  // MEMBER METHODS
+
+  avatarURL(
+    userId: bigint,
+    discriminator: number,
+    avatar: bigint,
+    animated: boolean,
+    size?: DiscordImageSize,
+    format?: DiscordImageFormat
+  ) {
+    return this.helpers.members.avatarURL(userId, discriminator, {
+      avatar,
+      size,
+      format,
+      animated,
+    });
+  }
+
+  /** Kick the member from a guild */
+  async kick(guildId: bigint, id: bigint, reason?: string) {
+    return await this.helpers.members.kick(guildId, id, reason);
+  }
+
+  /** Edit the member in a guild */
+  async editMember(guildId: bigint, id: bigint, options: ModifyGuildMember) {
+    return await this.helpers.members.editMember(guildId, id, options);
+  }
+
+  /** Ban a member in a guild */
+  async banMember(guildId: bigint, id: bigint, options: CreateGuildBan) {
+    return await this.helpers.members.ban(guildId, id, options);
+  }
+
+  /** Add a role to the member */
+  async addRole(guildId: bigint, id: bigint, roleId: bigint, reason?: string) {
+    return await this.helpers.roles.addRole(guildId, id, roleId, reason);
+  }
+
+  /** Remove a role from the member */
+  async removeRole(
+    guildId: bigint,
+    id: bigint,
+    roleId: bigint,
+    reason?: string
+  ) {
+    return await this.helpers.roles.removeRole(guildId, id, roleId, reason);
+  }
+
   // MESSAGE METHODS
   deleteMessage(
     channelId: bigint,
@@ -403,6 +457,17 @@ export class Client extends EventEmitter {
 
   sendDirectMessage(memberId: bigint, content: string | CreateMessage) {
     return this.helpers.members.sendDirectMessage(memberId, content);
+  }
+
+  // ROLE METHODS
+
+  /** Delete a guild role. Requires the MANAGE_ROLES permission. */
+  deleteRole(guildId: bigint, id: bigint) {
+    return this.helpers.roles.deleteRole(guildId, id);
+  }
+
+  editRole(guildId: bigint, id: bigint, options: CreateGuildRole) {
+    return this.helpers.roles.editRole(guildId, id, options);
   }
 
   // UTILS

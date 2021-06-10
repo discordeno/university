@@ -2,9 +2,7 @@ import {
   RoleTags,
   Role,
   Collection,
-  deleteRole,
   CreateGuildRole,
-  editRole,
   Errors,
 } from "../../deps.ts";
 import Client from "../Client.ts";
@@ -136,11 +134,11 @@ export class DDRole extends Base {
 
   /** Delete a guild role. Requires the MANAGE_ROLES permission. */
   delete() {
-    return deleteRole(this.guildId, this.id);
+    return this.client.deleteRole(this.guildId, this.id);
   }
 
   edit(options: CreateGuildRole) {
-    return editRole(this.guildId, this.id, options);
+    return this.client.editRole(this.guildId, this.id, options);
   }
 
   higherThanRole(roleId: bigint, position?: number) {
