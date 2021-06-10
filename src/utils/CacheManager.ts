@@ -69,13 +69,30 @@ export class CacheManager {
   }
 
   /** Get the value from the client using its key */
-  get(table: "guilds", key: bigint): Promise<DDGuild | undefined>;
-  get(table: "channels", key: bigint): Promise<DDChannel | undefined>;
-  get(table: "messages", key: bigint): Promise<DDMessage | undefined>;
-  get(table: "members", key: bigint): Promise<DDMember | undefined>;
-  get(table: "presences", key: bigint): Promise<PresenceUpdate | undefined>;
-  get(table: "unavailableGuilds", key: bigint): Promise<number | undefined>;
-  async get(table: TableName, key: bigint) {
+  async get(table: "guilds", key: bigint): Promise<DDGuild | undefined>;
+  async get(table: "channels", key: bigint): Promise<DDChannel | undefined>;
+  async get(table: "messages", key: bigint): Promise<DDMessage | undefined>;
+  async get(table: "members", key: bigint): Promise<DDMember | undefined>;
+  async get(
+    table: "presences",
+    key: bigint
+  ): Promise<PresenceUpdate | undefined>;
+  async get(
+    table: "unavailableGuilds",
+    key: bigint
+  ): Promise<number | undefined>;
+  async get(
+    table: TableName,
+    key: bigint
+  ): Promise<
+    | DDGuild
+    | DDChannel
+    | DDMessage
+    | DDMember
+    | PresenceUpdate
+    | number
+    | undefined
+  > {
     return this.client[table].get(key);
   }
 

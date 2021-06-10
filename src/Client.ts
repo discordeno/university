@@ -1,11 +1,16 @@
 import {
   BotConfig,
   Collection,
+  CreateGuildBan,
   DiscordBitwisePermissionFlags,
   DiscordGatewayIntents,
+  DiscordImageFormat,
+  DiscordImageSize,
   Emoji,
   Errors,
   EventEmitter,
+  GetGuildAuditLog,
+  ModifyGuild,
   Overwrite,
   PermissionStrings,
   PresenceUpdate,
@@ -183,6 +188,101 @@ export class Client extends EventEmitter {
     return true;
   }
 
+  // GUILD METHODS
+
+  /** The banner url for this server */
+  guildBannerURL(
+    guildId: bigint,
+    banner: bigint,
+    animated: boolean,
+    size?: DiscordImageSize,
+    format?: DiscordImageFormat
+  ) {
+    return this.helpers.guilds.guildBannerURL(guildId, {
+      banner,
+      size,
+      format,
+      animated,
+    });
+  }
+
+  /** The splash url for this server */
+  splashURL(
+    guildId: bigint,
+    splash: bigint,
+    animated: boolean,
+    size?: DiscordImageSize,
+    format?: DiscordImageFormat
+  ) {
+    return this.helpers.guilds.guildSplashURL(guildId, {
+      splash,
+      size,
+      format,
+      animated,
+    });
+  }
+
+  /** Delete a guild permanently. User must be owner. Returns 204 No Content on success. Fires a Guild Delete Gateway event. */
+  async deleteGuild(id: bigint) {
+    return await this.helpers.guilds.deleteGuild(id);
+  }
+
+  /** Edit the server. Requires the MANAGE_GUILD permission. */
+  async editGuild(id: bigint, options: ModifyGuild) {
+    return await this.helpers.guilds.editGuild(id, options);
+  }
+
+  /** Returns the audit logs for the guild. Requires VIEW AUDIT LOGS permission */
+  async auditLogs(id: bigint, options: Partial<GetGuildAuditLog>) {
+    return await this.helpers.guilds.getAuditLogs(id, options);
+  }
+
+  /** Returns a ban object for the given user or a 404 not found if the ban cannot be found. Requires the BAN_MEMBERS permission. */
+  async getBan(id: bigint, memberId: bigint) {
+    return await this.helpers.guilds.getBan(id, memberId);
+  }
+
+  /** Returns a list of ban objects for the users banned from this guild. Requires the BAN_MEMBERS permission. */
+  async bans(id: bigint) {
+    return await this.helpers.guilds.getBans(id);
+  }
+
+  /** Ban a user from the guild and optionally delete previous messages sent by the user. Requires the BAN_MEMBERS permission. */
+  async ban(guildId: bigint, memberId: bigint, options: CreateGuildBan) {
+    return await this.helpers.members.ban(guildId, memberId, options);
+  }
+
+  /** Remove the ban for a user. Requires BAN_MEMBERS permission */
+  async unban(guildId: bigint, memberId: bigint) {
+    return await this.helpers.members.unban(guildId, memberId);
+  }
+
+  /** Get all the invites for this guild. Requires MANAGE_GUILD permission */
+  async invites(guildId: bigint) {
+    return await this.helpers.invites.getInvites(guildId);
+  }
+
+  /** The full URL of the icon from Discords CDN. Undefined when no icon is set. */
+  iconURL(
+    guildId: bigint,
+    icon: bigint,
+    animated: boolean,
+    size?: DiscordImageSize,
+    format?: DiscordImageFormat
+  ) {
+    return this.helpers.guilds.guildIconURL(guildId, {
+      icon,
+      size,
+      format,
+      animated,
+    });
+  }
+
+  /** Leave a guild */
+  async leaveGuild(guildId: bigint) {
+    return await this.helpers.guilds.leaveGuild(guildId);
+  }
+
   // MESSAGE METHODS
   deleteMessage(
     channelId: bigint,
@@ -242,38 +342,19 @@ export class Client extends EventEmitter {
     return res as T;
   }
 
-  async getCached(
-    table: "guilds",
-    key: bigint | DDGuild
-  ): Promise<DDGuild | undefined>;
-  async getCached(
-    table: "channels",
-    key: bigint | DDChannel
-  ): Promise<DDChannel | undefined>;
-  async getCached(
-    table: "members",
-    key: bigint | DDMember
-  ): Promise<DDMember | undefined>;
-  async getCached(
-    table: "guilds" | "channels" | "members",
-    key: bigint | DDGuild | DDChannel | DDMember
-  ) {
-    const cached =
-      typeof key === "bigint"
-        ? // @ts-ignore TS is wrong here
-          await cacheHandlers.get(table, key)
-        : key;
-
-    return typeof cached === "bigint" ? undefined : cached;
-  }
-
   /** Calculates the permissions this member has in the given guild */
   async calculateBasePermissions(
     guildOrId: bigint | DDGuild,
     memberOrId: bigint | DDMember
   ) {
-    const guild = await this.getCached("guilds", guildOrId);
-    const member = await this.getCached("members", memberOrId);
+    const guild =
+      typeof guildOrId === "bigint"
+        ? await this.cache.get("guilds", guildOrId)
+        : guildOrId;
+    const member =
+      typeof memberOrId === "bigint"
+        ? await this.cache.get("members", memberOrId)
+        : memberOrId;
 
     if (!guild || !member) return 8n;
 
@@ -300,12 +381,18 @@ export class Client extends EventEmitter {
     channelOrId: bigint | DDChannel,
     memberOrId: bigint | DDMember
   ) {
-    const channel = await this.getCached("channels", channelOrId);
+    const channel =
+      typeof channelOrId === "bigint"
+        ? await this.cache.get("channels", channelOrId)
+        : channelOrId;
 
     // This is a DM channel so return ADMINISTRATOR permission
     if (!channel?.guildId) return 8n;
 
-    const member = await this.getCached("members", memberOrId);
+    const member =
+      typeof memberOrId === "bigint"
+        ? await this.cache.get("members", memberOrId)
+        : memberOrId;
 
     if (!channel || !member) return 8n;
 
@@ -552,13 +639,18 @@ export class Client extends EventEmitter {
     guildOrId: bigint | DDGuild,
     memberOrId: bigint | DDMember
   ) {
-    const guild = await this.getCached("guilds", guildOrId);
+    const guild =
+      typeof guildOrId === "bigint"
+        ? await this.cache.get("guilds", guildOrId)
+        : guildOrId;
 
     if (!guild) throw new Error(Errors.GUILD_NOT_FOUND);
 
     // Get the roles from the member
     const memberRoles = (
-      await this.getCached("members", memberOrId)
+      typeof memberOrId === "bigint"
+        ? await this.cache.get("members", memberOrId)
+        : memberOrId
     )?.guilds.get(guild.id)?.roles;
     // This member has no roles so the highest one is the @everyone role
     if (!memberRoles) return guild.roles.get(guild.id)!;
@@ -591,7 +683,10 @@ export class Client extends EventEmitter {
     roleId: bigint,
     otherRoleId: bigint
   ) {
-    const guild = await this.getCached("guilds", guildOrId);
+    const guild =
+      typeof guildOrId === "bigint"
+        ? await this.cache.get("guilds", guildOrId)
+        : guildOrId;
 
     if (!guild) return true;
 
@@ -613,7 +708,10 @@ export class Client extends EventEmitter {
     memberId: bigint,
     compareRoleId: bigint
   ) {
-    const guild = await this.getCached("guilds", guildOrId);
+    const guild =
+      typeof guildOrId === "bigint"
+        ? await this.cache.get("guilds", guildOrId)
+        : guildOrId;
 
     if (!guild || guild.ownerId === memberId) return true;
 
