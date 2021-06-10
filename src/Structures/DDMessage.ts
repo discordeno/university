@@ -238,7 +238,7 @@ export class DDMessage extends Base {
 
   /** Edit the message */
   async edit(content: string | EditMessage) {
-    return await this.client.editMessage(this as unknown as DDMessage, content);
+    return await this.client.editMessage(this.channelId, this.id, content);
   }
 
   /** Pins the message in the channel */
