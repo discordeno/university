@@ -223,6 +223,10 @@ export class Client extends EventEmitter {
   removeAllReactions(channelId: bigint, messageId: bigint) {
     return this.helpers.messages.removeAllReactions(channelId, messageId)
   }
+  
+  sendDirectMessage(memberId: bigint, content: string | CreateMessage) {
+    return this.helpers.members.sendDirectMessage(memberId, content)
+  }
 
 
   // UTILS
