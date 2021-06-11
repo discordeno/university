@@ -93,14 +93,14 @@ export class Client extends EventEmitter {
     this.botId = 0n;
     this.applicationId = 0n;
     this.guilds = new Collection([], {
-      sweeper: { filter: this.guildSweeper, interval: 3600000 },
+      sweeper: { filter: this.guildSweeper.bind(this), interval: 3600000 },
     });
     this.channels = new Collection();
     this.messages = new Collection([], {
-      sweeper: { filter: this.messageSweeper, interval: 300000 },
+      sweeper: { filter: this.messageSweeper.bind(this), interval: 300000 },
     });
     this.members = new Collection([], {
-      sweeper: { filter: this.memberSweeper, interval: 300000 },
+      sweeper: { filter: this.memberSweeper.bind(this), interval: 300000 },
     });
     this.unavailableGuilds = new Collection();
     this.presences = new Collection([], {
