@@ -38,11 +38,8 @@ export class DDBaseInteraction extends Base {
   
   constructor(client: Client, payload: Interaction) {
     super(client,payload.id)
-    this.update(client,payload)
-  }
-
-  update(client: Client, payload: Interaction) {
     this.id=payload.id
+    this.version=1
     this.applicationId=payload.applicationId
     this.guildId=payload.guildId
     this.type=payload.type
