@@ -3,7 +3,8 @@ import {
   DiscordInteractionResponsesTypes,
   User,
   Interaction,
-  GuildMemberWithUser
+  GuildMemberWithUser,
+  Message
 } from "../../deps.ts"
 
 import DDMember from "./DDMember.ts";
