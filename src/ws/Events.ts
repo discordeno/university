@@ -718,7 +718,7 @@ export class GatewayEvents {
     const discordenoMember = payload.guildId
       ? new DDMember(
           this.client,
-          payload.member as GuildMemberWithUser,
+          payload.member,
           snowflakeToBigint(payload.guildId)
         )
       : undefined;
