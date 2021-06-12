@@ -2,7 +2,8 @@ import {
   DiscordInteractionTypes,
   DiscordInteractionResponsesTypes,
   User,
-  Interaction
+  Interaction,
+  GuildMemberWithUser
 } from "../../deps.ts"
 
 import DDMember from "./DDMember.ts";
@@ -23,6 +24,8 @@ export class DDBaseInteraction extends Base {
   guildId: string;
   /** The channel it was sent from */
   channelId?: string;
+  /** The member object */
+  member?: GuildMemberWithUser
   /** User object for the invoking user, if invoked in a DM */
   user?: User;
   /** A continuation token for responding to the interaction */
@@ -44,7 +47,8 @@ export class DDBaseInteraction extends Base {
     this.applicationId=payload.application_id
     this.type=payload.type
     this.guildId=payload.guild_id
-    this.user=payload?.user as User
+    this.member=payload.member?payload.member as GuildMemberWithUser:null
+    this.user=payload.user?payload.user as User:null
     console.log("it worked ig")
   }
 
