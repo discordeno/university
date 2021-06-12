@@ -24,7 +24,6 @@ import {
   iconHashToBigInt,
   IntegrationCreateUpdate,
   IntegrationDelete,
-  Interaction,
   InviteCreate,
   InviteDelete,
   Message,
@@ -49,6 +48,7 @@ import {
   WebhookUpdate,
 } from "../../deps.ts";
 import Client from "../Client.ts";
+import DDBaseInteraction from "../Structures/DDBaseInteraction.ts";
 import DDChannel from "../Structures/DDChannel.ts";
 import DDGuild from "../Structures/DDGuild.ts";
 import DDMember from "../Structures/DDMember.ts";
@@ -714,7 +714,7 @@ export class GatewayEvents {
   }
 
   async INTERACTION_CREATE(data: DiscordGatewayPayload) {
-    const payload = data.d as Interaction;
+    const payload = new DDBaseInteraction(client,data.d);
     const discordenoMember = payload.guildId
       ? new DDMember(
           this.client,
