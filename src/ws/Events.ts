@@ -24,6 +24,7 @@ import {
   iconHashToBigInt,
   IntegrationCreateUpdate,
   IntegrationDelete,
+  Interaction,
   InviteCreate,
   InviteDelete,
   Message,
