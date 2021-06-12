@@ -6,6 +6,7 @@ import {
 } from "../../deps.ts"
 
 import DDMember from "./DDMember.ts";
+import DDGuild from "./DDGuild.ts"
 import Client from "../Client.ts";
 import Base from "./Base.ts";
 
@@ -17,11 +18,9 @@ export class DDBaseInteraction extends Base {
   /** The type of interaction */
   type: DiscordInteractionTypes;
   /** The guild it was sent from */
-  guildId?: string;
+  guild?: DDGuild;
   /** The channel it was sent from */
   channelId?: string;
-  /** Guild member data for the invoking user, including permissions */
-  member?: DDMember;
   /** User object for the invoking user, if invoked in a DM */
   user?: User;
   /** A continuation token for responding to the interaction */
@@ -33,13 +32,18 @@ export class DDBaseInteraction extends Base {
   
   constructor(client: Client, payload: Interaction) {
     super(client,payload.id)
-    this.update(payload)
+    this.update(client,payload)
   }
 
-  update(payload: Interaction) {
+  update(client: Client payload: Interaction) {
     this.id=payload.id
     this.applicationId=payload.applicationId
-    console.log(payload.token)
+    this.guildId=payload.guild_id
+    this.applicationId=payload.application_id
+    this.type=payload.type
+    this.guildId=payload.guild_id
+    this.userId=payload?.user?.id
+    console.log("it worked ig")
   }
 
 }
