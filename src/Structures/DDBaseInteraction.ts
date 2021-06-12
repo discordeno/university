@@ -22,6 +22,7 @@ export class DDBaseInteraction extends Base {
   /** The guild it was sent from */
   guild?: DDGuild;
   /** The Id of the guild it was sent in */
+  //@ts-ignore h
   guildId: string;
   /** The channel it was sent from */
   channelId?: string;
