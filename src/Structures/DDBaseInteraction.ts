@@ -43,10 +43,9 @@ export class DDBaseInteraction extends Base {
   update(client: Client, payload: Interaction) {
     this.id=payload.id
     this.applicationId=payload.applicationId
-    this.guildId=payload.guild_id
-    this.applicationId=payload.application_id
+    this.guildId=payload.guildId
     this.type=payload.type
-    this.guildId=payload.guild_id
+    this.token=payload.token
     if (payload.member) this.member= payload.member as GuildMemberWithUser
     if (payload.user) this.user=payload.user as User
     console.log("it worked ig")
