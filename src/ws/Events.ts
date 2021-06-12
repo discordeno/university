@@ -714,8 +714,8 @@ export class GatewayEvents {
   }
 
   async INTERACTION_CREATE(data: DiscordGatewayPayload) {
-    const payload = new DDBaseInteraction(client,data.d);
-    const discordenoMember = payload.guildId
+    const payload = new DDBaseInteraction(this.client,data.d as Interaction);
+    const discordenoMember = payload.member
       ? new DDMember(
           this.client,
           payload.member,
