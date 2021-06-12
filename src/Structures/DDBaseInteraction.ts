@@ -48,3 +48,4 @@ export class DDBaseInteraction extends Base {
 
 }
     
+export default DDBaseInteraction
