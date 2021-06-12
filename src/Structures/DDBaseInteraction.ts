@@ -47,7 +47,6 @@ export class DDBaseInteraction extends Base {
     if (payload.member) {this.member= payload.member as GuildMemberWithUser}
     if (payload.guildId) {this.guildId=payload.guildId}
     if (payload.user) {this.user=payload.user as User}
-    console.log("it worked ig")
   }
 
 }
