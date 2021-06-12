@@ -35,14 +35,14 @@ export class DDBaseInteraction extends Base {
     this.update(client,payload)
   }
 
-  update(client: Client payload: Interaction) {
+  update(client: Client, payload: Interaction) {
     this.id=payload.id
     this.applicationId=payload.applicationId
     this.guildId=payload.guild_id
     this.applicationId=payload.application_id
     this.type=payload.type
     this.guildId=payload.guild_id
-    this.userId=payload?.user?.id
+    this.user=payload?.user as User
     console.log("it worked ig")
   }
 
