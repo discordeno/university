@@ -19,6 +19,8 @@ export class DDBaseInteraction extends Base {
   type: DiscordInteractionTypes;
   /** The guild it was sent from */
   guild?: DDGuild;
+  /** The Id of the guild it was sent in */
+  guildId: string;
   /** The channel it was sent from */
   channelId?: string;
   /** User object for the invoking user, if invoked in a DM */
