@@ -44,7 +44,7 @@ export class DDBaseInteraction extends Base {
     this.type=payload.type
     this.token=payload.token
     if (payload.member) this.member= payload.member as GuildMemberWithUser
-    if (payload.guild) this.guildId=payload.guildId
+    if (payload.guildId) this.guildId=payload.guildId
     if (payload.user) this.user=payload.user as User
     console.log("it worked ig")
   }
