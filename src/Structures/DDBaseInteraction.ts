@@ -1,6 +1,6 @@
 import {
   DiscordInteractionTypes,
-  DiscordInteractionResponsesTypes,
+  DiscordInteractionResponseTypes,
   User,
   Interaction,
   GuildMemberWithUser,
@@ -14,7 +14,7 @@ import Base from "./Base.ts";
 
 export class DDBaseInteraction extends Base {
    /** Id of the interaction */
-  id: string;
+  interactionId: string;
   /** Id of the application this interaction is for */
   applicationId: string;
   /** The type of interaction */
@@ -38,13 +38,13 @@ export class DDBaseInteraction extends Base {
   
   constructor(client: Client, payload: Interaction) {
     super(client,payload.id)
-    this.id=payload.id
+    this.interactionId=payload.id
     this.version=1
     this.applicationId=payload.applicationId
-    this.guildId=payload.guildId
     this.type=payload.type
     this.token=payload.token
     if (payload.member) this.member= payload.member as GuildMemberWithUser
+    if (payload.guild) this.guildId=payload.guildId
     if (payload.user) this.user=payload.user as User
     console.log("it worked ig")
   }
