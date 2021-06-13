@@ -9,9 +9,10 @@ export class DDSlashInteraction extends BaseInteraction {
   /** Interaction data */
   data: ApplicationCommandInteractionData
   
-  //deno-lint-ignore no-explicit-any
-  constructor(client: Client,payload: any) {
+  
+  constructor(client: Client,payload: Interaction) {
     super(client,payload)
+    //@ts-ignore
     this.data=payload.data
   }
 }
