@@ -24,7 +24,6 @@ export class DDBaseInteraction {
   /** The guild it was sent from */
   guild?: DDGuild;
   /** The Id of the guild it was sent in */
-  //@ts-ignore h
   guildId?: string;
   /** The channel it was sent from */
   channelId?: string;
@@ -46,6 +45,7 @@ export class DDBaseInteraction {
     this.token=payload.token
     if (payload.member) {this.member= payload.member as GuildMemberWithUser}
     if (payload.guildId) {this.guildId=payload.guildId}
+    if (payload.channelId) {this.channelId=payload.channelId}
     if (payload.user) {this.user=payload.user as User}
   }
 
