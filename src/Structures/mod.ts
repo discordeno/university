@@ -1,4 +1,6 @@
 export * from "./Base.ts";
+export * from "./DDSlashInteraction.ts";
+export * from "./DDButtonInteraction.ts";
 export * from "./DDChannel.ts";
 export * from "./DDGuild.ts";
 export * from "./DDMember.ts";
