@@ -730,6 +730,25 @@ export class GatewayEvents {
         discordenoMember
       );
       this.client.emit("interactionGuildCreate", payload, discordenoMember);
+      if (this.client.helpers.typeGuards.isSlashCommand(payload)) {
+        this.client.emit("slashCommand", payload, discordenoMember);
+      } else if (this.client.helpers.typeGuards.isComponent(payload)) {
+        this.client.emit("component", payload, discordenoMember);
+
+        if (
+          payload.data &&
+          this.client.helpers.typeGuards.isButton(payload.data)
+        ) {
+          this.client.emit("buttonPressed", payload, discordenoMember);
+        }
+
+        if (
+          payload.data &&
+          this.client.helpers.typeGuards.isSelectMenu(payload.data)
+        ) {
+          this.client.emit("dropdown", payload, discordenoMember);
+        }
+      }
     } else {
       this.client.emit("interactionDMCreate", payload);
     }
