@@ -11,7 +11,7 @@ export class DDSlashInteraction extends BaseInteraction {
   
   constructor(client: Client,payload: Interaction) {
     super(client,payload)
-    this.data=this.payload.data
+    this.data=payload.data
   }
 }
 
