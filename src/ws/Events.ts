@@ -719,10 +719,10 @@ export class GatewayEvents {
     let payload;
     switch (data.d.type) {
       case 2: 
-        payload=new DDSlashInteraction(data.d)
+        payload=new DDSlashInteraction(this.client,data.d)
         break;
       case 3:
-        payload=new DDButtonInteraction(data.d)
+        payload=new DDButtonInteraction(this.client,data.d)
         break;
     }
     
