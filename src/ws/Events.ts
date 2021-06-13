@@ -49,7 +49,8 @@ import {
   WebhookUpdate,
 } from "../../deps.ts";
 import Client from "../Client.ts";
-import DDBaseInteraction from "../Structures/DDBaseInteraction.ts";
+import DDSlashInteraction from "../Structures/DDSlashInteraction.ts";
+import DDButtonInteraction from "../Structures/DDButtonInteraction.ts";
 import DDChannel from "../Structures/DDChannel.ts";
 import DDGuild from "../Structures/DDGuild.ts";
 import DDMember from "../Structures/DDMember.ts";
@@ -715,7 +716,16 @@ export class GatewayEvents {
   }
 
   async INTERACTION_CREATE(data: DiscordGatewayPayload) {
-    const payload = new DDBaseInteraction(this.client,data.d as Interaction);
+    let payload;
+    switch (data.d.type) {
+      case 2: 
+        payload=new DDSlashInteraction(data.d)
+        break;
+      case 3:
+        payload=new DDButtonInteraction(data.d)
+        break;
+    }
+    
     const discordenoMember = payload.member
       ? new DDMember(
           this.client,
@@ -723,33 +733,7 @@ export class GatewayEvents {
           snowflakeToBigint(payload.guildId)
         )
       : undefined;
-    if (discordenoMember) {
-      await this.client.cache.set(
-        "members",
-        discordenoMember.id,
-        discordenoMember
-      );
-      this.client.emit("interactionGuildCreate", payload, discordenoMember);
-      if (this.client.helpers.typeGuards.isSlashCommand(payload)) {
-        this.client.emit("slashCommand", payload, discordenoMember);
-      } else if (this.client.helpers.typeGuards.isComponent(payload)) {
-        this.client.emit("component", payload, discordenoMember);
-
-        if (
-          payload.data &&
-          this.client.helpers.typeGuards.isButton(payload.data)
-        ) {
-          this.client.emit("buttonPressed", payload, discordenoMember);
-        }
-
-        if (
-          payload.data &&
-          this.client.helpers.typeGuards.isSelectMenu(payload.data)
-        ) {
-          this.client.emit("dropdown", payload, discordenoMember);
-        }
-      }
-    } else {
+    if (!discordenoMember) {
       this.client.emit("interactionDMCreate", payload);
     }
 
