@@ -719,14 +719,14 @@ export class GatewayEvents {
     let payload;
     switch (data.d.type) {
       case 2: 
-        payload=new DDSlashInteraction(this.client,data.d)
+        payload=new DDSlashInteraction(this.client,data.d as Omit<Interaction,"member">)
         break;
       case 3:
-        payload=new DDButtonInteraction(this.client,data.d)
+        payload=new DDButtonInteraction(this.client,data.d as Omit<Interaction,"member">)
         break;
     }
-    
-    const discordenoMember = payload.member
+    if (!payload) return;
+    const discordenoMember = payload.member && payload.guildId
       ? new DDMember(
           this.client,
           payload.member,
