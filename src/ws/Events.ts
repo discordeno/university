@@ -717,8 +717,8 @@ export class GatewayEvents {
 
   async INTERACTION_CREATE(data: DiscordGatewayPayload) {
     let payload;
-    const d = data.d as Omit<Interaction,"member">
-    switch (data.type) {
+    const d = data.d as Interaction
+    switch (d.type) {
       case 2: 
         payload=new DDSlashInteraction(this.client,d)
         break;
