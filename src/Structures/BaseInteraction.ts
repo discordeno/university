@@ -25,7 +25,7 @@ export class DDBaseInteraction {
   guild?: DDGuild;
   /** The Id of the guild it was sent in */
   //@ts-ignore h
-  ?guildId: string;
+  guildId?: string;
   /** The channel it was sent from */
   channelId?: string;
   /** DO NOT USE THIS - Used to get data with the right type once */
