@@ -9,7 +9,7 @@ export class DDSlashInteraction extends BaseInteraction {
   /** Interaction data */
   data: ApplicationCommandInteractionData
   
-  constructor(client: Client,payload: Interaction) {
+  constructor(client: Client,payload: Omit<Interaction,"member">) {
     super(client,payload)
     this.data=payload.data
   }
