@@ -1,6 +1,6 @@
 import {
   DiscordInteractionTypes,
-  DiscordenoInteractionResponse
+  DiscordenoInteractionResponse,
   User,
   Interaction,
   GuildMemberWithUser,
@@ -46,7 +46,7 @@ export class DDBaseInteraction {
     this.applicationId=payload.applicationId
     this.type=payload.type
     this.token=payload.token
-    this.payload=payload
+    this.#payload=payload
     if (payload.member) {this.member= payload.member as GuildMemberWithUser}
     if (payload.guildId) {this.guildId=payload.guildId}
     if (payload.user) {this.user=payload.user as User}
