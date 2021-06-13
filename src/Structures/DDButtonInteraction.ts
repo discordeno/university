@@ -10,8 +10,8 @@ export class DDButtonInteraction extends BaseInteraction {
   data: ButtonData
   
   constructor(client: Client, payload: Interaction) {
-    super(client, interaction)
-    this.data=this.payload.data
+    super(client, payload)
+    this.data=payload.data
   }
 }
 
