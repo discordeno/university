@@ -20,7 +20,7 @@ import {
   validateLength,
 } from "../../../deps.ts";
 import Client from "../../Client.ts";
-import DDMessage from "../../Structures/DDMessage.ts";
+import UniversityMessage from "../../Structures/UniversityMessage.ts";
 
 export class MessageHelpers {
   /** The client itself. */
@@ -158,7 +158,7 @@ export class MessageHelpers {
       snakelize(content)
     )) as Message;
 
-    return new DDMessage(this.client, result);
+    return new UniversityMessage(this.client, result);
   }
 
   /** Fetch a single message from the server. Requires VIEW_CHANNEL and READ_MESSAGE_HISTORY */
@@ -174,7 +174,7 @@ export class MessageHelpers {
       endpoints.CHANNEL_MESSAGE(channelId, id)
     )) as Message;
 
-    return new DDMessage(this.client, result);
+    return new UniversityMessage(this.client, result);
   }
 
   /** Fetches between 2-100 messages. Requires VIEW_CHANNEL and READ_MESSAGE_HISTORY */
@@ -201,7 +201,7 @@ export class MessageHelpers {
     )) as Message[];
 
     return await Promise.all(
-      result.map((res) => new DDMessage(this.client, res))
+      result.map((res) => new UniversityMessage(this.client, res))
     );
   }
 
@@ -237,7 +237,7 @@ export class MessageHelpers {
       endpoints.CHANNEL_MESSAGE_CROSSPOST(channelId, messageId)
     )) as Message;
 
-    return new DDMessage(this.client, data);
+    return new UniversityMessage(this.client, data);
   }
 
   /** Removes all reactions for all emojis on this message. */
@@ -406,7 +406,7 @@ export class MessageHelpers {
       })
     )) as Message;
 
-    return new DDMessage(this.client, result);
+    return new UniversityMessage(this.client, result);
   }
 
   /** Unpin a message in a channel. Requires MANAGE_MESSAGES. */

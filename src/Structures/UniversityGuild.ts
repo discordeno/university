@@ -26,12 +26,12 @@ import {
 import Client from "../Client.ts";
 import Base from "./Base.ts";
 import GuildBitField from "./BitFields/Guild.ts";
-import DDChannel from "./DDChannel.ts";
-import DDMember from "./DDMember.ts";
-import DDRole from "./DDRole.ts";
-import DDVoiceState from "./DDVoiceState.ts";
+import UniversityChannel from "./UniversityChannel.ts";
+import UniversityMember from "./UniversityMember.ts";
+import UniversityRole from "./UniversityRole.ts";
+import UniversityVoiceState from "./UniversityVoiceState.ts";
 
-export class DDGuild extends Base {
+export class UniversityGuild extends Base {
   /** The id of the shard this guild is bound to */
   shardId: number;
   /** Guild name (2-100 characaters, excluding trailing and leading whitespace) */
@@ -59,7 +59,7 @@ export class DDGuild extends Base {
   /** Explicit content filter level */
   explicitContentFilter!: DiscordExplicitContentFilterLevels;
   /** Roles in the guild */
-  roles: Collection<bigint, DDRole>;
+  roles: Collection<bigint, UniversityRole>;
   /** Enabled guild features */
   features!: DiscordGuildFeatures[];
   /** Required MFA level for the guild */
@@ -71,7 +71,7 @@ export class DDGuild extends Base {
   /** Total number of members in this guild */
   memberCount: number;
   /** States of members currently in voice channels; lacks the guild_id key */
-  voiceStates: Collection<bigint, DDVoiceState>;
+  voiceStates: Collection<bigint, UniversityVoiceState>;
   // TODO: check if need to omit
   /** All active threads in the guild that the current user has permission to view */
   threads?: Channel[];
@@ -184,21 +184,22 @@ export class DDGuild extends Base {
     for (const role of payload.roles) {
       this.roles.set(
         snowflakeToBigint(role.id),
-        new DDRole(this.client, role, this.id)
+        new UniversityRole(this.client, role, this.id)
       );
     }
 
+    console.log("in ug", payload.channels);
     for (const channel of payload.channels || []) {
       this.client.channels.set(
         snowflakeToBigint(channel.id),
-        new DDChannel(this.client, channel, this.id.toString())
+        new UniversityChannel(this.client, channel, this.id.toString())
       );
     }
 
     for (const voiceState of payload.voiceStates || []) {
       this.voiceStates.set(
         snowflakeToBigint(voiceState.userId),
-        new DDVoiceState(this.client, this.id, voiceState)
+        new UniversityVoiceState(this.client, this.id, voiceState)
       );
     }
 
@@ -209,7 +210,7 @@ export class DDGuild extends Base {
       this.client.cache.set(
         "members",
         snowflakeToBigint(user.id),
-        new DDMember(this.client, { ...member, user }, this.id)
+        new UniversityMember(this.client, { ...member, user }, this.id)
       );
     }
 
@@ -466,4 +467,4 @@ export class DDGuild extends Base {
   }
 }
 
-export default DDGuild;
+export default UniversityGuild;

@@ -7,7 +7,7 @@ import {
   Role,
 } from "../../../deps.ts";
 import Client from "../../Client.ts";
-import DDRole from "../../Structures/DDRole.ts";
+import UniversityRole from "../../Structures/UniversityRole.ts";
 
 export class RoleHelpers {
   /** The client itself. */
@@ -18,7 +18,7 @@ export class RoleHelpers {
   }
 
   /** Add a role to the member */
-  async addRole(
+  async aUniversityRole(
     guildId: bigint,
     memberId: bigint,
     roleId: bigint,
@@ -54,7 +54,7 @@ export class RoleHelpers {
       }
     )) as Role;
 
-    const role = new DDRole(this.client, result, guildId);
+    const role = new UniversityRole(this.client, result, guildId);
     const guild = await this.client.cache.get("guilds", guildId);
     if (guild) {
       guild.roles.set(role.id, role);
@@ -86,7 +86,7 @@ export class RoleHelpers {
       }
     )) as Role;
 
-    return new DDRole(this.client, result, guildId);
+    return new UniversityRole(this.client, result, guildId);
   }
 
   /** Returns a list of role objects for the guild.
@@ -101,7 +101,7 @@ export class RoleHelpers {
     )) as Role[];
 
     const roleStructures = result.map(
-      (role) => new DDRole(this.client, role, guildId)
+      (role) => new UniversityRole(this.client, role, guildId)
     );
 
     const roles = new Collection(roleStructures.map((role) => [role.id, role]));

@@ -22,8 +22,8 @@ import {
   snakelize,
 } from "../../../deps.ts";
 import Client from "../../Client.ts";
-import DDChannel from "../../Structures/DDChannel.ts";
-import DDMember from "../../Structures/DDMember.ts";
+import UniversityChannel from "../../Structures/UniversityChannel.ts";
+import UniversityMember from "../../Structures/UniversityMember.ts";
 
 export class MemberHelpers {
   /** The client itself. */
@@ -154,7 +154,7 @@ export class MemberHelpers {
       }) as ModifyGuildMember
     )) as GuildMemberWithUser;
 
-    return new DDMember(this.client, result, guildId);
+    return new UniversityMember(this.client, result, guildId);
   }
 
   /**
@@ -198,7 +198,7 @@ export class MemberHelpers {
           nonce,
         },
       });
-    }) as Promise<Collection<bigint, DDMember>>;
+    }) as Promise<Collection<bigint, UniversityMember>>;
   }
 
   /** Returns a guild member object for the specified user.
@@ -213,7 +213,7 @@ export class MemberHelpers {
       endpoints.GUILD_MEMBER(guildId, id)
     )) as GuildMemberWithUser;
 
-    const discordenoMember = new DDMember(this.client, data, guildId);
+    const discordenoMember = new UniversityMember(this.client, data, guildId);
     await this.client.cache.set(
       "members",
       discordenoMember.id,
@@ -242,7 +242,7 @@ export class MemberHelpers {
     const guild = await this.client.cache.get("guilds", guildId);
     if (!guild) throw new Error(Errors.GUILD_NOT_FOUND);
 
-    const members = new Collection<bigint, DDMember>();
+    const members = new Collection<bigint, UniversityMember>();
 
     let membersLeft = options?.limit ?? guild.memberCount;
     let loops = 1;
@@ -272,7 +272,11 @@ export class MemberHelpers {
 
       const discordenoMembers = await Promise.all(
         result.map(async (member) => {
-          const discordenoMember = new DDMember(this.client, member, guildId);
+          const discordenoMember = new UniversityMember(
+            this.client,
+            member,
+            guildId
+          );
 
           if (options?.addToCache !== false) {
             await this.client.cache.set(
@@ -393,7 +397,11 @@ export class MemberHelpers {
 
     const members = await Promise.all(
       result.map(async (member) => {
-        const discordenoMember = new DDMember(this.client, member, guildId);
+        const discordenoMember = new UniversityMember(
+          this.client,
+          member,
+          guildId
+        );
         if (options?.cache) {
           await this.client.cache.set(
             "members",
@@ -406,7 +414,7 @@ export class MemberHelpers {
       })
     );
 
-    return new Collection<bigint, DDMember>(
+    return new Collection<bigint, UniversityMember>(
       members.map((member) => [member.id, member])
     );
   }
@@ -419,7 +427,10 @@ export class MemberHelpers {
       const dmChannelData = (await this.client.rest.post(endpoints.USER_DM, {
         recipient_id: memberId,
       })) as Channel;
-      const discordenoChannel = new DDChannel(this.client, dmChannelData);
+      const discordenoChannel = new UniversityChannel(
+        this.client,
+        dmChannelData
+      );
       // Recreate the channel and add it under the users id
       await this.client.cache.set("channels", memberId, discordenoChannel);
       dmChannel = discordenoChannel;

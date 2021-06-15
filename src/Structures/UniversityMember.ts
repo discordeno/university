@@ -17,7 +17,7 @@ import Client from "../Client.ts";
 import Base from "./Base.ts";
 import MemberBitField from "./BitFields/Member.ts";
 
-export class DDMember extends Base {
+export class UniversityMember extends Base {
   /** The username of the member */
   username!: string;
   /** The user's 4-digit discord-tag */
@@ -186,8 +186,8 @@ export class DDMember extends Base {
   }
 
   /** Add a role to the member */
-  async addRole(guildId: bigint, roleId: bigint, reason?: string) {
-    return await this.client.addRole(guildId, this.id, roleId, reason);
+  async aUniversityRole(guildId: bigint, roleId: bigint, reason?: string) {
+    return await this.client.aUniversityRole(guildId, this.id, roleId, reason);
   }
 
   /** Remove a role from the member */
@@ -223,4 +223,4 @@ export class DDMember extends Base {
   }
 }
 
-export default DDMember;
+export default UniversityMember;

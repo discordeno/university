@@ -9,7 +9,7 @@ import {
   urlToBase64,
 } from "../../../deps.ts";
 import Client from "../../Client.ts";
-import DDGuild from "../../Structures/DDGuild.ts";
+import UniversityGuild from "../../Structures/UniversityGuild.ts";
 
 export class TemplateHelpers {
   /** The client itself. */
@@ -42,7 +42,7 @@ export class TemplateHelpers {
       data
     )) as Guild;
 
-    return new DDGuild(
+    return new UniversityGuild(
       this.client,
       createdGuild,
       Number(
