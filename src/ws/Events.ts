@@ -729,9 +729,12 @@ export class GatewayEvents {
         discordenoMember
       );
       this.client.emit("interactionGuildCreate", payload, discordenoMember);
+      
       if (this.client.helpers.typeGuards.isSlashCommand(payload)) {
         this.client.emit("slashCommand", payload, discordenoMember);
-      } else if (this.client.helpers.typeGuards.isComponent(payload)) {
+      } 
+      
+      if (this.client.helpers.typeGuards.isComponent(payload)) {
         this.client.emit("component", payload, discordenoMember);
 
         if (
