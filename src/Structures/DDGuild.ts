@@ -26,6 +26,7 @@ import {
 import Client from "../Client.ts";
 import Base from "./Base.ts";
 import GuildBitField from "./BitFields/Guild.ts";
+import DDChannel from "./DDChannel.ts";
 import DDMember from "./DDMember.ts";
 import DDRole from "./DDRole.ts";
 import DDVoiceState from "./DDVoiceState.ts";
@@ -184,6 +185,13 @@ export class DDGuild extends Base {
       this.roles.set(
         snowflakeToBigint(role.id),
         new DDRole(this.client, role, this.id)
+      );
+    }
+
+    for (const channel of payload.channels || []) {
+      this.client.channels.set(
+        snowflakeToBigint(channel.id),
+        new DDChannel(this.client, channel, this.id.toString())
       );
     }
 
