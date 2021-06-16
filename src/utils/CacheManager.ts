@@ -1,10 +1,10 @@
 // deno-lint-ignore-file require-await no-explicit-any
 import { Collection, PresenceUpdate, TableName } from "../../deps.ts";
 import Client from "../Client.ts";
-import DDChannel from "../Structures/DDChannel.ts";
-import DDGuild from "../Structures/DDGuild.ts";
-import DDMember from "../Structures/DDMember.ts";
-import DDMessage from "../Structures/DDMessage.ts";
+import UniversityChannel from "../Structures/UniversityChannel.ts";
+import UniversityGuild from "../Structures/UniversityGuild.ts";
+import UniversityMember from "../Structures/UniversityMember.ts";
+import UniversityMessage from "../Structures/UniversityMessage.ts";
 
 export class CacheManager {
   /** The client for whome this is managing. */
@@ -37,23 +37,23 @@ export class CacheManager {
   set(
     table: "guilds",
     key: bigint,
-    value: DDGuild
-  ): Promise<Collection<bigint, DDGuild>>;
+    value: UniversityGuild
+  ): Promise<Collection<bigint, UniversityGuild>>;
   set(
     table: "channels",
     key: bigint,
-    value: DDChannel
-  ): Promise<Collection<bigint, DDChannel>>;
+    value: UniversityChannel
+  ): Promise<Collection<bigint, UniversityChannel>>;
   set(
     table: "messages",
     key: bigint,
-    value: DDMessage
-  ): Promise<Collection<bigint, DDMessage>>;
+    value: UniversityMessage
+  ): Promise<Collection<bigint, UniversityMessage>>;
   set(
     table: "members",
     key: bigint,
-    value: DDMember
-  ): Promise<Collection<bigint, DDMember>>;
+    value: UniversityMember
+  ): Promise<Collection<bigint, UniversityMember>>;
   set(
     table: "presences",
     key: bigint,
@@ -69,10 +69,19 @@ export class CacheManager {
   }
 
   /** Get the value from the client using its key */
-  async get(table: "guilds", key: bigint): Promise<DDGuild | undefined>;
-  async get(table: "channels", key: bigint): Promise<DDChannel | undefined>;
-  async get(table: "messages", key: bigint): Promise<DDMessage | undefined>;
-  async get(table: "members", key: bigint): Promise<DDMember | undefined>;
+  async get(table: "guilds", key: bigint): Promise<UniversityGuild | undefined>;
+  async get(
+    table: "channels",
+    key: bigint
+  ): Promise<UniversityChannel | undefined>;
+  async get(
+    table: "messages",
+    key: bigint
+  ): Promise<UniversityMessage | undefined>;
+  async get(
+    table: "members",
+    key: bigint
+  ): Promise<UniversityMember | undefined>;
   async get(
     table: "presences",
     key: bigint
@@ -85,10 +94,10 @@ export class CacheManager {
     table: TableName,
     key: bigint
   ): Promise<
-    | DDGuild
-    | DDChannel
-    | DDMessage
-    | DDMember
+    | UniversityGuild
+    | UniversityChannel
+    | UniversityMessage
+    | UniversityMember
     | PresenceUpdate
     | number
     | undefined
@@ -100,9 +109,9 @@ export class CacheManager {
   forEach(
     table: "guilds",
     callback: (
-      value: DDGuild,
+      value: UniversityGuild,
       key: bigint,
-      map: Map<bigint, DDGuild>
+      map: Map<bigint, UniversityGuild>
     ) => unknown
   ): void;
   forEach(
@@ -112,25 +121,25 @@ export class CacheManager {
   forEach(
     table: "channels",
     callback: (
-      value: DDChannel,
+      value: UniversityChannel,
       key: bigint,
-      map: Map<bigint, DDChannel>
+      map: Map<bigint, UniversityChannel>
     ) => unknown
   ): void;
   forEach(
     table: "messages",
     callback: (
-      value: DDMessage,
+      value: UniversityMessage,
       key: bigint,
-      map: Map<bigint, DDMessage>
+      map: Map<bigint, UniversityMessage>
     ) => unknown
   ): void;
   forEach(
     table: "members",
     callback: (
-      value: DDMember,
+      value: UniversityMember,
       key: bigint,
-      map: Map<bigint, DDMember>
+      map: Map<bigint, UniversityMember>
     ) => unknown
   ): void;
   forEach(
@@ -143,24 +152,24 @@ export class CacheManager {
   /** Allows you to filter our all items in this client. */
   filter(
     table: "guilds",
-    callback: (value: DDGuild, key: bigint) => boolean
-  ): Promise<Collection<bigint, DDGuild>>;
+    callback: (value: UniversityGuild, key: bigint) => boolean
+  ): Promise<Collection<bigint, UniversityGuild>>;
   filter(
     table: "unavailableGuilds",
     callback: (value: number, key: bigint) => boolean
   ): Promise<Collection<bigint, number>>;
   filter(
     table: "channels",
-    callback: (value: DDChannel, key: bigint) => boolean
-  ): Promise<Collection<bigint, DDChannel>>;
+    callback: (value: UniversityChannel, key: bigint) => boolean
+  ): Promise<Collection<bigint, UniversityChannel>>;
   filter(
     table: "messages",
-    callback: (value: DDMessage, key: bigint) => boolean
-  ): Promise<Collection<bigint, DDMessage>>;
+    callback: (value: UniversityMessage, key: bigint) => boolean
+  ): Promise<Collection<bigint, UniversityMessage>>;
   filter(
     table: "members",
-    callback: (value: DDMember, key: bigint) => boolean
-  ): Promise<Collection<bigint, DDMember>>;
+    callback: (value: UniversityMember, key: bigint) => boolean
+  ): Promise<Collection<bigint, UniversityMember>>;
   async filter(
     table: TableName,
     callback: (value: any, key: bigint) => boolean

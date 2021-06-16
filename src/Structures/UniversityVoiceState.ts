@@ -3,7 +3,7 @@ import { snowflakeToBigint, VoiceState } from "../../deps.ts";
 import Client from "../Client.ts";
 import VoiceStateBitField from "./BitFields/VoiceState.ts";
 
-export class DDVoiceState {
+export class UniversityVoiceState {
   /** The client itself */
   client: Client;
   /** The guild id this voice state is for */
@@ -166,4 +166,4 @@ export class DDVoiceState {
   }
 }
 
-export default DDVoiceState;
+export default UniversityVoiceState;

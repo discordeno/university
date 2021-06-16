@@ -18,7 +18,7 @@ import {
   verify,
 } from "../../../deps.ts";
 import Client from "../../Client.ts";
-import DDMessage from "../../Structures/DDMessage.ts";
+import UniversityMessage from "../../Structures/UniversityMessage.ts";
 
 export class InteractionHelpers {
   /** The client itself. */
@@ -184,7 +184,7 @@ export class InteractionHelpers {
     // If the original message was edited, this will not return a message
     if (!options.messageId) return result as undefined;
 
-    return new DDMessage(this.client, result);
+    return new UniversityMessage(this.client, result);
   }
 
   /** Fetchs the global command for the given Id. If a guildId is provided, the guild command will be fetched. */
@@ -291,7 +291,7 @@ export class InteractionHelpers {
       endpoints.INTERACTION_ORIGINAL_ID_TOKEN(this.client.applicationId, token)
     )) as Message;
 
-    return new DDMessage(this.client, result);
+    return new UniversityMessage(this.client, result);
   }
 
   /**
