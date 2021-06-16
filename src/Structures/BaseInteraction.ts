@@ -5,11 +5,9 @@ import {
   Interaction,
   GuildMemberWithUser,
   DiscordenoEditWebhookMessage,
-  Message
 } from "../../deps.ts"
 
-import DDMember from "./DDMember.ts";
-import DDGuild from "./DDGuild.ts"
+import UniversityGuild from "./UniversityGuild.ts"
 import Client from "../Client.ts";
 
 export class DDBaseInteraction {
@@ -22,7 +20,7 @@ export class DDBaseInteraction {
   /** The type of interaction */
   type: DiscordInteractionTypes;
   /** The guild it was sent from */
-  guild?: DDGuild;
+  guild?: UniversityGuild;
   /** The Id of the guild it was sent in */
   guildId?: string;
   /** The channel it was sent from */

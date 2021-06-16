@@ -5,7 +5,7 @@ import {
 } from "../../deps.ts"
 import Client from "../Client.ts"
 
-export class DDSlashInteraction extends BaseInteraction {
+export class UniversitySlashInteraction extends BaseInteraction {
   /** Interaction data */
   data: ApplicationCommandInteractionData
   
@@ -17,4 +17,4 @@ export class DDSlashInteraction extends BaseInteraction {
   }
 }
 
-export default DDSlashInteraction
+export default UniversitySlashInteraction
