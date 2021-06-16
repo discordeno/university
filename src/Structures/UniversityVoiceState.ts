@@ -1,4 +1,4 @@
-import { voiceStateToggles } from "https://deno.land/x/discordeno@11.0.0-rc.5/src/structures/voice_state.ts";
+import { voiceStateToggles } from "https://deno.land/x/discordeno@11.2.0/src/structures/voice_state.ts";
 import { snowflakeToBigint, VoiceState } from "../../deps.ts";
 import Client from "../Client.ts";
 import VoiceStateBitField from "./BitFields/VoiceState.ts";

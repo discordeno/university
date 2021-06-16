@@ -569,7 +569,7 @@ export class Client extends EventEmitter {
         // Removes any edge case undefined
         .filter((perm) => perm)
         .reduce((bits, perms) => {
-          bits! |= perms?.bits!;
+          bits! |= BigInt(perms?.bits!);
           return bits;
         }, 0n) || 0n;
 

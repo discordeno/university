@@ -1,19 +1,19 @@
 import BaseInteraction from "./BaseInteraction.ts"
 import {
   Interaction,
-  ApplicationCommandInteractionData
+  SelectMenuData
 } from "../../deps.ts"
 import Client from "../Client.ts"
 
-export class UniversitySlashInteraction extends BaseInteraction {
+export class UniversityDropdownInteraction extends BaseInteraction {
   /** Interaction data */
-  data: ApplicationCommandInteractionData
+  data: SelectMenuData
   
   
   constructor(client: Client,payload: Interaction) {
     super(client,payload)
-    this.data=payload.data as ApplicationCommandInteractionData
+    this.data=payload.data as SelectMenuData
   }
 }
 
-export default UniversitySlashInteraction
+export default UniversityDropdownInteraction

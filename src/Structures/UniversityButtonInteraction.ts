@@ -1,12 +1,9 @@
 import BaseInteraction from "./BaseInteraction.ts"
 import {
   Interaction,
-  DiscordMessageComponentTypes
+  ButtonData
 } from "../../deps.ts"
-interface ButtonData {
-  customId: string,
-  componentType: DiscordMessageComponentTypes.Button
-}
+
 import Client from "../Client.ts"
 
 export class DDButtonInteraction extends BaseInteraction {
@@ -15,8 +12,7 @@ export class DDButtonInteraction extends BaseInteraction {
   
   constructor(client: Client, payload: Interaction) {
     super(client, payload)
-    //@ts-ignore h
-    this.data=payload.data
+    this.data=payload.data as ButtonData
   }
 }
 

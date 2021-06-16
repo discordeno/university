@@ -1,4 +1,4 @@
-import { decompressWith } from "https://deno.land/x/discordeno@11.0.0-rc.5/src/ws/deps.ts";
+import { decompressWith } from "https://deno.land/x/discordeno@11.2.0/src/ws/deps.ts";
 import {
   camelize,
   delay,

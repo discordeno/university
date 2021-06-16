@@ -1,4 +1,4 @@
-import { ButtonData } from "https://deno.land/x/discordeno@11.0.0-rc.5/src/types/messages/components/button_data.ts";
+import { ButtonData } from "https://deno.land/x/discordeno@11.2.0/src/types/messages/components/button_data.ts";
 import {
   ComponentInteraction,
   DiscordInteractionTypes,

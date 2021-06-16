@@ -1,4 +1,4 @@
-import { PrivacyLevel } from "https://deno.land/x/discordeno@11.0.0-rc.5/src/types/channels/privacy_level.ts";
+import { PrivacyLevel } from "https://deno.land/x/discordeno@11.2.0/src/types/channels/privacy_level.ts";
 import {
   DiscordOverwrite,
   PermissionStrings,

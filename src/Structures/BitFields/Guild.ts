@@ -1,4 +1,4 @@
-import { guildToggles } from "https://deno.land/x/discordeno@11.0.0-rc.5/src/structures/guild.ts";
+import { guildToggles } from "https://deno.land/x/discordeno@11.2.0/src/structures/guild.ts";
 import Bitfield from "./Bitfield.ts";
 
 export class GuildBitField extends Bitfield {

@@ -1,4 +1,4 @@
-import { GuildNsfwLevel } from "https://deno.land/x/discordeno@11.0.0-rc.5/src/types/guilds/guild_nsfw_level.ts";
+import { GuildNsfwLevel } from "https://deno.land/x/discordeno@11.2.0/src/types/guilds/guild_nsfw_level.ts";
 import {
   DiscordVerificationLevels,
   DiscordDefaultMessageNotificationLevels,
@@ -145,7 +145,6 @@ export class UniversityGuild extends Base {
     this.discoverySplash = payload.discoverySplash;
     this.preferredLocale = payload.preferredLocale;
     this.memberCount = payload.memberCount || 0;
-    this.region = payload.region;
     this.afkTimeout = payload.afkTimeout;
     this.verificationLevel = payload.verificationLevel;
     this.permissions = payload.permissions
