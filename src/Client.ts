@@ -21,11 +21,11 @@ import {
   ModifyGuildMember,
   CreateGuildRole,
 } from "../deps.ts";
-import DDChannel from "./Structures/DDChannel.ts";
-import DDGuild from "./Structures/DDGuild.ts";
-import DDMember from "./Structures/DDMember.ts";
-import DDMessage from "./Structures/DDMessage.ts";
-import DDRole from "./Structures/DDRole.ts";
+import UniversityChannel from "./Structures/UniversityChannel.ts";
+import UniversityGuild from "./Structures/UniversityGuild.ts";
+import UniversityMember from "./Structures/UniversityMember.ts";
+import UniversityMessage from "./Structures/UniversityMessage.ts";
+import UniversityRole from "./Structures/UniversityRole.ts";
 import CacheManager from "./utils/CacheManager.ts";
 import HelperManager from "./utils/Helpers/HelperManager.ts";
 import RestManager from "./utils/RestManager.ts";
@@ -46,13 +46,13 @@ export class Client extends EventEmitter {
   // CACHE VALUES
 
   /** All of the guild objects the bot has access to, mapped by their Ids */
-  guilds: Collection<bigint, DDGuild>;
+  guilds: Collection<bigint, UniversityGuild>;
   /** All of the channel objects the bot has access to, mapped by their Ids */
-  channels: Collection<bigint, DDChannel>;
+  channels: Collection<bigint, UniversityChannel>;
   /** All of the message objects the bot has cached since the bot acquired `READY` state, mapped by their Ids */
-  messages: Collection<bigint, DDMessage>;
+  messages: Collection<bigint, UniversityMessage>;
   /** All of the member objects that have been cached since the bot acquired `READY` state, mapped by their Ids */
-  members: Collection<bigint, DDMember>;
+  members: Collection<bigint, UniversityMember>;
   /** All of the unavailable guilds, mapped by their Ids (id, timestamp) */
   unavailableGuilds: Collection<bigint, number>;
   /** All of the presence update objects received in PRESENCE_UPDATE gateway event, mapped by their user Id */
@@ -62,8 +62,8 @@ export class Client extends EventEmitter {
     string,
     (
       value:
-        | Collection<bigint, DDMember>
-        | PromiseLike<Collection<bigint, DDMember>>
+        | Collection<bigint, UniversityMember>
+        | PromiseLike<Collection<bigint, UniversityMember>>
     ) => void
   >;
   /** The slash commands that were executed atleast once are cached here so they can be responded to using followups next time. */
@@ -162,7 +162,7 @@ export class Client extends EventEmitter {
 
   // METHODS
 
-  messageSweeper(message: DDMessage) {
+  messageSweeper(message: UniversityMessage) {
     // DM MESSAGES AREN'T NEEDED
     if (!message.guildId) return true;
 
@@ -170,7 +170,7 @@ export class Client extends EventEmitter {
     return Date.now() - message.timestamp > 600000;
   }
 
-  memberSweeper(member: DDMember) {
+  memberSweeper(member: UniversityMember) {
     // DON'T SWEEP THE BOT ELSE STRANGE THINGS WILL HAPPEN
     if (member.id === this.botId) return false;
 
@@ -178,7 +178,7 @@ export class Client extends EventEmitter {
     return member.cachedAt - Date.now() < 1800000;
   }
 
-  guildSweeper(guild: DDGuild) {
+  guildSweeper(guild: UniversityGuild) {
     // RESET ACTIVITY FOR NEXT INTERVAL
     if (!this.activeGuildIds.delete(guild.id)) return false;
 
@@ -388,8 +388,18 @@ export class Client extends EventEmitter {
   }
 
   /** Add a role to the member */
-  async addRole(guildId: bigint, id: bigint, roleId: bigint, reason?: string) {
-    return await this.helpers.roles.addRole(guildId, id, roleId, reason);
+  async aUniversityRole(
+    guildId: bigint,
+    id: bigint,
+    roleId: bigint,
+    reason?: string
+  ) {
+    return await this.helpers.roles.aUniversityRole(
+      guildId,
+      id,
+      roleId,
+      reason
+    );
   }
 
   /** Remove a role from the member */
@@ -537,8 +547,8 @@ export class Client extends EventEmitter {
 
   /** Calculates the permissions this member has in the given guild */
   async calculateBasePermissions(
-    guildOrId: bigint | DDGuild,
-    memberOrId: bigint | DDMember
+    guildOrId: bigint | UniversityGuild,
+    memberOrId: bigint | UniversityMember
   ) {
     const guild =
       typeof guildOrId === "bigint"
@@ -571,8 +581,8 @@ export class Client extends EventEmitter {
 
   /** Calculates the permissions this member has for the given Channel */
   async calculateChannelOverwrites(
-    channelOrId: bigint | DDChannel,
-    memberOrId: bigint | DDMember
+    channelOrId: bigint | UniversityChannel,
+    memberOrId: bigint | UniversityMember
   ) {
     const channel =
       typeof channelOrId === "bigint"
@@ -650,8 +660,8 @@ export class Client extends EventEmitter {
 
   /** Checks if the given member has these permissions in the given guild */
   async hasGuildPermissions(
-    guild: bigint | DDGuild,
-    member: bigint | DDMember,
+    guild: bigint | UniversityGuild,
+    member: bigint | UniversityMember,
     permissions: PermissionStrings[]
   ) {
     // First we need the role permission bits this member has
@@ -662,7 +672,7 @@ export class Client extends EventEmitter {
 
   /** Checks if the bot has these permissions in the given guild */
   botHasGuildPermissions(
-    guild: bigint | DDGuild,
+    guild: bigint | UniversityGuild,
     permissions: PermissionStrings[]
   ) {
     // Since Bot is a normal member we can use the hasRolePermissions() function
@@ -671,8 +681,8 @@ export class Client extends EventEmitter {
 
   /** Checks if the given member has these permissions for the given channel */
   async hasChannelPermissions(
-    channel: bigint | DDChannel,
-    member: bigint | DDMember,
+    channel: bigint | UniversityChannel,
+    member: bigint | UniversityMember,
     permissions: PermissionStrings[]
   ) {
     // First we need the overwrite bits this member has
@@ -686,7 +696,7 @@ export class Client extends EventEmitter {
 
   /** Checks if the bot has these permissions f0r the given channel */
   botHasChannelPermissions(
-    channel: bigint | DDChannel,
+    channel: bigint | UniversityChannel,
     permissions: PermissionStrings[]
   ) {
     // Since Bot is a normal member we can use the hasRolePermissions() function
@@ -705,8 +715,8 @@ export class Client extends EventEmitter {
 
   /** Get the missing Guild permissions this member has */
   async getMissingGuildPermissions(
-    guild: bigint | DDGuild,
-    member: bigint | DDMember,
+    guild: bigint | UniversityGuild,
+    member: bigint | UniversityMember,
     permissions: PermissionStrings[]
   ) {
     // First we need the role permission bits this member has
@@ -717,8 +727,8 @@ export class Client extends EventEmitter {
 
   /** Get the missing Channel permissions this member has */
   async getMissingChannelPermissions(
-    channel: bigint | DDChannel,
-    member: bigint | DDMember,
+    channel: bigint | UniversityChannel,
+    member: bigint | UniversityMember,
     permissions: PermissionStrings[]
   ) {
     // First we need the role permissino bits this member has
@@ -732,8 +742,8 @@ export class Client extends EventEmitter {
 
   /** Throws an error if this member has not all of the given permissions */
   async requireGuildPermissions(
-    guild: bigint | DDGuild,
-    member: bigint | DDMember,
+    guild: bigint | UniversityGuild,
+    member: bigint | UniversityMember,
     permissions: PermissionStrings[]
   ) {
     const missing = await this.getMissingGuildPermissions(
@@ -749,7 +759,7 @@ export class Client extends EventEmitter {
 
   /** Throws an error if the bot does not have all permissions */
   requireBotGuildPermissions(
-    guild: bigint | DDGuild,
+    guild: bigint | UniversityGuild,
     permissions: PermissionStrings[]
   ) {
     // Since Bot is a normal member we can use the throwOnMissingGuildPermission() function
@@ -758,8 +768,8 @@ export class Client extends EventEmitter {
 
   /** Throws an error if this member has not all of the given permissions */
   async requireChannelPermissions(
-    channel: bigint | DDChannel,
-    member: bigint | DDMember,
+    channel: bigint | UniversityChannel,
+    member: bigint | UniversityMember,
     permissions: PermissionStrings[]
   ) {
     const missing = await this.getMissingChannelPermissions(
@@ -775,7 +785,7 @@ export class Client extends EventEmitter {
 
   /** Throws an error if the bot has not all of the given channel permissions */
   requireBotChannelPermissions(
-    channel: bigint | DDChannel,
+    channel: bigint | UniversityChannel,
     permissions: PermissionStrings[]
   ) {
     // Since Bot is a normal member we can use the throwOnMissingChannelPermission() function
@@ -807,7 +817,7 @@ export class Client extends EventEmitter {
 
   /** Internal function to check if the bot has the permissions to set these overwrites */
   async requireOverwritePermissions(
-    guildOrId: bigint | DDGuild,
+    guildOrId: bigint | UniversityGuild,
     overwrites: Overwrite[]
   ) {
     let requiredPerms: Set<PermissionStrings> = new Set(["MANAGE_CHANNELS"]);
@@ -829,8 +839,8 @@ export class Client extends EventEmitter {
 
   /** Gets the highest role from the member in this guild */
   async highestRole(
-    guildOrId: bigint | DDGuild,
-    memberOrId: bigint | DDMember
+    guildOrId: bigint | UniversityGuild,
+    memberOrId: bigint | UniversityMember
   ) {
     const guild =
       typeof guildOrId === "bigint"
@@ -848,7 +858,7 @@ export class Client extends EventEmitter {
     // This member has no roles so the highest one is the @everyone role
     if (!memberRoles) return guild.roles.get(guild.id)!;
 
-    let memberHighestRole: DDRole | undefined;
+    let memberHighestRole: UniversityRole | undefined;
 
     for (const roleId of memberRoles) {
       const role = guild.roles.get(roleId);
@@ -872,7 +882,7 @@ export class Client extends EventEmitter {
 
   /** Checks if the first role is higher than the second role */
   async higherRolePosition(
-    guildOrId: bigint | DDGuild,
+    guildOrId: bigint | UniversityGuild,
     roleId: bigint,
     otherRoleId: bigint
   ) {
@@ -897,7 +907,7 @@ export class Client extends EventEmitter {
 
   /** Checks if the member has a higher position than the given role */
   async isHigherPosition(
-    guildOrId: bigint | DDGuild,
+    guildOrId: bigint | UniversityGuild,
     memberId: bigint,
     compareRoleId: bigint
   ) {

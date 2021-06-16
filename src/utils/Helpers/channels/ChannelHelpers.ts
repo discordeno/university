@@ -29,8 +29,8 @@ import {
   Message,
 } from "../../../../deps.ts";
 import Client from "../../../Client.ts";
-import DDChannel from "../../../Structures/DDChannel.ts";
-import DDMessage from "../../../Structures/DDMessage.ts";
+import UniversityChannel from "../../../Structures/UniversityChannel.ts";
+import UniversityMessage from "../../../Structures/UniversityMessage.ts";
 import { ThreadHelpers } from "./mod.ts";
 
 export class ChannelHelpers {
@@ -146,7 +146,7 @@ export class ChannelHelpers {
       })
     );
 
-    const discordenoChannel = new DDChannel(this.client, result);
+    const discordenoChannel = new UniversityChannel(this.client, result);
     await this.client.cache.set(
       "channels",
       discordenoChannel.id,
@@ -347,7 +347,7 @@ export class ChannelHelpers {
       })
     );
 
-    return new DDChannel(this.client, result);
+    return new UniversityChannel(this.client, result);
   }
 
   processEditChannelQueue() {
@@ -439,7 +439,7 @@ export class ChannelHelpers {
       endpoints.CHANNEL_BASE(channelId)
     );
 
-    const discordenoChannel = new DDChannel(
+    const discordenoChannel = new UniversityChannel(
       this.client,
       result,
       result.guildId
@@ -452,7 +452,7 @@ export class ChannelHelpers {
       );
     }
 
-    return DDChannel;
+    return UniversityChannel;
   }
 
   /** Gets the webhooks for this channel. Requires MANAGE_WEBHOOKS */
@@ -481,7 +481,7 @@ export class ChannelHelpers {
       (
         await Promise.all(
           result.map(async (res) => {
-            const discordenoChannel = new DDChannel(
+            const discordenoChannel = new UniversityChannel(
               this.client,
               res,
               guildId.toString()
@@ -507,7 +507,9 @@ export class ChannelHelpers {
       endpoints.CHANNEL_PINS(channelId)
     )) as Message[];
 
-    return Promise.all(result.map((res) => new DDMessage(this.client, res)));
+    return Promise.all(
+      result.map((res) => new UniversityMessage(this.client, res))
+    );
   }
 
   /** Gets the stage instance associated with the Stage channel, if it exists. */

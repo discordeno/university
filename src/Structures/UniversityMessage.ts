@@ -26,7 +26,7 @@ import Client from "../Client.ts";
 import Base from "./Base.ts";
 import MessageBitField from "./BitFields/Message.ts";
 
-export class DDMessage extends Base {
+export class UniversityMessage extends Base {
   /** Id of the guild which the massage has been send in. */
   guildId?: bigint;
   /** id of the channel the message was sent in */
@@ -431,4 +431,4 @@ export class DDMessage extends Base {
   }
 }
 
-export default DDMessage;
+export default UniversityMessage;

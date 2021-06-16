@@ -26,7 +26,7 @@ import {
   WelcomeScreen,
 } from "../../../deps.ts";
 import Client from "../../Client.ts";
-import DDGuild from "../../Structures/DDGuild.ts";
+import UniversityGuild from "../../Structures/UniversityGuild.ts";
 
 export class GuildHelpers {
   /** The client itself. */
@@ -43,7 +43,7 @@ export class GuildHelpers {
       snakelize(options)
     )) as Guild;
 
-    const guild = new DDGuild(this.client, result, 0);
+    const guild = new UniversityGuild(this.client, result, 0);
     // MANUALLY CACHE THE GUILD
     await this.client.cache.set("guilds", guild.id, guild);
     // MANUALLY CACHE THE BOT
@@ -79,7 +79,7 @@ export class GuildHelpers {
     )) as Guild;
 
     const cached = await this.client.cache.get("guilds", guildId);
-    return new DDGuild(
+    return new UniversityGuild(
       this.client,
       result,
       cached?.shardId ||
@@ -174,7 +174,7 @@ export class GuildHelpers {
       with_counts: options.counts,
     })) as Guild;
 
-    const guild = new DDGuild(
+    const guild = new UniversityGuild(
       this.client,
       result,
       Number(

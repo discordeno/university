@@ -15,7 +15,7 @@ import {
   ExecuteWebhook,
 } from "../../../deps.ts";
 import Client from "../../Client.ts";
-import DDMessage from "../../Structures/DDMessage.ts";
+import UniversityMessage from "../../Structures/UniversityMessage.ts";
 
 export class WebhookHelpers {
   /** The client itself */
@@ -155,7 +155,7 @@ export class WebhookHelpers {
       snakelize(options)
     )) as Message;
 
-    return new DDMessage(this.client, result);
+    return new UniversityMessage(this.client, result);
   }
 
   /** Edit a webhook. Returns the updated webhook object on success. */
@@ -187,7 +187,7 @@ export class WebhookHelpers {
       endpoints.WEBHOOK_MESSAGE(webhookId, webhookToken, messageId)
     )) as Message;
 
-    return new DDMessage(this.client, result);
+    return new UniversityMessage(this.client, result);
   }
 
   /** Returns the new webhook object for the given id, this call does not require authentication and returns no user in the webhook object. */
@@ -274,7 +274,7 @@ export class WebhookHelpers {
     )) as Message;
     if (!options.wait) return;
 
-    return new DDMessage(this.client, result);
+    return new UniversityMessage(this.client, result);
   }
 }
 

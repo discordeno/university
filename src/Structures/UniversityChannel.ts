@@ -15,7 +15,7 @@ import {
 import Client from "../Client.ts";
 import Base from "./Base.ts";
 
-export class DDChannel extends Base {
+export class UniversityChannel extends Base {
   /** The type of channel */
   type!: DiscordChannelTypes;
   /** Sorting position of the channel */
@@ -244,4 +244,4 @@ export class DDChannel extends Base {
   }
 }
 
-export default DDChannel;
+export default UniversityChannel;

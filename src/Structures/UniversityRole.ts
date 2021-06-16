@@ -10,7 +10,7 @@ import Base from "./Base.ts";
 import Permissions from "./BitFields/Permissions.ts";
 import RoleBitField, { roleToggles } from "./BitFields/Role.ts";
 
-export class DDRole extends Base {
+export class UniversityRole extends Base {
   /** The client itself. */
   client: Client;
   /** The name of the role. */
@@ -192,4 +192,4 @@ export class DDRole extends Base {
   }
 }
 
-export default DDRole;
+export default UniversityRole;
