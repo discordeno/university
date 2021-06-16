@@ -44,7 +44,7 @@ export class MessageHelpers {
     }
 
     return await this.client.rest.put(
-      endpoints.CHANNEL_MESSAGE_REACTION_ME(channelId, messageId, reaction)
+      endpoints.CHANNEL_MESSAGE_REACTION_ME(channelId, messageId, reaction),
     );
   }
 
@@ -53,20 +53,20 @@ export class MessageHelpers {
     channelId: bigint,
     messageId: bigint,
     reactions: string[],
-    ordered = false
+    ordered = false,
   ) {
     if (!ordered) {
       await Promise.all(
         reactions.map((reaction) =>
           this.addReaction(channelId, messageId, reaction)
-        )
+        ),
       );
     } else {
       for (const reaction of reactions) {
         this.client.emit(
           "DEBUG",
           "loop",
-          "Running for of loop in addReactions function."
+          "Running for of loop in addReactions function.",
         );
         await this.addReaction(channelId, messageId, reaction);
       }
@@ -78,7 +78,7 @@ export class MessageHelpers {
     channelId: bigint,
     messageId: bigint,
     reason?: string,
-    delayMilliseconds = 0
+    delayMilliseconds = 0,
   ) {
     const message = await this.client.cache.get("messages", messageId);
 
@@ -92,7 +92,7 @@ export class MessageHelpers {
 
     return await this.client.rest.delete(
       endpoints.CHANNEL_MESSAGE(channelId, messageId),
-      { reason }
+      { reason },
     );
   }
 
@@ -108,7 +108,7 @@ export class MessageHelpers {
 
     if (ids.length > 100) {
       console.warn(
-        `This endpoint only accepts a maximum of 100 messages. Deleting the first 100 message ids provided.`
+        `This endpoint only accepts a maximum of 100 messages. Deleting the first 100 message ids provided.`,
       );
     }
 
@@ -117,7 +117,7 @@ export class MessageHelpers {
       {
         messages: ids.splice(0, 100),
         reason,
-      }
+      },
     );
   }
 
@@ -125,21 +125,21 @@ export class MessageHelpers {
   async editMessage(
     channelId: bigint,
     messageId: bigint,
-    content: string | EditMessage
+    content: string | EditMessage,
   ) {
     const message = await this.client.cache.get("messages", messageId);
 
     if (message) {
       if (message.authorId !== this.client.botId) {
         throw new Error(
-          "You can only edit a message that was sent by the bot."
+          "You can only edit a message that was sent by the bot.",
         );
       }
       const requiredPerms: PermissionStrings[] = ["SEND_MESSAGES"];
 
       await this.client.requireBotChannelPermissions(
         message.channelId,
-        requiredPerms
+        requiredPerms,
       );
     }
 
@@ -155,7 +155,7 @@ export class MessageHelpers {
 
     const result = (await this.client.rest.patch(
       endpoints.CHANNEL_MESSAGE(channelId, messageId),
-      snakelize(content)
+      snakelize(content),
     )) as Message;
 
     return new UniversityMessage(this.client, result);
@@ -171,7 +171,7 @@ export class MessageHelpers {
     }
 
     const result = (await this.client.rest.get(
-      endpoints.CHANNEL_MESSAGE(channelId, id)
+      endpoints.CHANNEL_MESSAGE(channelId, id),
     )) as Message;
 
     return new UniversityMessage(this.client, result);
@@ -184,7 +184,7 @@ export class MessageHelpers {
       | GetMessagesAfter
       | GetMessagesBefore
       | GetMessagesAround
-      | GetMessagesLimit
+      | GetMessagesLimit,
   ) {
     await this.client.requireBotChannelPermissions(channelId, [
       "VIEW_CHANNEL",
@@ -197,11 +197,11 @@ export class MessageHelpers {
 
     const result = (await this.client.rest.get(
       endpoints.CHANNEL_MESSAGES(channelId),
-      options
+      options,
     )) as Message[];
 
     return await Promise.all(
-      result.map((res) => new UniversityMessage(this.client, res))
+      result.map((res) => new UniversityMessage(this.client, res)),
     );
   }
 
@@ -210,11 +210,11 @@ export class MessageHelpers {
     channelId: bigint,
     messageId: bigint,
     reaction: string,
-    options?: GetReactions
+    options?: GetReactions,
   ) {
     const users = (await this.client.rest.get(
       endpoints.CHANNEL_MESSAGE_REACTION(channelId, messageId, reaction),
-      options
+      options,
     )) as User[];
 
     return new Collection(users.map((user) => [user.id, user]));
@@ -227,14 +227,14 @@ export class MessageHelpers {
     ]);
 
     return await this.client.rest.put(
-      endpoints.CHANNEL_PIN(channelId, messageId)
+      endpoints.CHANNEL_PIN(channelId, messageId),
     );
   }
 
   /** Crosspost a message in a News Channel to following channels. */
   async publishMessage(channelId: bigint, messageId: bigint) {
     const data = (await this.client.rest.post(
-      endpoints.CHANNEL_MESSAGE_CROSSPOST(channelId, messageId)
+      endpoints.CHANNEL_MESSAGE_CROSSPOST(channelId, messageId),
     )) as Message;
 
     return new UniversityMessage(this.client, data);
@@ -247,7 +247,7 @@ export class MessageHelpers {
     ]);
 
     return await this.client.rest.delete(
-      endpoints.CHANNEL_MESSAGE_REACTIONS(channelId, messageId)
+      endpoints.CHANNEL_MESSAGE_REACTIONS(channelId, messageId),
     );
   }
 
@@ -256,7 +256,7 @@ export class MessageHelpers {
     channelId: bigint,
     messageId: bigint,
     reaction: string,
-    options?: { userId?: bigint }
+    options?: { userId?: bigint },
   ) {
     if (options?.userId) {
       await this.client.requireBotChannelPermissions(channelId, [
@@ -273,12 +273,12 @@ export class MessageHelpers {
     return await this.client.rest.delete(
       options?.userId
         ? endpoints.CHANNEL_MESSAGE_REACTION_USER(
-            channelId,
-            messageId,
-            reaction,
-            options.userId
-          )
-        : endpoints.CHANNEL_MESSAGE_REACTION_ME(channelId, messageId, reaction)
+          channelId,
+          messageId,
+          reaction,
+          options.userId,
+        )
+        : endpoints.CHANNEL_MESSAGE_REACTION_ME(channelId, messageId, reaction),
     );
   }
 
@@ -286,7 +286,7 @@ export class MessageHelpers {
   async removeReactionEmoji(
     channelId: bigint,
     messageId: bigint,
-    reaction: string
+    reaction: string,
   ) {
     await this.client.requireBotChannelPermissions(channelId, [
       "MANAGE_MESSAGES",
@@ -299,7 +299,7 @@ export class MessageHelpers {
     }
 
     return await this.client.rest.delete(
-      endpoints.CHANNEL_MESSAGE_REACTION(channelId, messageId, reaction)
+      endpoints.CHANNEL_MESSAGE_REACTION(channelId, messageId, reaction),
     );
   }
 
@@ -354,18 +354,18 @@ export class MessageHelpers {
       if (content.allowedMentions.users?.length) {
         if (
           content.allowedMentions.parse?.includes(
-            DiscordAllowedMentionsTypes.UserMentions
+            DiscordAllowedMentionsTypes.UserMentions,
           )
         ) {
           content.allowedMentions.parse = content.allowedMentions.parse.filter(
-            (p) => p !== "users"
+            (p) => p !== "users",
           );
         }
 
         if (content.allowedMentions.users.length > 100) {
           content.allowedMentions.users = content.allowedMentions.users.slice(
             0,
-            100
+            100,
           );
         }
       }
@@ -373,18 +373,18 @@ export class MessageHelpers {
       if (content.allowedMentions.roles?.length) {
         if (
           content.allowedMentions.parse?.includes(
-            DiscordAllowedMentionsTypes.RoleMentions
+            DiscordAllowedMentionsTypes.RoleMentions,
           )
         ) {
           content.allowedMentions.parse = content.allowedMentions.parse.filter(
-            (p) => p !== "roles"
+            (p) => p !== "roles",
           );
         }
 
         if (content.allowedMentions.roles.length > 100) {
           content.allowedMentions.roles = content.allowedMentions.roles.slice(
             0,
-            100
+            100,
           );
         }
       }
@@ -396,14 +396,14 @@ export class MessageHelpers {
         ...content,
         ...(content.messageReference?.messageId
           ? {
-              messageReference: {
-                ...content.messageReference,
-                failIfNotExists:
-                  content.messageReference.failIfNotExists === true,
-              },
-            }
+            messageReference: {
+              ...content.messageReference,
+              failIfNotExists:
+                content.messageReference.failIfNotExists === true,
+            },
+          }
           : {}),
-      })
+      }),
     )) as Message;
 
     return new UniversityMessage(this.client, result);
@@ -416,7 +416,7 @@ export class MessageHelpers {
     ]);
 
     return await this.client.rest.delete(
-      endpoints.CHANNEL_PIN(channelId, messageId)
+      endpoints.CHANNEL_PIN(channelId, messageId),
     );
   }
 }

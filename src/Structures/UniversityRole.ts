@@ -1,9 +1,9 @@
 import {
-  RoleTags,
-  Role,
   Collection,
   CreateGuildRole,
   Errors,
+  Role,
+  RoleTags,
 } from "../../deps.ts";
 import Client from "../Client.ts";
 import Base from "./Base.ts";
@@ -147,7 +147,7 @@ export class UniversityRole extends Base {
     // If still none error out.
     if (!position) {
       throw new Error(
-        "role.higherThanRoleId() did not have a position provided and the role or guild was not found in cache. Please provide a position like role.higherThanRoleId(roleId, position)"
+        "role.higherThanRoleId() did not have a position provided and the role or guild was not found in cache. Please provide a position like role.higherThanRoleId(roleId, position)",
       );
     }
 
@@ -168,7 +168,7 @@ export class UniversityRole extends Base {
     const memberHighestRole = await this.client.highestRole(guild, memberId);
     return this.higherThanRole!(
       memberHighestRole.id,
-      memberHighestRole.position
+      memberHighestRole.position,
     );
   }
 

@@ -23,7 +23,7 @@ export class EmojiHelpers {
     guildId: bigint,
     name: string,
     image: string,
-    options: CreateGuildEmoji
+    options: CreateGuildEmoji,
   ) {
     await this.client.requireBotGuildPermissions(guildId, ["MANAGE_EMOJIS"]);
 
@@ -37,7 +37,7 @@ export class EmojiHelpers {
         ...options,
         name,
         image,
-      }
+      },
     )) as Emoji;
 
     return {
@@ -61,7 +61,7 @@ export class EmojiHelpers {
 
     return (await this.client.rest.patch(
       endpoints.GUILD_EMOJI(guildId, id),
-      options
+      options,
     )) as Emoji;
   }
 
@@ -75,7 +75,7 @@ export class EmojiHelpers {
   /** Returns an emoji for the given guild and emoji Id. */
   async getEmoji(guildId: bigint, emojiId: bigint, addToCache = true) {
     const result = (await this.client.rest.get(
-      endpoints.GUILD_EMOJI(guildId, emojiId)
+      endpoints.GUILD_EMOJI(guildId, emojiId),
     )) as Emoji;
 
     if (addToCache) {
@@ -91,7 +91,7 @@ export class EmojiHelpers {
   /** Returns a list of emojis for the given guild. */
   async getEmojis(guildId: bigint, addToCache = true) {
     const result = (await this.client.rest.get(
-      endpoints.GUILD_EMOJIS(guildId)
+      endpoints.GUILD_EMOJIS(guildId),
     )) as Emoji[];
 
     if (addToCache) {
@@ -102,7 +102,7 @@ export class EmojiHelpers {
         this.client.emit(
           "DEBUG",
           "loop",
-          `Running forEach loop in get_emojis file.`
+          `Running forEach loop in get_emojis file.`,
         );
         guild.emojis.set(snowflakeToBigint(emoji.id!), emoji);
       });

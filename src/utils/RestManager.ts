@@ -81,7 +81,7 @@ export class RestManager {
       this.client.emit(
         "DEBUG",
         "loop",
-        "Running for of loop in cleanupQueues function."
+        "Running for of loop in cleanupQueues function.",
       );
       if (queue.length) continue;
 
@@ -111,7 +111,7 @@ export class RestManager {
     // IF A REASON IS PROVIDED ENCODE IT IN HEADERS
     if (queuedRequest.payload.body?.reason) {
       headers["X-Audit-Log-Reason"] = encodeURIComponent(
-        queuedRequest.payload.body.reason as string
+        queuedRequest.payload.body.reason as string,
       );
     }
 
@@ -131,13 +131,13 @@ export class RestManager {
         form.append(
           `file${i}`,
           (queuedRequest.payload.body.file as FileContent[])[i].blob,
-          (queuedRequest.payload.body.file as FileContent[])[i].name
+          (queuedRequest.payload.body.file as FileContent[])[i].name,
         );
       }
 
       form.append(
         "payload_json",
-        JSON.stringify({ ...queuedRequest.payload.body, file: undefined })
+        JSON.stringify({ ...queuedRequest.payload.body, file: undefined }),
       );
       queuedRequest.payload.body.file = form;
     } else if (
@@ -164,7 +164,7 @@ export class RestManager {
       this.client.emit(
         "DEBUG",
         "loop",
-        "Running while loop in processQueue function."
+        "Running while loop in processQueue function.",
       );
       // IF THE BOT IS GLOBALLY RATELIMITED TRY AGAIN
       if (this.globallyRateLimited) {
@@ -172,7 +172,7 @@ export class RestManager {
           this.client.emit(
             "DEBUG",
             "loop",
-            `Running setTimeout in processQueue function.`
+            `Running setTimeout in processQueue function.`,
           );
           this.processQueue(id);
         }, 1000);
@@ -186,7 +186,7 @@ export class RestManager {
 
       const basicURL = this.simplifyUrl(
         queuedRequest.request.url,
-        queuedRequest.request.method.toUpperCase()
+        queuedRequest.request.method.toUpperCase(),
       );
 
       // IF THIS URL IS STILL RATE LIMITED, TRY AGAIN
@@ -207,18 +207,19 @@ export class RestManager {
       // EXECUTE THE REQUEST
 
       // IF THIS IS A GET REQUEST, CHANGE THE BODY TO QUERY PARAMETERS
-      const query =
-        queuedRequest.request.method.toUpperCase() === "GET" &&
-        queuedRequest.payload.body
-          ? Object.entries(queuedRequest.payload.body)
-              .map(
-                ([key, value]) =>
-                  `${encodeURIComponent(key)}=${encodeURIComponent(
-                    value as string
-                  )}`
-              )
-              .join("&")
-          : "";
+      const query = queuedRequest.request.method.toUpperCase() === "GET" &&
+          queuedRequest.payload.body
+        ? Object.entries(queuedRequest.payload.body)
+          .map(
+            ([key, value]) =>
+              `${encodeURIComponent(key)}=${
+                encodeURIComponent(
+                  value as string,
+                )
+              }`,
+          )
+          .join("&")
+        : "";
       const urlToUse =
         queuedRequest.request.method.toUpperCase() === "GET" && query
           ? `${queuedRequest.request.url}?${query}`
@@ -230,13 +231,13 @@ export class RestManager {
       try {
         const response = await fetch(
           urlToUse,
-          this.createRequestBody(queuedRequest)
+          this.createRequestBody(queuedRequest),
         );
 
         this.client.emit("fetched", queuedRequest.payload);
         const bucketIdFromHeaders = this.processRequestHeaders(
           basicURL,
-          response.headers
+          response.headers,
         );
         // SET THE BUCKET Id IF IT WAS PRESENT
         if (bucketIdFromHeaders) {
@@ -248,7 +249,7 @@ export class RestManager {
             "error",
             "httpError",
             queuedRequest.payload,
-            response
+            response,
           );
 
           let error = "REQUEST_UNKNOWN_ERROR";
@@ -278,7 +279,7 @@ export class RestManager {
           }
 
           queuedRequest.request.reject?.(
-            new Error(`[${response.status}] ${error}`)
+            new Error(`[${response.status}] ${error}`),
           );
 
           // If Rate limited should not remove from queue
@@ -348,7 +349,7 @@ export class RestManager {
       this.client.emit(
         "DEBUG",
         "loop",
-        `Running forEach loop in process_rate_limited_paths file.`
+        `Running forEach loop in process_rate_limited_paths file.`,
       );
       // IF THE TIME HAS NOT REACHED CANCEL
       if (value.resetTimestamp > now) continue;
@@ -370,7 +371,7 @@ export class RestManager {
         this.client.emit(
           "DEBUG",
           "loop",
-          `Running setTimeout in processRateLimitedPaths function.`
+          `Running setTimeout in processRateLimitedPaths function.`,
         );
         this.processRateLimitedPaths();
       }, 1000);
@@ -475,7 +476,7 @@ export class RestManager {
     url: string,
     body?: unknown,
     retryCount = 0,
-    bucketId?: string
+    bucketId?: string,
   ) {
     if (body) {
       body = this.client.loopObject(
@@ -486,7 +487,7 @@ export class RestManager {
             : Array.isArray(value)
             ? value.map((v) => (typeof v === "bigint" ? v.toString() : v))
             : value,
-        `Running forEach loop in runMethod function for changing bigints to strings.`
+        `Running forEach loop in runMethod function for changing bigints to strings.`,
       );
     }
 
@@ -534,14 +535,14 @@ export class RestManager {
             resolve(
               data.status !== 204
                 ? camelize(JSON.parse(data.body ?? "{}"))
-                : undefined
+                : undefined,
             ),
         },
         {
           bucketId,
           body: body as Record<string, unknown> | undefined,
           retryCount,
-        }
+        },
       );
     });
   }
@@ -578,14 +579,14 @@ export class RestManager {
       .replace(/\/reactions\/[^/]+/g, "/reactions/skillzPrefersID")
       .replace(
         /^\/webhooks\/(\d+)\/[A-Za-z0-9-_]{64,}/,
-        "/webhooks/$1/:itohIsAHoti"
+        "/webhooks/$1/:itohIsAHoti",
       );
 
     // GENERAL /reactions and /reactions/emoji/@me share the buckets
     if (route.includes("/reactions")) {
       route = route.substring(
         0,
-        route.indexOf("/reactions") + "/reactions".length
+        route.indexOf("/reactions") + "/reactions".length,
       );
     }
 

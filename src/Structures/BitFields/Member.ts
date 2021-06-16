@@ -1,4 +1,4 @@
-import { memberToggles } from "https://deno.land/x/discordeno@11.0.0-rc.5/src/structures/member.ts";
+import { memberToggles } from "https://deno.land/x/discordeno@11.2.0/src/structures/member.ts";
 import Bitfield from "./Bitfield.ts";
 
 export class MemberBitField extends Bitfield {

@@ -1,4 +1,4 @@
-import { ButtonData } from "https://deno.land/x/discordeno@11.0.0-rc.5/src/types/messages/components/button_data.ts";
+import { ButtonData } from "https://deno.land/x/discordeno@11.2.0/src/types/messages/components/button_data.ts";
 import {
   ComponentInteraction,
   DiscordInteractionTypes,
@@ -24,7 +24,7 @@ export class TypeGuardHelpers {
 
   /** A type guard function to tell if the interaction is a slash command or not. */
   isSlashCommand(
-    interaction: Interaction
+    interaction: Interaction,
   ): interaction is SlashCommandInteraction {
     return interaction.type === DiscordInteractionTypes.ApplicationCommand;
   }

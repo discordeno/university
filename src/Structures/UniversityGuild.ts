@@ -1,27 +1,27 @@
-import { GuildNsfwLevel } from "https://deno.land/x/discordeno@11.0.0-rc.5/src/types/guilds/guild_nsfw_level.ts";
+import { GuildNsfwLevel } from "https://deno.land/x/discordeno@11.2.0/src/types/guilds/guild_nsfw_level.ts";
 import {
-  DiscordVerificationLevels,
+  Channel,
+  Collection,
+  CreateGuildBan,
   DiscordDefaultMessageNotificationLevels,
   DiscordExplicitContentFilterLevels,
-  Collection,
   DiscordGuildFeatures,
-  DiscordMfaLevels,
-  DiscordSystemChannelFlags,
-  Channel,
-  DiscordPremiumTiers,
-  WelcomeScreen,
-  StageInstance,
-  PresenceUpdate,
-  Emoji,
-  Guild,
-  snowflakeToBigint,
-  DiscordImageSize,
   DiscordImageFormat,
-  ModifyGuild,
+  DiscordImageSize,
+  DiscordMfaLevels,
+  DiscordPremiumTiers,
+  DiscordSystemChannelFlags,
+  DiscordVerificationLevels,
+  Emoji,
   GetGuildAuditLog,
-  CreateGuildBan,
+  Guild,
   GuildMember,
   iconBigintToHash,
+  ModifyGuild,
+  PresenceUpdate,
+  snowflakeToBigint,
+  StageInstance,
+  WelcomeScreen,
 } from "../../deps.ts";
 import Client from "../Client.ts";
 import Base from "./Base.ts";
@@ -145,7 +145,6 @@ export class UniversityGuild extends Base {
     this.discoverySplash = payload.discoverySplash;
     this.preferredLocale = payload.preferredLocale;
     this.memberCount = payload.memberCount || 0;
-    this.region = payload.region;
     this.afkTimeout = payload.afkTimeout;
     this.verificationLevel = payload.verificationLevel;
     this.permissions = payload.permissions
@@ -184,21 +183,21 @@ export class UniversityGuild extends Base {
     for (const role of payload.roles) {
       this.roles.set(
         snowflakeToBigint(role.id),
-        new UniversityRole(this.client, role, this.id)
+        new UniversityRole(this.client, role, this.id),
       );
     }
 
     for (const channel of payload.channels || []) {
       this.client.channels.set(
         snowflakeToBigint(channel.id),
-        new UniversityChannel(this.client, channel, this.id.toString())
+        new UniversityChannel(this.client, channel, this.id.toString()),
       );
     }
 
     for (const voiceState of payload.voiceStates || []) {
       this.voiceStates.set(
         snowflakeToBigint(voiceState.userId),
-        new UniversityVoiceState(this.client, this.id, voiceState)
+        new UniversityVoiceState(this.client, this.id, voiceState),
       );
     }
 
@@ -209,7 +208,7 @@ export class UniversityGuild extends Base {
       this.client.cache.set(
         "members",
         snowflakeToBigint(user.id),
-        new UniversityMember(this.client, { ...member, user }, this.id)
+        new UniversityMember(this.client, { ...member, user }, this.id),
       );
     }
 
@@ -230,7 +229,7 @@ export class UniversityGuild extends Base {
   /** Channels in this guild. */
   get channels() {
     return this.client.channels.filter(
-      (channel) => channel.guildId === this.id
+      (channel) => channel.guildId === this.id,
     );
   }
 
@@ -325,7 +324,7 @@ export class UniversityGuild extends Base {
       this.banner,
       this.animatedBanner,
       size,
-      format
+      format,
     );
   }
 
@@ -336,7 +335,7 @@ export class UniversityGuild extends Base {
       this.splash,
       this.animatedSplash,
       size,
-      format
+      format,
     );
   }
 
@@ -387,7 +386,7 @@ export class UniversityGuild extends Base {
       this.icon,
       this.animatedIcon,
       size,
-      format
+      format,
     );
   }
 
@@ -434,9 +433,8 @@ export class UniversityGuild extends Base {
       systemChannelId: this.systemChannelId?.toString(),
       systemChannelFlags: this.systemChannelFlags,
       rulesChannelId: this.rulesChannelId?.toString(),
-      joinedAt: this.joinedAt
-        ? new Date(this.joinedAt).toISOString()
-        : undefined,
+      joinedAt: this.joinedAt ? new Date(this.joinedAt).toISOString()
+      : undefined,
       large: this.large,
       unavailable: this.unavailable,
       memberCount: this.memberCount,
