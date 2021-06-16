@@ -96,7 +96,7 @@ export class UniversityMember extends Base {
       this.id,
       this.discriminator,
       this.avatar,
-      this.animatedAvatar,
+      this.animatedAvatar
     );
   }
 
@@ -146,7 +146,7 @@ export class UniversityMember extends Base {
       this.avatar!,
       this.animatedAvatar,
       options?.size,
-      options?.format,
+      options?.format
     );
   }
 

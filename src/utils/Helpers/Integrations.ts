@@ -14,7 +14,7 @@ export class IntegrationHelpers {
     await this.client.requireBotGuildPermissions(guildId, ["MANAGE_GUILD"]);
 
     return await this.client.rest.delete(
-      endpoints.GUILD_INTEGRATION(guildId, id),
+      endpoints.GUILD_INTEGRATION(guildId, id)
     );
   }
 
@@ -23,7 +23,7 @@ export class IntegrationHelpers {
     await this.client.requireBotGuildPermissions(guildId, ["MANAGE_GUILD"]);
 
     return (await this.client.rest.get(
-      endpoints.GUILD_INTEGRATIONS(guildId),
+      endpoints.GUILD_INTEGRATIONS(guildId)
     )) as Integration;
   }
 }

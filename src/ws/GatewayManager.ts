@@ -81,7 +81,7 @@ export class GatewayManager extends Collection<number, Shard> {
 
     // BIGGER BOTS THAT HAVE MULTIPLE BUCKETS CAN RUN SAME TIME!
     await Promise.all(
-      this.buckets.map((bucket) => bucket.createNextShard.shift()?.()),
+      this.buckets.map((bucket) => bucket.createNextShard.shift()?.())
     );
   }
 
@@ -89,7 +89,7 @@ export class GatewayManager extends Collection<number, Shard> {
     for (let i = firstShardId; i <= this.lastShardId; i++) {
       this.client.emit(
         "DEBUG",
-        "Running for loop inside spawnshards to prepare buckets.",
+        "Running for loop inside spawnshards to prepare buckets."
       );
       const bucketId = i % this.botGatewayData.sessionStartLimit.maxConcurrency;
       const bucket = this.buckets.get(bucketId);
@@ -107,7 +107,7 @@ export class GatewayManager extends Collection<number, Shard> {
       for (const shardId of bucket.queue) {
         this.client.emit(
           "DEBUG",
-          `Running for loop inside startup for each bucket.`,
+          `Running for loop inside startup for each bucket.`
         );
 
         bucket.createNextShard.push(async () => {
@@ -127,7 +127,7 @@ export class GatewayManager extends Collection<number, Shard> {
   tellClusterToIdentify(
     shardId: number,
     clusterId: number,
-    bucketId: number,
+    bucketId: number
   ): void | Promise<void> {
     const shard = new Shard(this.client, shardId, clusterId, bucketId);
     shard.identify();
