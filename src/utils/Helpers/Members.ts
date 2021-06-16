@@ -42,19 +42,19 @@ export class MemberHelpers {
       size?: DiscordImageSize;
       format?: DiscordImageFormat;
       animated?: boolean;
-    },
+    }
   ) {
     return options.avatar
       ? formatImageURL(
-        endpoints.USER_AVATAR(
-          userId,
-          typeof options.avatar === "string"
-            ? options.avatar
-            : iconBigintToHash(options.avatar, options.animated ?? true),
-        ),
-        options.size || 128,
-        options.format,
-      )
+          endpoints.USER_AVATAR(
+            userId,
+            typeof options.avatar === "string"
+              ? options.avatar
+              : iconBigintToHash(options.avatar, options.animated ?? true)
+          ),
+          options.size || 128,
+          options.format
+        )
       : endpoints.USER_DEFAULT_AVATAR(Number(discriminator) % 5);
   }
 
@@ -64,7 +64,7 @@ export class MemberHelpers {
 
     return await this.client.rest.put(
       endpoints.GUILD_BAN(guildId, id),
-      snakelize(options),
+      snakelize(options)
     );
   }
 
@@ -81,7 +81,7 @@ export class MemberHelpers {
       endpoints.USER_NICK(guildId),
       {
         nick: nickname,
-      },
+      }
     )) as { nick: string };
 
     return response.nick;
@@ -91,7 +91,7 @@ export class MemberHelpers {
   async editMember(
     guildId: bigint,
     memberId: bigint,
-    options: ModifyGuildMember,
+    options: ModifyGuildMember
   ) {
     const requiredPerms: Set<PermissionStrings> = new Set();
 
@@ -133,7 +133,7 @@ export class MemberHelpers {
         if (memberVoiceState) {
           await this.client.requireBotChannelPermissions(
             memberVoiceState?.channelId,
-            [...requiredVoicePerms],
+            [...requiredVoicePerms]
           );
         }
         await this.client.requireBotChannelPermissions(options.channelId, [
@@ -151,7 +151,7 @@ export class MemberHelpers {
         channelId: options.channelId
           ? bigintToSnowflake(options.channelId)
           : undefined,
-      }) as ModifyGuildMember,
+      }) as ModifyGuildMember
     )) as GuildMemberWithUser;
 
     return new UniversityMember(this.client, result, guildId);
@@ -168,7 +168,7 @@ export class MemberHelpers {
   fetchMembers(
     guildId: bigint,
     shardId: number,
-    options?: Omit<RequestGuildMembers, "guildId">,
+    options?: Omit<RequestGuildMembers, "guildId">
   ) {
     // You can request 1 member without the intent
     if (
@@ -210,14 +210,14 @@ export class MemberHelpers {
     if (!guild && !options?.force) return;
 
     const data = (await this.client.rest.get(
-      endpoints.GUILD_MEMBER(guildId, id),
+      endpoints.GUILD_MEMBER(guildId, id)
     )) as GuildMemberWithUser;
 
     const discordenoMember = new UniversityMember(this.client, data, guildId);
     await this.client.cache.set(
       "members",
       discordenoMember.id,
-      discordenoMember,
+      discordenoMember
     );
 
     return discordenoMember;
@@ -233,7 +233,7 @@ export class MemberHelpers {
    */
   async getMembers(
     guildId: bigint,
-    options?: ListGuildMembers & { addToCache?: boolean },
+    options?: ListGuildMembers & { addToCache?: boolean }
   ) {
     if (!(this.client.gateway.intents && DiscordGatewayIntents.GuildMembers)) {
       throw new Error(Errors.MISSING_INTENT_GUILD_MEMBERS);
@@ -253,23 +253,21 @@ export class MemberHelpers {
       this.client.emit(
         "DEBUG",
         "loop",
-        "Running while loop in getMembers function.",
+        "Running while loop in getMembers function."
       );
 
       if (options?.limit && options.limit > 1000) {
         console.log(
-          `Paginating get members from REST. #${loops} / ${
-            Math.ceil(
-              (options?.limit ?? 1) / 1000,
-            )
-          }`,
+          `Paginating get members from REST. #${loops} / ${Math.ceil(
+            (options?.limit ?? 1) / 1000
+          )}`
         );
       }
 
       const result = (await this.client.rest.get(
         `${endpoints.GUILD_MEMBERS(guildId)}?limit=${
           membersLeft > 1000 ? 1000 : membersLeft
-        }${options?.after ? `&after=${options.after}` : ""}`,
+        }${options?.after ? `&after=${options.after}` : ""}`
       )) as GuildMemberWithUser[];
 
       const discordenoMembers = await Promise.all(
@@ -277,19 +275,19 @@ export class MemberHelpers {
           const discordenoMember = new UniversityMember(
             this.client,
             member,
-            guildId,
+            guildId
           );
 
           if (options?.addToCache !== false) {
             await this.client.cache.set(
               "members",
               discordenoMember.id,
-              discordenoMember,
+              discordenoMember
             );
           }
 
           return discordenoMember;
-        }),
+        })
       );
 
       if (!discordenoMembers.length) break;
@@ -298,7 +296,7 @@ export class MemberHelpers {
         this.client.emit(
           "DEBUG",
           "loop",
-          `Running forEach loop in get_members file.`,
+          `Running forEach loop in get_members file.`
         );
         members.set(member.id, member);
       });
@@ -306,7 +304,7 @@ export class MemberHelpers {
       options = {
         limit: options?.limit,
         after: bigintToSnowflake(
-          discordenoMembers[discordenoMembers.length - 1].id,
+          discordenoMembers[discordenoMembers.length - 1].id
         ),
       };
 
@@ -322,7 +320,7 @@ export class MemberHelpers {
   async kick(guildId: bigint, memberId: bigint, reason?: string) {
     const botsHighestRole = await this.client.highestRole(
       guildId,
-      this.client.botId,
+      this.client.botId
     );
     const membersHighestRole = await this.client.highestRole(guildId, memberId);
     if (
@@ -337,7 +335,7 @@ export class MemberHelpers {
 
     return await this.client.rest.delete(
       endpoints.GUILD_MEMBER(guildId, memberId),
-      { reason },
+      { reason }
     );
   }
 
@@ -368,7 +366,7 @@ export class MemberHelpers {
 
     const result = (await this.client.rest.post(
       endpoints.GUILD_PRUNE(guildId),
-      snakelize(options),
+      snakelize(options)
     )) as { pruned: number };
 
     return result.pruned;
@@ -381,7 +379,7 @@ export class MemberHelpers {
   async searchMembers(
     guildId: bigint,
     query: string,
-    options?: Omit<SearchGuildMembers, "query"> & { cache?: boolean },
+    options?: Omit<SearchGuildMembers, "query"> & { cache?: boolean }
   ) {
     if (options?.limit) {
       if (options.limit < 1) {
@@ -397,7 +395,7 @@ export class MemberHelpers {
       {
         ...options,
         query,
-      },
+      }
     )) as GuildMemberWithUser[];
 
     const members = await Promise.all(
@@ -405,22 +403,22 @@ export class MemberHelpers {
         const discordenoMember = new UniversityMember(
           this.client,
           member,
-          guildId,
+          guildId
         );
         if (options?.cache) {
           await this.client.cache.set(
             "members",
             discordenoMember.id,
-            discordenoMember,
+            discordenoMember
           );
         }
 
         return discordenoMember;
-      }),
+      })
     );
 
     return new Collection<bigint, UniversityMember>(
-      members.map((member) => [member.id, member]),
+      members.map((member) => [member.id, member])
     );
   }
 
@@ -434,7 +432,7 @@ export class MemberHelpers {
       })) as Channel;
       const discordenoChannel = new UniversityChannel(
         this.client,
-        dmChannelData,
+        dmChannelData
       );
       // Recreate the channel and add it under the users id
       await this.client.cache.set("channels", memberId, discordenoChannel);
@@ -444,7 +442,7 @@ export class MemberHelpers {
     // If it does exist try sending a message to this user
     return await this.client.helpers.messages.sendMessage(
       dmChannel.id,
-      content,
+      content
     );
   }
 

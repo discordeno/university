@@ -21,7 +21,7 @@ export class DiscoveryHelpers {
     await this.client.requireBotGuildPermissions(guildId, ["MANAGE_GUILD"]);
 
     return await this.client.rest.post(
-      endpoints.DISCOVERY_SUBCATEGORY(guildId, categoryId),
+      endpoints.DISCOVERY_SUBCATEGORY(guildId, categoryId)
     );
   }
 
@@ -31,7 +31,7 @@ export class DiscoveryHelpers {
 
     return await this.client.rest.patch(
       endpoints.DISCOVERY_METADATA(guildId),
-      snakelize(data),
+      snakelize(data)
     );
   }
 
@@ -45,11 +45,11 @@ export class DiscoveryHelpers {
   /** Returns a Collection (mapped by Id of the discovery category object) of discovery category objects that can be used when editing guilds */
   async getDiscoveryCategories() {
     const result = (await this.client.rest.get(
-      endpoints.DISCOVERY_CATEGORIES,
+      endpoints.DISCOVERY_CATEGORIES
     )) as DiscoveryCategory[];
 
     return new Collection<number, DiscoveryCategory>(
-      result.map((category) => [category.id, category]),
+      result.map((category) => [category.id, category])
     );
   }
 
@@ -58,7 +58,7 @@ export class DiscoveryHelpers {
     await this.client.requireBotGuildPermissions(guildId, ["MANAGE_GUILD"]);
 
     return await this.client.rest.delete(
-      endpoints.DISCOVERY_SUBCATEGORY(guildId, categoryId),
+      endpoints.DISCOVERY_SUBCATEGORY(guildId, categoryId)
     );
   }
 

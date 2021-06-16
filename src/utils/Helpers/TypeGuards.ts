@@ -24,7 +24,7 @@ export class TypeGuardHelpers {
 
   /** A type guard function to tell if the interaction is a slash command or not. */
   isSlashCommand(
-    interaction: Interaction,
+    interaction: Interaction
   ): interaction is SlashCommandInteraction {
     return interaction.type === DiscordInteractionTypes.ApplicationCommand;
   }

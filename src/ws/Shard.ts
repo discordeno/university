@@ -65,7 +65,7 @@ export class Shard {
     client: Client,
     shardId: number,
     clusterId: number,
-    bucketId: number,
+    bucketId: number
   ) {
     this.client = client;
     this.id = shardId;
@@ -130,14 +130,14 @@ export class Shard {
             shard: [this.id, this.client.gateway.maxShards],
           },
         },
-        true,
+        true
       );
     };
 
     return new Promise((resolve, reject) => {
       const timeout = setTimeout(() => {
         reject(
-          `[Identify Failure] Shard ${this.id} has not received READY event in over a minute.`,
+          `[Identify Failure] Shard ${this.id} has not received READY event in over a minute.`
         );
       }, 600000);
 
@@ -192,7 +192,7 @@ export class Shard {
             seq: this.previousSequenceNumber,
           },
         },
-        true,
+        true
       );
     };
   }
@@ -238,7 +238,7 @@ export class Shard {
               : Array.isArray(value)
               ? value.map((v) => (typeof v === "bigint" ? v.toString() : v))
               : value,
-          `Running forEach loop in shard.processQueue function for changing bigints to strings.`,
+          `Running forEach loop in shard.processQueue function for changing bigints to strings.`
         );
       }
 
@@ -294,7 +294,7 @@ export class Shard {
       if (
         event.code === 3065 ||
         ["Resharded!", "Resuming the shard, closing old shard."].includes(
-          event.reason,
+          event.reason
         )
       ) {
         return this.client.emit("DEBUG", "CLOSED_RECONNECT", {
@@ -326,7 +326,7 @@ export class Shard {
         case DiscordGatewayCloseEventCodes.InvalidIntents:
         case DiscordGatewayCloseEventCodes.DisallowedIntents:
           throw new Error(
-            event.reason || "Discord gave no reason! GG! You broke Discord!",
+            event.reason || "Discord gave no reason! GG! You broke Discord!"
           );
         // THESE ERRORS CAN NO BE RESUMED! THEY MUST RE-IDENTIFY!
         case DiscordGatewayCloseEventCodes.NotAuthenticated:
@@ -359,10 +359,8 @@ export class Shard {
     }
 
     if (message instanceof Uint8Array) {
-      message = decompressWith(
-        message,
-        0,
-        (slice: Uint8Array) => this.gateway.utf8decoder.decode(slice),
+      message = decompressWith(message, 0, (slice: Uint8Array) =>
+        this.gateway.utf8decoder.decode(slice)
       );
     }
 
@@ -385,7 +383,7 @@ export class Shard {
             op: DiscordGatewayOpcodes.Heartbeat,
             d: this.previousSequenceNumber,
           },
-          true,
+          true
         );
         break;
       case DiscordGatewayOpcodes.Hello:
@@ -481,7 +479,7 @@ export class Shard {
       JSON.stringify({
         op: DiscordGatewayOpcodes.Heartbeat,
         d: this.previousSequenceNumber,
-      }),
+      })
     );
 
     this.heartbeat.keepAlive = true;
@@ -493,7 +491,7 @@ export class Shard {
       this.client.emit(
         "DEBUG",
         "loop",
-        `Running setInterval in heartbeat file.`,
+        `Running setInterval in heartbeat file.`
       );
 
       this.client.emit("DEBUG", "HEARTBEATING", {
@@ -526,7 +524,7 @@ export class Shard {
         JSON.stringify({
           op: DiscordGatewayOpcodes.Heartbeat,
           d: this.previousSequenceNumber,
-        }),
+        })
       );
     }, this.heartbeat.interval);
   }

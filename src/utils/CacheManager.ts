@@ -37,32 +37,32 @@ export class CacheManager {
   set(
     table: "guilds",
     key: bigint,
-    value: UniversityGuild,
+    value: UniversityGuild
   ): Promise<Collection<bigint, UniversityGuild>>;
   set(
     table: "channels",
     key: bigint,
-    value: UniversityChannel,
+    value: UniversityChannel
   ): Promise<Collection<bigint, UniversityChannel>>;
   set(
     table: "messages",
     key: bigint,
-    value: UniversityMessage,
+    value: UniversityMessage
   ): Promise<Collection<bigint, UniversityMessage>>;
   set(
     table: "members",
     key: bigint,
-    value: UniversityMember,
+    value: UniversityMember
   ): Promise<Collection<bigint, UniversityMember>>;
   set(
     table: "presences",
     key: bigint,
-    value: PresenceUpdate,
+    value: PresenceUpdate
   ): Promise<Collection<bigint, PresenceUpdate>>;
   set(
     table: "unavailableGuilds",
     key: bigint,
-    value: number,
+    value: number
   ): Promise<Collection<bigint, number>>;
   async set(table: TableName, key: bigint, value: any) {
     return this.client[table].set(key, value);
@@ -72,27 +72,27 @@ export class CacheManager {
   async get(table: "guilds", key: bigint): Promise<UniversityGuild | undefined>;
   async get(
     table: "channels",
-    key: bigint,
+    key: bigint
   ): Promise<UniversityChannel | undefined>;
   async get(
     table: "messages",
-    key: bigint,
+    key: bigint
   ): Promise<UniversityMessage | undefined>;
   async get(
     table: "members",
-    key: bigint,
+    key: bigint
   ): Promise<UniversityMember | undefined>;
   async get(
     table: "presences",
-    key: bigint,
+    key: bigint
   ): Promise<PresenceUpdate | undefined>;
   async get(
     table: "unavailableGuilds",
-    key: bigint,
+    key: bigint
   ): Promise<number | undefined>;
   async get(
     table: TableName,
-    key: bigint,
+    key: bigint
   ): Promise<
     | UniversityGuild
     | UniversityChannel
@@ -111,40 +111,40 @@ export class CacheManager {
     callback: (
       value: UniversityGuild,
       key: bigint,
-      map: Map<bigint, UniversityGuild>,
-    ) => unknown,
+      map: Map<bigint, UniversityGuild>
+    ) => unknown
   ): void;
   forEach(
     table: "unavailableGuilds",
-    callback: (value: number, key: bigint, map: Map<bigint, number>) => unknown,
+    callback: (value: number, key: bigint, map: Map<bigint, number>) => unknown
   ): void;
   forEach(
     table: "channels",
     callback: (
       value: UniversityChannel,
       key: bigint,
-      map: Map<bigint, UniversityChannel>,
-    ) => unknown,
+      map: Map<bigint, UniversityChannel>
+    ) => unknown
   ): void;
   forEach(
     table: "messages",
     callback: (
       value: UniversityMessage,
       key: bigint,
-      map: Map<bigint, UniversityMessage>,
-    ) => unknown,
+      map: Map<bigint, UniversityMessage>
+    ) => unknown
   ): void;
   forEach(
     table: "members",
     callback: (
       value: UniversityMember,
       key: bigint,
-      map: Map<bigint, UniversityMember>,
-    ) => unknown,
+      map: Map<bigint, UniversityMember>
+    ) => unknown
   ): void;
   forEach(
     table: TableName,
-    callback: (value: any, key: bigint, map: Map<bigint, any>) => unknown,
+    callback: (value: any, key: bigint, map: Map<bigint, any>) => unknown
   ) {
     return this.client[table].forEach(callback);
   }
@@ -152,27 +152,27 @@ export class CacheManager {
   /** Allows you to filter our all items in this client. */
   filter(
     table: "guilds",
-    callback: (value: UniversityGuild, key: bigint) => boolean,
+    callback: (value: UniversityGuild, key: bigint) => boolean
   ): Promise<Collection<bigint, UniversityGuild>>;
   filter(
     table: "unavailableGuilds",
-    callback: (value: number, key: bigint) => boolean,
+    callback: (value: number, key: bigint) => boolean
   ): Promise<Collection<bigint, number>>;
   filter(
     table: "channels",
-    callback: (value: UniversityChannel, key: bigint) => boolean,
+    callback: (value: UniversityChannel, key: bigint) => boolean
   ): Promise<Collection<bigint, UniversityChannel>>;
   filter(
     table: "messages",
-    callback: (value: UniversityMessage, key: bigint) => boolean,
+    callback: (value: UniversityMessage, key: bigint) => boolean
   ): Promise<Collection<bigint, UniversityMessage>>;
   filter(
     table: "members",
-    callback: (value: UniversityMember, key: bigint) => boolean,
+    callback: (value: UniversityMember, key: bigint) => boolean
   ): Promise<Collection<bigint, UniversityMember>>;
   async filter(
     table: TableName,
-    callback: (value: any, key: bigint) => boolean,
+    callback: (value: any, key: bigint) => boolean
   ) {
     return this.client[table].filter(callback);
   }

@@ -113,7 +113,7 @@ export class HelperManager {
       this.client.emit(
         "DEBUG",
         "loop",
-        `Running forEach loop in editBotStatus function.`,
+        `Running forEach loop in editBotStatus function.`
       );
 
       shard.sendShardMessage({

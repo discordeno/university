@@ -38,7 +38,7 @@ export class ThreadHelpers {
     return await this.client.rest.put(
       userId
         ? endpoints.THREAD_USER(channelId, userId)
-        : endpoints.THREAD_ME(channelId),
+        : endpoints.THREAD_ME(channelId)
     );
   }
 
@@ -53,7 +53,7 @@ export class ThreadHelpers {
     channelId: bigint,
     options?: ListPublicArchivedThreads & {
       type?: "public" | "private" | "privateJoinedThreads";
-    },
+    }
   ) {
     // TODO(threads): perm check
     // TODO(threads): check if this works
@@ -64,7 +64,7 @@ export class ThreadHelpers {
         : options?.type === "private"
         ? endpoints.THREAD_ARCHIVED_PRIVATE(channelId)
         : endpoints.THREAD_ARCHIVED_PUBLIC(channelId),
-      snakelize(options ?? {}),
+      snakelize(options ?? {})
     );
   }
 
@@ -108,7 +108,7 @@ export class ThreadHelpers {
     return await this.client.rest.delete(
       userId
         ? endpoints.THREAD_USER(channelId, userId)
-        : endpoints.THREAD_ME(channelId),
+        : endpoints.THREAD_ME(channelId)
     );
   }
 
@@ -118,7 +118,7 @@ export class ThreadHelpers {
    */
   async startThread(
     channelId: bigint,
-    options: StartThread & { messageId?: bigint },
+    options: StartThread & { messageId?: bigint }
   ) {
     const channel = await this.client.cache.get("channels", channelId);
     if (channel) {
@@ -138,7 +138,7 @@ export class ThreadHelpers {
       options?.messageId
         ? endpoints.THREAD_START_PUBLIC(channelId, options.messageId)
         : endpoints.THREAD_START_PRIVATE(channelId),
-      snakelize(options),
+      snakelize(options)
     );
   }
 }
