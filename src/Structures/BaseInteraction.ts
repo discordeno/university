@@ -10,7 +10,7 @@ import {
 import UniversityGuild from "./UniversityGuild.ts";
 import Client from "../Client.ts";
 
-export class DDBaseInteraction {
+export class UniversityBaseInteraction {
   /** The bot client */
   client: Client;
   /** Id of the interaction */
@@ -63,4 +63,4 @@ export class DDBaseInteraction {
   }
 }
 
-export default DDBaseInteraction;
+export default UniversityBaseInteraction;

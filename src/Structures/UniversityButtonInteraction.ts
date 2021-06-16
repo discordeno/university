@@ -3,7 +3,7 @@ import { ButtonData, Interaction } from "../../deps.ts";
 
 import Client from "../Client.ts";
 
-export class DDButtonInteraction extends BaseInteraction {
+export class UniversityButtonInteraction extends BaseInteraction {
   /** Interaction data */
   data: ButtonData;
 
@@ -13,4 +13,4 @@ export class DDButtonInteraction extends BaseInteraction {
   }
 }
 
-export default DDButtonInteraction;
+export default UniversityButtonInteraction;
