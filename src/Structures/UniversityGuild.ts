@@ -188,7 +188,6 @@ export class UniversityGuild extends Base {
       );
     }
 
-    console.log("in ug", payload.channels);
     for (const channel of payload.channels || []) {
       this.client.channels.set(
         snowflakeToBigint(channel.id),
