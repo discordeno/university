@@ -1,4 +1,4 @@
-import { snowflakeToBigint, camelize, snakelize } from "../../deps.ts";
+import { camelize, snakelize, snowflakeToBigint } from "../../deps.ts";
 import Client from "../Client.ts";
 
 export class Base {

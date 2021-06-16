@@ -1,19 +1,16 @@
-import BaseInteraction from "./BaseInteraction.ts"
-import {
-  Interaction,
-  ButtonData
-} from "../../deps.ts"
+import BaseInteraction from "./BaseInteraction.ts";
+import { ButtonData, Interaction } from "../../deps.ts";
 
-import Client from "../Client.ts"
+import Client from "../Client.ts";
 
 export class DDButtonInteraction extends BaseInteraction {
   /** Interaction data */
-  data: ButtonData
-  
+  data: ButtonData;
+
   constructor(client: Client, payload: Interaction) {
-    super(client, payload)
-    this.data=payload.data as ButtonData
+    super(client, payload);
+    this.data = payload.data as ButtonData;
   }
 }
 
-export default DDButtonInteraction
+export default DDButtonInteraction;

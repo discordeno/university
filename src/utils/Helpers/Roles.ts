@@ -22,12 +22,12 @@ export class RoleHelpers {
     guildId: bigint,
     memberId: bigint,
     roleId: bigint,
-    reason?: string
+    reason?: string,
   ) {
     const isHigherRolePosition = await this.client.isHigherPosition(
       guildId,
       this.client.botId,
-      roleId
+      roleId,
     );
     if (!isHigherRolePosition) {
       throw new Error(Errors.BOTS_HIGHEST_ROLE_TOO_LOW);
@@ -37,7 +37,7 @@ export class RoleHelpers {
 
     return await this.client.rest.put(
       endpoints.GUILD_MEMBER_ROLE(guildId, memberId, roleId),
-      { reason }
+      { reason },
     );
   }
 
@@ -51,7 +51,7 @@ export class RoleHelpers {
         ...options,
         permissions: calculateBits(options?.permissions || []),
         reason,
-      }
+      },
     )) as Role;
 
     const role = new UniversityRole(this.client, result, guildId);
@@ -83,7 +83,7 @@ export class RoleHelpers {
         permissions: options.permissions
           ? calculateBits(options.permissions)
           : undefined,
-      }
+      },
     )) as Role;
 
     return new UniversityRole(this.client, result, guildId);
@@ -97,11 +97,11 @@ export class RoleHelpers {
     await this.client.requireBotGuildPermissions(guildId, ["MANAGE_ROLES"]);
 
     const result = (await this.client.rest.get(
-      endpoints.GUILD_ROLES(guildId)
+      endpoints.GUILD_ROLES(guildId),
     )) as Role[];
 
     const roleStructures = result.map(
-      (role) => new UniversityRole(this.client, role, guildId)
+      (role) => new UniversityRole(this.client, role, guildId),
     );
 
     const roles = new Collection(roleStructures.map((role) => [role.id, role]));
@@ -122,12 +122,12 @@ export class RoleHelpers {
     guildId: bigint,
     memberId: bigint,
     roleId: bigint,
-    reason?: string
+    reason?: string,
   ) {
     const isHigherRolePosition = await this.client.isHigherPosition(
       guildId,
       this.client.botId,
-      roleId
+      roleId,
     );
     if (!isHigherRolePosition) {
       throw new Error(Errors.BOTS_HIGHEST_ROLE_TOO_LOW);
@@ -137,7 +137,7 @@ export class RoleHelpers {
 
     return await this.client.rest.delete(
       endpoints.GUILD_MEMBER_ROLE(guildId, memberId, roleId),
-      { reason }
+      { reason },
     );
   }
 }

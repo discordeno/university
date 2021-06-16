@@ -25,11 +25,11 @@ export class TemplateHelpers {
    */
   async createGuildFromTemplate(
     templateCode: string,
-    data: CreateGuildFromTemplate
+    data: CreateGuildFromTemplate,
   ) {
     if ((await this.client.cache.size("guilds")) >= 10) {
       throw new Error(
-        "This function can only be used by bots in less than 10 guilds."
+        "This function can only be used by bots in less than 10 guilds.",
       );
     }
 
@@ -39,7 +39,7 @@ export class TemplateHelpers {
 
     const createdGuild = (await this.client.rest.post(
       endpoints.GUILD_TEMPLATE(templateCode),
-      data
+      data,
     )) as Guild;
 
     return new UniversityGuild(
@@ -49,8 +49,8 @@ export class TemplateHelpers {
         (
           BigInt(createdGuild.id) >>
           22n % BigInt(this.client.gateway.botGatewayData.shards)
-        ).toString()
-      )
+        ).toString(),
+      ),
     );
   }
 
@@ -69,13 +69,13 @@ export class TemplateHelpers {
 
     if (data.description?.length && data.description.length > 120) {
       throw new Error(
-        "The description can only be in between 0-120 characters."
+        "The description can only be in between 0-120 characters.",
       );
     }
 
     return (await this.client.rest.post(
       endpoints.GUILD_TEMPLATES(guildId),
-      snakelize(data)
+      snakelize(data),
     )) as Template;
   }
 
@@ -87,7 +87,7 @@ export class TemplateHelpers {
     await this.client.requireBotGuildPermissions(guildId, ["MANAGE_GUILD"]);
 
     return await this.client.rest.delete(
-      `${endpoints.GUILD_TEMPLATES(guildId)}/${templateCode}`
+      `${endpoints.GUILD_TEMPLATES(guildId)}/${templateCode}`,
     );
   }
 
@@ -98,7 +98,7 @@ export class TemplateHelpers {
   async editGuildTemplate(
     guildId: bigint,
     templateCode: string,
-    data: ModifyGuildTemplate
+    data: ModifyGuildTemplate,
   ) {
     await this.client.requireBotGuildPermissions(guildId, ["MANAGE_GUILD"]);
 
@@ -108,13 +108,13 @@ export class TemplateHelpers {
 
     if (data.description?.length && data.description.length > 120) {
       throw new Error(
-        "The description can only be in between 0-120 characters."
+        "The description can only be in between 0-120 characters.",
       );
     }
 
     return (await this.client.rest.patch(
       `${endpoints.GUILD_TEMPLATES(guildId)}/${templateCode}`,
-      data
+      data,
     )) as Template;
   }
 
@@ -126,11 +126,11 @@ export class TemplateHelpers {
     await this.client.requireBotGuildPermissions(guildId, ["MANAGE_GUILD"]);
 
     const templates = (await this.client.rest.get(
-      endpoints.GUILD_TEMPLATES(guildId)
+      endpoints.GUILD_TEMPLATES(guildId),
     )) as Template[];
 
     return new Collection(
-      templates.map((template) => [template.code, template])
+      templates.map((template) => [template.code, template]),
     );
   }
 
@@ -147,7 +147,7 @@ export class TemplateHelpers {
     await this.client.requireBotGuildPermissions(guildId, ["MANAGE_GUILD"]);
 
     return (await this.client.rest.put(
-      `${endpoints.GUILD_TEMPLATES(guildId)}/${templateCode}`
+      `${endpoints.GUILD_TEMPLATES(guildId)}/${templateCode}`,
     )) as Template;
   }
 }

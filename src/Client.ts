@@ -2,24 +2,24 @@ import {
   BotConfig,
   Collection,
   CreateGuildBan,
+  CreateGuildRole,
+  CreateMessage,
   DiscordBitwisePermissionFlags,
   DiscordGatewayIntents,
   DiscordImageFormat,
   DiscordImageSize,
+  DiscordOverwrite,
+  EditMessage,
   Emoji,
   Errors,
   EventEmitter,
   GetGuildAuditLog,
+  ModifyChannel,
   ModifyGuild,
+  ModifyGuildMember,
   Overwrite,
-  EditMessage,
   PermissionStrings,
   PresenceUpdate,
-  CreateMessage,
-  DiscordOverwrite,
-  ModifyChannel,
-  ModifyGuildMember,
-  CreateGuildRole,
 } from "../deps.ts";
 import UniversityChannel from "./Structures/UniversityChannel.ts";
 import UniversityGuild from "./Structures/UniversityGuild.ts";
@@ -63,7 +63,7 @@ export class Client extends EventEmitter {
     (
       value:
         | Collection<bigint, UniversityMember>
-        | PromiseLike<Collection<bigint, UniversityMember>>
+        | PromiseLike<Collection<bigint, UniversityMember>>,
     ) => void
   >;
   /** The slash commands that were executed atleast once are cached here so they can be responded to using followups next time. */
@@ -115,9 +115,13 @@ export class Client extends EventEmitter {
     this.gateway = new GatewayManager(this);
     this.rest = new RestManager(this);
     this.gateway.intents = config.intents.reduce(
-      (bits, next) =>
-        (bits |= typeof next === "string" ? DiscordGatewayIntents[next] : next),
-      0
+      (
+        bits,
+        next,
+      ) => (bits |= typeof next === "string"
+        ? DiscordGatewayIntents[next]
+        : next),
+      0,
     );
     this.gateway.compress = config.compress || false;
     this.helpers = new HelperManager(this);
@@ -127,12 +131,15 @@ export class Client extends EventEmitter {
   async connect() {
     // INITIAL API CONNECTION TO GET INFO ABOUT BOTS CONNECTION
     this.gateway.botGatewayData = await this.helpers.getGatewayBot();
-    this.gateway.botGatewayData.url += `?v=${this.gateway.version}&encoding=json`;
+    this.gateway.botGatewayData.url +=
+      `?v=${this.gateway.version}&encoding=json`;
     // IF DEFAULTS WERE NOT MODIFED, SET TO RECOMMENDED DISCORD DEFAULTS
-    if (!this.gateway.maxShards)
+    if (!this.gateway.maxShards) {
       this.gateway.maxShards = this.gateway.botGatewayData.shards;
-    if (!this.gateway.lastShardId)
+    }
+    if (!this.gateway.lastShardId) {
       this.gateway.lastShardId = this.gateway.botGatewayData.shards - 1;
+    }
 
     this.gateway.spawnShards();
   }
@@ -155,8 +162,8 @@ export class Client extends EventEmitter {
       this.guilds.reduce(
         (a, b) => [...a, ...b.emojis.map((e) => [e.id, e])],
         // deno-lint-ignore no-explicit-any
-        [] as any[]
-      )
+        [] as any[],
+      ),
     );
   }
 
@@ -211,13 +218,13 @@ export class Client extends EventEmitter {
     id: bigint,
     guildId: bigint,
     overwriteId: bigint,
-    options: Omit<Overwrite, "id">
+    options: Omit<Overwrite, "id">,
   ) {
     return await this.helpers.channels.editChannelOverwrite(
       guildId,
       id,
       overwriteId,
-      options
+      options,
     );
   }
 
@@ -226,7 +233,7 @@ export class Client extends EventEmitter {
     return await this.helpers.channels.deleteChannelOverwrite(
       guildId,
       channelId,
-      id
+      id,
     );
   }
 
@@ -239,13 +246,13 @@ export class Client extends EventEmitter {
       allow: bigint;
       deny: bigint;
     })[],
-    permissions: PermissionStrings[]
+    permissions: PermissionStrings[],
   ) {
     return this.helpers.channels.channelOverwriteHasPermission(
       guildId,
       id,
       overwrites,
-      permissions
+      permissions,
     );
   }
 
@@ -267,7 +274,7 @@ export class Client extends EventEmitter {
     banner: bigint,
     animated: boolean,
     size?: DiscordImageSize,
-    format?: DiscordImageFormat
+    format?: DiscordImageFormat,
   ) {
     return this.helpers.guilds.guildBannerURL(guildId, {
       banner,
@@ -283,7 +290,7 @@ export class Client extends EventEmitter {
     splash: bigint,
     animated: boolean,
     size?: DiscordImageSize,
-    format?: DiscordImageFormat
+    format?: DiscordImageFormat,
   ) {
     return this.helpers.guilds.guildSplashURL(guildId, {
       splash,
@@ -339,7 +346,7 @@ export class Client extends EventEmitter {
     icon: bigint,
     animated: boolean,
     size?: DiscordImageSize,
-    format?: DiscordImageFormat
+    format?: DiscordImageFormat,
   ) {
     return this.helpers.guilds.guildIconURL(guildId, {
       icon,
@@ -362,7 +369,7 @@ export class Client extends EventEmitter {
     avatar: bigint,
     animated: boolean,
     size?: DiscordImageSize,
-    format?: DiscordImageFormat
+    format?: DiscordImageFormat,
   ) {
     return this.helpers.members.avatarURL(userId, discriminator, {
       avatar,
@@ -392,13 +399,13 @@ export class Client extends EventEmitter {
     guildId: bigint,
     id: bigint,
     roleId: bigint,
-    reason?: string
+    reason?: string,
   ) {
     return await this.helpers.roles.aUniversityRole(
       guildId,
       id,
       roleId,
-      reason
+      reason,
     );
   }
 
@@ -407,7 +414,7 @@ export class Client extends EventEmitter {
     guildId: bigint,
     id: bigint,
     roleId: bigint,
-    reason?: string
+    reason?: string,
   ) {
     return await this.helpers.roles.removeRole(guildId, id, roleId, reason);
   }
@@ -417,20 +424,20 @@ export class Client extends EventEmitter {
     channelId: bigint,
     messageId: bigint,
     reason?: string,
-    delayMilliseconds?: number
+    delayMilliseconds?: number,
   ) {
     return this.helpers.messages.deleteMessage(
       channelId,
       messageId,
       reason,
-      delayMilliseconds
+      delayMilliseconds,
     );
   }
 
   editMessage(
     channelId: bigint,
     messageId: bigint,
-    content: string | EditMessage
+    content: string | EditMessage,
   ) {
     return this.helpers.messages.editMessage(channelId, messageId, content);
   }
@@ -447,13 +454,13 @@ export class Client extends EventEmitter {
     channelId: bigint,
     messageId: bigint,
     reactions: string[],
-    ordered?: boolean
+    ordered?: boolean,
   ) {
     return this.helpers.messages.addReactions(
       channelId,
       messageId,
       reactions,
-      ordered
+      ordered,
     );
   }
 
@@ -470,7 +477,7 @@ export class Client extends EventEmitter {
     return await this.helpers.messages.removeReactionEmoji(
       channelId,
       id,
-      reaction
+      reaction,
     );
   }
 
@@ -479,7 +486,7 @@ export class Client extends EventEmitter {
     channelId: bigint,
     id: bigint,
     reaction: string,
-    userId?: bigint
+    userId?: bigint,
   ) {
     return await this.helpers.messages.removeReaction(channelId, id, reaction, {
       userId,
@@ -505,7 +512,7 @@ export class Client extends EventEmitter {
   loopObject<T = Record<string, unknown>>(
     obj: Record<string, unknown>,
     handler: (value: unknown, key: string) => unknown,
-    log: string
+    log: string,
   ) {
     let res: Record<string, unknown> | unknown[] = {};
 
@@ -534,7 +541,7 @@ export class Client extends EventEmitter {
           res[key] = this.loopObject(
             value as Record<string, unknown>,
             handler,
-            log
+            log,
           );
         } else {
           res[key] = handler(value, key);
@@ -548,30 +555,27 @@ export class Client extends EventEmitter {
   /** Calculates the permissions this member has in the given guild */
   async calculateBasePermissions(
     guildOrId: bigint | UniversityGuild,
-    memberOrId: bigint | UniversityMember
+    memberOrId: bigint | UniversityMember,
   ) {
-    const guild =
-      typeof guildOrId === "bigint"
-        ? await this.cache.get("guilds", guildOrId)
-        : guildOrId;
-    const member =
-      typeof memberOrId === "bigint"
-        ? await this.cache.get("members", memberOrId)
-        : memberOrId;
+    const guild = typeof guildOrId === "bigint"
+      ? await this.cache.get("guilds", guildOrId)
+      : guildOrId;
+    const member = typeof memberOrId === "bigint"
+      ? await this.cache.get("members", memberOrId)
+      : memberOrId;
 
     if (!guild || !member) return 8n;
 
     let permissions = 0n;
     // Calculate the role permissions bits, @everyone role is not in memberRoleIds so we need to pass guildId manualy
-    permissions |=
-      [...(member.guilds.get(guild.id)?.roles || []), guild.id]
-        .map((id) => guild.roles.get(id)?.permissions)
-        // Removes any edge case undefined
-        .filter((perm) => perm)
-        .reduce((bits, perms) => {
-          bits! |= BigInt(perms?.bits!);
-          return bits;
-        }, 0n) || 0n;
+    permissions |= [...(member.guilds.get(guild.id)?.roles || []), guild.id]
+      .map((id) => guild.roles.get(id)?.permissions)
+      // Removes any edge case undefined
+      .filter((perm) => perm)
+      .reduce((bits, perms) => {
+        bits! |= BigInt(perms?.bits!);
+        return bits;
+      }, 0n) || 0n;
 
     // If the memberId is equal to the guild ownerId he automatically has every permission so we add ADMINISTRATOR permission
     if (guild.ownerId === member.id) permissions |= 8n;
@@ -582,32 +586,30 @@ export class Client extends EventEmitter {
   /** Calculates the permissions this member has for the given Channel */
   async calculateChannelOverwrites(
     channelOrId: bigint | UniversityChannel,
-    memberOrId: bigint | UniversityMember
+    memberOrId: bigint | UniversityMember,
   ) {
-    const channel =
-      typeof channelOrId === "bigint"
-        ? await this.cache.get("channels", channelOrId)
-        : channelOrId;
+    const channel = typeof channelOrId === "bigint"
+      ? await this.cache.get("channels", channelOrId)
+      : channelOrId;
 
     // This is a DM channel so return ADMINISTRATOR permission
     if (!channel?.guildId) return 8n;
 
-    const member =
-      typeof memberOrId === "bigint"
-        ? await this.cache.get("members", memberOrId)
-        : memberOrId;
+    const member = typeof memberOrId === "bigint"
+      ? await this.cache.get("members", memberOrId)
+      : memberOrId;
 
     if (!channel || !member) return 8n;
 
     // Get all the role permissions this member already has
     let permissions = await this.calculateBasePermissions(
       channel.guildId,
-      member
+      member,
     );
 
     // First calculate @everyone overwrites since these have the lowest priority
     const overwriteEveryone = channel.permissionOverwrites?.find(
-      (overwrite) => overwrite.id === channel.guildId
+      (overwrite) => overwrite.id === channel.guildId,
     );
     if (overwriteEveryone) {
       // First remove denied permissions since denied < allowed
@@ -634,7 +636,7 @@ export class Client extends EventEmitter {
 
     // Third calculate member specific overwrites since these have the highest priority
     const overwriteMember = overwrites?.find(
-      (overwrite) => overwrite.id === member.id
+      (overwrite) => overwrite.id === member.id,
     );
     if (overwriteMember) {
       permissions &= ~overwriteMember.deny;
@@ -647,14 +649,14 @@ export class Client extends EventEmitter {
   /** Checks if the given permission bits are matching the given permissions. `ADMINISTRATOR` always returns `true` */
   validatePermissions(
     permissionBits: bigint,
-    permissions: PermissionStrings[]
+    permissions: PermissionStrings[],
   ) {
     if (permissionBits & 8n) return true;
 
     return permissions.every(
       (permission) =>
         // Check if permission is in permissionBits
-        permissionBits & BigInt(DiscordBitwisePermissionFlags[permission])
+        permissionBits & BigInt(DiscordBitwisePermissionFlags[permission]),
     );
   }
 
@@ -662,7 +664,7 @@ export class Client extends EventEmitter {
   async hasGuildPermissions(
     guild: bigint | UniversityGuild,
     member: bigint | UniversityMember,
-    permissions: PermissionStrings[]
+    permissions: PermissionStrings[],
   ) {
     // First we need the role permission bits this member has
     const basePermissions = await this.calculateBasePermissions(guild, member);
@@ -673,7 +675,7 @@ export class Client extends EventEmitter {
   /** Checks if the bot has these permissions in the given guild */
   botHasGuildPermissions(
     guild: bigint | UniversityGuild,
-    permissions: PermissionStrings[]
+    permissions: PermissionStrings[],
   ) {
     // Since Bot is a normal member we can use the hasRolePermissions() function
     return this.hasGuildPermissions(guild, this.botId, permissions);
@@ -683,12 +685,12 @@ export class Client extends EventEmitter {
   async hasChannelPermissions(
     channel: bigint | UniversityChannel,
     member: bigint | UniversityMember,
-    permissions: PermissionStrings[]
+    permissions: PermissionStrings[],
   ) {
     // First we need the overwrite bits this member has
     const channelOverwrites = await this.calculateChannelOverwrites(
       channel,
-      member
+      member,
     );
     // Second use the validatePermissions function to check if the member has every permission
     return this.validatePermissions(channelOverwrites, permissions);
@@ -697,7 +699,7 @@ export class Client extends EventEmitter {
   /** Checks if the bot has these permissions f0r the given channel */
   botHasChannelPermissions(
     channel: bigint | UniversityChannel,
-    permissions: PermissionStrings[]
+    permissions: PermissionStrings[],
   ) {
     // Since Bot is a normal member we can use the hasRolePermissions() function
     return this.hasChannelPermissions(channel, this.botId, permissions);
@@ -709,7 +711,7 @@ export class Client extends EventEmitter {
 
     return permissions.filter(
       (permission) =>
-        !(permissionBits & BigInt(DiscordBitwisePermissionFlags[permission]))
+        !(permissionBits & BigInt(DiscordBitwisePermissionFlags[permission])),
     );
   }
 
@@ -717,7 +719,7 @@ export class Client extends EventEmitter {
   async getMissingGuildPermissions(
     guild: bigint | UniversityGuild,
     member: bigint | UniversityMember,
-    permissions: PermissionStrings[]
+    permissions: PermissionStrings[],
   ) {
     // First we need the role permission bits this member has
     const permissionBits = await this.calculateBasePermissions(guild, member);
@@ -729,12 +731,12 @@ export class Client extends EventEmitter {
   async getMissingChannelPermissions(
     channel: bigint | UniversityChannel,
     member: bigint | UniversityMember,
-    permissions: PermissionStrings[]
+    permissions: PermissionStrings[],
   ) {
     // First we need the role permissino bits this member has
     const permissionBits = await this.calculateChannelOverwrites(
       channel,
-      member
+      member,
     );
     // Second returnn the members missing permissions
     return this.missingPermissions(permissionBits, permissions);
@@ -744,12 +746,12 @@ export class Client extends EventEmitter {
   async requireGuildPermissions(
     guild: bigint | UniversityGuild,
     member: bigint | UniversityMember,
-    permissions: PermissionStrings[]
+    permissions: PermissionStrings[],
   ) {
     const missing = await this.getMissingGuildPermissions(
       guild,
       member,
-      permissions
+      permissions,
     );
     if (missing.length) {
       // If the member is missing a permission throw an Error
@@ -760,7 +762,7 @@ export class Client extends EventEmitter {
   /** Throws an error if the bot does not have all permissions */
   requireBotGuildPermissions(
     guild: bigint | UniversityGuild,
-    permissions: PermissionStrings[]
+    permissions: PermissionStrings[],
   ) {
     // Since Bot is a normal member we can use the throwOnMissingGuildPermission() function
     return this.requireGuildPermissions(guild, this.botId, permissions);
@@ -770,12 +772,12 @@ export class Client extends EventEmitter {
   async requireChannelPermissions(
     channel: bigint | UniversityChannel,
     member: bigint | UniversityMember,
-    permissions: PermissionStrings[]
+    permissions: PermissionStrings[],
   ) {
     const missing = await this.getMissingChannelPermissions(
       channel,
       member,
-      permissions
+      permissions,
     );
     if (missing.length) {
       // If the member is missing a permission throw an Error
@@ -786,7 +788,7 @@ export class Client extends EventEmitter {
   /** Throws an error if the bot has not all of the given channel permissions */
   requireBotChannelPermissions(
     channel: bigint | UniversityChannel,
-    permissions: PermissionStrings[]
+    permissions: PermissionStrings[],
   ) {
     // Since Bot is a normal member we can use the throwOnMissingChannelPermission() function
     return this.requireChannelPermissions(channel, this.botId, permissions);
@@ -818,7 +820,7 @@ export class Client extends EventEmitter {
   /** Internal function to check if the bot has the permissions to set these overwrites */
   async requireOverwritePermissions(
     guildOrId: bigint | UniversityGuild,
-    overwrites: Overwrite[]
+    overwrites: Overwrite[],
   ) {
     let requiredPerms: Set<PermissionStrings> = new Set(["MANAGE_CHANNELS"]);
 
@@ -840,12 +842,11 @@ export class Client extends EventEmitter {
   /** Gets the highest role from the member in this guild */
   async highestRole(
     guildOrId: bigint | UniversityGuild,
-    memberOrId: bigint | UniversityMember
+    memberOrId: bigint | UniversityMember,
   ) {
-    const guild =
-      typeof guildOrId === "bigint"
-        ? await this.cache.get("guilds", guildOrId)
-        : guildOrId;
+    const guild = typeof guildOrId === "bigint"
+      ? await this.cache.get("guilds", guildOrId)
+      : guildOrId;
 
     if (!guild) throw new Error(Errors.GUILD_NOT_FOUND);
 
@@ -884,12 +885,11 @@ export class Client extends EventEmitter {
   async higherRolePosition(
     guildOrId: bigint | UniversityGuild,
     roleId: bigint,
-    otherRoleId: bigint
+    otherRoleId: bigint,
   ) {
-    const guild =
-      typeof guildOrId === "bigint"
-        ? await this.cache.get("guilds", guildOrId)
-        : guildOrId;
+    const guild = typeof guildOrId === "bigint"
+      ? await this.cache.get("guilds", guildOrId)
+      : guildOrId;
 
     if (!guild) return true;
 
@@ -909,12 +909,11 @@ export class Client extends EventEmitter {
   async isHigherPosition(
     guildOrId: bigint | UniversityGuild,
     memberId: bigint,
-    compareRoleId: bigint
+    compareRoleId: bigint,
   ) {
-    const guild =
-      typeof guildOrId === "bigint"
-        ? await this.cache.get("guilds", guildOrId)
-        : guildOrId;
+    const guild = typeof guildOrId === "bigint"
+      ? await this.cache.get("guilds", guildOrId)
+      : guildOrId;
 
     if (!guild || guild.ownerId === memberId) return true;
 
@@ -922,7 +921,7 @@ export class Client extends EventEmitter {
     return this.higherRolePosition(
       guild.id,
       memberHighestRole.id,
-      compareRoleId
+      compareRoleId,
     );
   }
 }

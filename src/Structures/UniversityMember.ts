@@ -1,17 +1,17 @@
 import {
   Collection,
-  GuildMember,
-  DiscordUserFlags,
-  DiscordPremiumTypes,
-  GuildMemberWithUser,
-  iconHashToBigInt,
-  snowflakeToBigint,
-  DiscordImageSize,
-  DiscordImageFormat,
-  CreateMessage,
-  ModifyGuildMember,
   CreateGuildBan,
+  CreateMessage,
+  DiscordImageFormat,
+  DiscordImageSize,
+  DiscordPremiumTypes,
+  DiscordUserFlags,
+  GuildMember,
+  GuildMemberWithUser,
   iconBigintToHash,
+  iconHashToBigInt,
+  ModifyGuildMember,
+  snowflakeToBigint,
 } from "../../deps.ts";
 import Client from "../Client.ts";
 import Base from "./Base.ts";
@@ -96,7 +96,7 @@ export class UniversityMember extends Base {
       this.id,
       this.discriminator,
       this.avatar,
-      this.animatedAvatar
+      this.animatedAvatar,
     );
   }
 
@@ -146,7 +146,7 @@ export class UniversityMember extends Base {
       this.avatar!,
       this.animatedAvatar,
       options?.size,
-      options?.format
+      options?.format,
     );
   }
 

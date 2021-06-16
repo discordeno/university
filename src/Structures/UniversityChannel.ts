@@ -1,16 +1,16 @@
 import {
+  Channel,
+  Collection,
+  CreateMessage,
   DiscordChannelTypes,
   DiscordOverwrite,
   DiscordVideoQualityModes,
-  ThreadMetadata,
-  ThreadMember,
-  Channel,
-  snowflakeToBigint,
-  Collection,
-  CreateMessage,
+  ModifyChannel,
   Overwrite,
   PermissionStrings,
-  ModifyChannel,
+  snowflakeToBigint,
+  ThreadMember,
+  ThreadMetadata,
 } from "../../deps.ts";
 import Client from "../Client.ts";
 import Base from "./Base.ts";
@@ -94,7 +94,7 @@ export class UniversityChannel extends Base {
         id: snowflakeToBigint(o.id),
         allow: snowflakeToBigint(o.allow),
         deny: snowflakeToBigint(o.deny),
-      })
+      }),
     );
 
     this.type = payload.type;
@@ -133,7 +133,7 @@ export class UniversityChannel extends Base {
   /** Gets the voice states for this channel */
   get voiceStates() {
     return this.guild?.voiceStates.filter(
-      (voiceState) => voiceState.channelId === this.id
+      (voiceState) => voiceState.channelId === this.id,
     );
   }
 
@@ -146,7 +146,7 @@ export class UniversityChannel extends Base {
       voiceStates.map((vs) => [
         vs.memberId,
         this.client.members.get(vs.memberId),
-      ])
+      ]),
     );
   }
 
@@ -171,7 +171,7 @@ export class UniversityChannel extends Base {
       this.guildId,
       this.id,
       overwriteId,
-      options
+      options,
     );
   }
 
@@ -187,13 +187,13 @@ export class UniversityChannel extends Base {
       allow: bigint;
       deny: bigint;
     })[],
-    permissions: PermissionStrings[]
+    permissions: PermissionStrings[],
   ) {
     return this.client.channelOverwriteHasPermission(
       this.guildId!,
       this.id,
       overwrites,
-      permissions
+      permissions,
     );
   }
 

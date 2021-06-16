@@ -32,7 +32,7 @@ export class InviteHelpers {
 
     return (await this.client.rest.post(
       endpoints.CHANNEL_INVITES(channelId),
-      snakelize(options)
+      snakelize(options),
     )) as InviteMetadata;
   }
 
@@ -52,7 +52,7 @@ export class InviteHelpers {
     }
 
     return (await this.client.rest.delete(
-      endpoints.INVITE(inviteCode)
+      endpoints.INVITE(inviteCode),
     )) as InviteMetadata;
   }
 
@@ -63,7 +63,7 @@ export class InviteHelpers {
     ]);
 
     const result = (await this.client.rest.get(
-      endpoints.CHANNEL_INVITES(channelId)
+      endpoints.CHANNEL_INVITES(channelId),
     )) as InviteMetadata[];
 
     return new Collection(result.map((invite) => [invite.code, invite]));
@@ -73,7 +73,7 @@ export class InviteHelpers {
   async getInvite(inviteCode: string, options?: GetInvite) {
     return (await this.client.rest.get(
       endpoints.INVITE(inviteCode),
-      snakelize(options ?? {})
+      snakelize(options ?? {}),
     )) as InviteMetadata;
   }
 
@@ -82,7 +82,7 @@ export class InviteHelpers {
     await this.client.requireBotGuildPermissions(guildId, ["MANAGE_GUILD"]);
 
     const result = (await this.client.rest.get(
-      endpoints.GUILD_INVITES(guildId)
+      endpoints.GUILD_INVITES(guildId),
     )) as InviteMetadata[];
 
     return new Collection(result.map((invite) => [invite.code, invite]));
