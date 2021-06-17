@@ -3,6 +3,7 @@ import {
   Collection,
   CreateGuildBan,
   CreateGuildRole,
+  StatusUpdate,
   CreateMessage,
   DiscordBitwisePermissionFlags,
   DiscordGatewayIntents,
@@ -926,6 +927,15 @@ export class Client extends EventEmitter {
       memberHighestRole.id,
       compareRoleId
     );
+  }
+
+  //EDIT BOT
+  editBotStatus(data: Omit<StatusUpdate,"afk"|"since">) {
+    return this.helpers.editBotStatus(data)
+  }
+
+  editBotProfile(data: { username?: string | undefined; botAvatarURL?: string | undefined; }) {
+    return this.helpers.editBotProfile(data)
   }
 }
 
