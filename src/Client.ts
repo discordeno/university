@@ -395,13 +395,13 @@ export class Client extends EventEmitter {
   }
 
   /** Add a role to the member */
-  async aUniversityRole(
+  async addRole(
     guildId: bigint,
     id: bigint,
     roleId: bigint,
     reason?: string,
   ) {
-    return await this.helpers.roles.aUniversityRole(
+    return await this.helpers.roles.addRole(
       guildId,
       id,
       roleId,
