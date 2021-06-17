@@ -48,7 +48,7 @@ export class ChannelHelpers {
   async categoryChildren(id: bigint) {
     return await this.client.cache.filter(
       "channels",
-      (channel) => channel.parentId === id,
+      (channel) => channel.parentId === id
     );
   }
 
@@ -61,9 +61,10 @@ export class ChannelHelpers {
       allow: bigint;
       deny: bigint;
     })[],
-    permissions: PermissionStrings[],
+    permissions: PermissionStrings[]
   ) {
-    const overwrite = overwrites.find((perm) => perm.id === id) ||
+    const overwrite =
+      overwrites.find((perm) => perm.id === id) ||
       overwrites.find((perm) => perm.id === guildId);
 
     if (!overwrite) return false;
@@ -103,7 +104,7 @@ export class ChannelHelpers {
           type: overwrite.type,
           allow: calculatePermissions(overwrite.allow),
           deny: calculatePermissions(overwrite.deny),
-        }),
+        })
       ),
     };
 
@@ -111,7 +112,7 @@ export class ChannelHelpers {
     return await this.createChannel(
       channelToClone.guildId!,
       createChannelOptions,
-      reason,
+      reason
     );
   }
 
@@ -119,12 +120,12 @@ export class ChannelHelpers {
   async createChannel(
     guildId: bigint,
     options?: CreateGuildChannel,
-    reason?: string,
+    reason?: string
   ) {
     if (options?.permissionOverwrites) {
       await this.client.requireOverwritePermissions(
         guildId,
-        options.permissionOverwrites,
+        options.permissionOverwrites
       );
     }
 
@@ -142,14 +143,14 @@ export class ChannelHelpers {
         })),
         type: options?.type || DiscordChannelTypes.GuildText,
         reason,
-      }),
+      })
     );
 
     const discordenoChannel = new UniversityChannel(this.client, result);
     await this.client.cache.set(
       "channels",
       discordenoChannel.id,
-      discordenoChannel,
+      discordenoChannel
     );
 
     return discordenoChannel;
@@ -159,7 +160,7 @@ export class ChannelHelpers {
   async createStageInstance(
     channelId: bigint,
     topic: string,
-    privacyLevel?: PrivacyLevel,
+    privacyLevel?: PrivacyLevel
   ) {
     const channel = await this.client.cache.get("channels", channelId);
 
@@ -185,7 +186,7 @@ export class ChannelHelpers {
         channelId,
         topic,
         privacyLevel,
-      }),
+      })
     );
   }
 
@@ -201,12 +202,12 @@ export class ChannelHelpers {
       await this.client.requireBotGuildPermissions(
         guild,
         [
-            ChannelTypes.GuildNewsThread,
-            ChannelTypes.GuildPivateThread,
-            ChannelTypes.GuildPublicThread,
-          ].includes(channel.type)
+          ChannelTypes.GuildNewsThread,
+          ChannelTypes.GuildPivateThread,
+          ChannelTypes.GuildPublicThread,
+        ].includes(channel.type)
           ? ["MANAGE_THREADS"]
-          : ["MANAGE_CHANNELS"],
+          : ["MANAGE_CHANNELS"]
       );
       if (guild.rulesChannelId === channelId) {
         throw new Error(Errors.RULES_CHANNEL_CANNOT_BE_DELETED);
@@ -226,12 +227,12 @@ export class ChannelHelpers {
   async deleteChannelOverwrite(
     guildId: bigint,
     channelId: bigint,
-    overwriteId: bigint,
+    overwriteId: bigint
   ): Promise<undefined> {
     await this.client.requireBotGuildPermissions(guildId, ["MANAGE_ROLES"]);
 
     return await this.client.rest.delete(
-      endpoints.CHANNEL_OVERWRITE(channelId, overwriteId),
+      endpoints.CHANNEL_OVERWRITE(channelId, overwriteId)
     );
   }
 
@@ -260,7 +261,7 @@ export class ChannelHelpers {
   async editChannel(
     channelId: bigint,
     options: ModifyChannel | ModifyThread,
-    reason?: string,
+    reason?: string
   ) {
     const channel = await this.client.cache.get("channels", channelId);
 
@@ -295,7 +296,7 @@ export class ChannelHelpers {
       ) {
         await this.client.requireOverwritePermissions(
           channel.guildId,
-          options.permissionOverwrites,
+          options.permissionOverwrites
         );
       }
     }
@@ -331,19 +332,19 @@ export class ChannelHelpers {
       snakelize({
         ...options,
         permissionOverwrites: hasOwnProperty<ModifyChannel>(
-            options,
-            "permissionOverwrites",
-          )
+          options,
+          "permissionOverwrites"
+        )
           ? options.permissionOverwrites?.map((overwrite) => {
-            return {
-              ...overwrite,
-              allow: calculateBits(overwrite.allow),
-              deny: calculateBits(overwrite.deny),
-            };
-          })
+              return {
+                ...overwrite,
+                allow: calculateBits(overwrite.allow),
+                deny: calculateBits(overwrite.deny),
+              };
+            })
           : undefined,
         reason,
-      }),
+      })
     );
 
     return new UniversityChannel(this.client, result);
@@ -356,7 +357,7 @@ export class ChannelHelpers {
     editChannelNameTopicQueue.forEach(async (request) => {
       eventHandlers.debug?.(
         "loop",
-        `Running forEach loop in edit_channel file.`,
+        `Running forEach loop in edit_channel file.`
       );
       if (now < request.timestamp) return;
       // 10 minutes have passed so we can reset this channel again
@@ -385,7 +386,7 @@ export class ChannelHelpers {
       setTimeout(() => {
         eventHandlers.debug?.(
           "loop",
-          `Running setTimeout in EDIT_CHANNEL file.`,
+          `Running setTimeout in EDIT_CHANNEL file.`
         );
         this.processEditChannelQueue();
       }, 60000);
@@ -399,7 +400,7 @@ export class ChannelHelpers {
     guildId: bigint,
     channelId: bigint,
     overwriteId: bigint,
-    options: Omit<Overwrite, "id">,
+    options: Omit<Overwrite, "id">
   ): Promise<undefined> {
     await this.client.requireBotGuildPermissions(guildId, ["MANAGE_ROLES"]);
 
@@ -409,7 +410,7 @@ export class ChannelHelpers {
         allow: calculateBits(options.allow),
         deny: calculateBits(options.deny),
         type: options.type,
-      },
+      }
     );
   }
 
@@ -423,7 +424,7 @@ export class ChannelHelpers {
       endpoints.CHANNEL_FOLLOW(sourceChannelId),
       {
         webhook_channel_id: targetChannelId,
-      },
+      }
     );
 
     return data.webhookId;
@@ -435,19 +436,19 @@ export class ChannelHelpers {
    */
   async getChannel(channelId: bigint, addToCache = true) {
     const result = await this.client.rest.get(
-      endpoints.CHANNEL_BASE(channelId),
+      endpoints.CHANNEL_BASE(channelId)
     );
 
     const discordenoChannel = new UniversityChannel(
       this.client,
       result,
-      result.guildId,
+      result.guildId
     );
     if (addToCache) {
       await this.client.cache.set(
         "channels",
         discordenoChannel.id,
-        discordenoChannel,
+        discordenoChannel
       );
     }
 
@@ -461,7 +462,7 @@ export class ChannelHelpers {
     ]);
 
     const result = (await this.client.rest.get(
-      endpoints.CHANNEL_WEBHOOKS(channelId),
+      endpoints.CHANNEL_WEBHOOKS(channelId)
     )) as Webhook[];
 
     return new Collection(result.map((webhook) => [webhook.id, webhook]));
@@ -473,7 +474,7 @@ export class ChannelHelpers {
    */
   async getChannels(guildId: bigint, addToCache = true) {
     const result = (await this.client.rest.get(
-      endpoints.GUILD_CHANNELS(guildId),
+      endpoints.GUILD_CHANNELS(guildId)
     )) as Channel[];
 
     return new Collection(
@@ -483,31 +484,31 @@ export class ChannelHelpers {
             const discordenoChannel = new UniversityChannel(
               this.client,
               res,
-              guildId.toString(),
+              guildId.toString()
             );
             if (addToCache) {
               await this.client.cache.set(
                 "channels",
                 discordenoChannel.id,
-                discordenoChannel,
+                discordenoChannel
               );
             }
 
             return discordenoChannel;
-          }),
+          })
         )
-      ).map((c) => [c.id, c]),
+      ).map((c) => [c.id, c])
     );
   }
 
   /** Get pinned messages in this channel. */
   async getPins(channelId: bigint) {
     const result = (await this.client.rest.get(
-      endpoints.CHANNEL_PINS(channelId),
+      endpoints.CHANNEL_PINS(channelId)
     )) as Message[];
 
     return Promise.all(
-      result.map((res) => new UniversityMessage(this.client, res)),
+      result.map((res) => new UniversityMessage(this.client, res))
     );
   }
 
@@ -531,13 +532,13 @@ export class ChannelHelpers {
 
     const parentChannel = await this.client.cache.get(
       "channels",
-      channel.parentId,
+      channel.parentId
     );
     if (!parentChannel) return false;
 
     return channel.permissionOverwrites?.every((overwrite) => {
       const permission = parentChannel.permissionOverwrites?.find(
-        (ow) => ow.id === overwrite.id,
+        (ow) => ow.id === overwrite.id
       );
       if (!permission) return false;
       return !(
@@ -571,7 +572,7 @@ export class ChannelHelpers {
 
       const hasSendMessagesPerm = await this.client.botHasChannelPermissions(
         channelId,
-        ["SEND_MESSAGES"],
+        ["SEND_MESSAGES"]
       );
       if (!hasSendMessagesPerm) {
         throw new Error(Errors.MISSING_SEND_MESSAGES);
@@ -584,7 +585,7 @@ export class ChannelHelpers {
   /** Modify the positions of channels on the guild. Requires MANAGE_CHANNELS permisison. */
   async swapChannels(
     guildId: bigint,
-    channelPositions: ModifyGuildChannelPositions[],
+    channelPositions: ModifyGuildChannelPositions[]
   ) {
     if (channelPositions.length < 2) {
       throw "You must provide at least two channels to be swapped.";
@@ -592,14 +593,14 @@ export class ChannelHelpers {
 
     return await this.client.rest.patch(
       endpoints.GUILD_CHANNELS(guildId),
-      snakelize(channelPositions),
+      snakelize(channelPositions)
     );
   }
 
   /** Updates fields of an existing Stage instance. Requires the user to be a moderator of the Stage channel. */
   async updateStageInstance(
     channelId: bigint,
-    data: Partial<Pick<StageInstance, "topic" | "privacyLevel">> = {},
+    data: Partial<Pick<StageInstance, "topic" | "privacyLevel">> = {}
   ) {
     const channel = await this.client.cache.get("channels", channelId);
 
@@ -627,7 +628,7 @@ export class ChannelHelpers {
 
     return await this.client.rest.patch(
       endpoints.STAGE_INSTANCE(channelId),
-      snakelize(data),
+      snakelize(data)
     );
   }
 
@@ -646,14 +647,14 @@ export class ChannelHelpers {
     guildId: bigint,
     options:
       | UpdateSelfVoiceState
-      | ({ userId: bigint } & UpdateOthersVoiceState),
+      | ({ userId: bigint } & UpdateOthersVoiceState)
   ) {
     return await this.client.rest.patch(
       endpoints.UPDATE_VOICE_STATE(
         guildId,
-        hasOwnProperty(options, "userId") ? options.userId : undefined,
+        hasOwnProperty(options, "userId") ? options.userId : undefined
       ),
-      snakelize(options),
+      snakelize(options)
     );
   }
 }

@@ -31,11 +31,11 @@ export class InteractionHelpers {
   /** Batch edits permissions for all commands in a guild. Takes an array of partial GuildApplicationCommandPermissions objects including `id` and `permissions`. */
   async batchEditSlashCommandPermissions(
     guildId: bigint,
-    options: { id: string; permissions: ApplicationCommandPermissions[] }[],
+    options: { id: string; permissions: ApplicationCommandPermissions[] }[]
   ) {
     return await this.client.rest.put(
       endpoints.COMMANDS_PERMISSIONS(this.client.applicationId, guildId),
-      snakelize(options),
+      snakelize(options)
     );
   }
 
@@ -52,18 +52,18 @@ export class InteractionHelpers {
    */
   async createSlashCommand(
     options: CreateGlobalApplicationCommand,
-    guildId?: bigint,
+    guildId?: bigint
   ) {
     [options] = validateSlashCommands(
       [options],
-      true,
+      true
     ) as CreateGlobalApplicationCommand[];
 
     return (await this.client.rest.post(
       guildId
         ? endpoints.COMMANDS_GUILD(this.client.applicationId, guildId)
         : endpoints.COMMANDS(this.client.applicationId),
-      snakelize(options),
+      snakelize(options)
     )) as ApplicationCommand;
   }
 
@@ -72,7 +72,7 @@ export class InteractionHelpers {
     return await this.client.rest.delete(
       guildId
         ? endpoints.COMMANDS_GUILD_ID(this.client.applicationId, guildId, id)
-        : endpoints.COMMANDS_ID(this.client.applicationId, id),
+        : endpoints.COMMANDS_ID(this.client.applicationId, id)
     );
   }
 
@@ -81,14 +81,14 @@ export class InteractionHelpers {
     return await this.client.rest.delete(
       messageId
         ? endpoints.INTERACTION_ID_TOKEN_MESSAGE_ID(
-          this.client.applicationId,
-          token,
-          messageId,
-        )
+            this.client.applicationId,
+            token,
+            messageId
+          )
         : endpoints.INTERACTION_ORIGINAL_ID_TOKEN(
-          this.client.applicationId,
-          token,
-        ),
+            this.client.applicationId,
+            token
+          )
     );
   }
 
@@ -96,24 +96,24 @@ export class InteractionHelpers {
   async editSlashCommandPermissions(
     guildId: bigint,
     commandId: bigint,
-    options: ApplicationCommandPermissions[],
+    options: ApplicationCommandPermissions[]
   ) {
     return await this.client.rest.put(
       endpoints.COMMANDS_PERMISSION(
         this.client.applicationId,
         guildId,
-        commandId,
+        commandId
       ),
       {
         permissions: snakelize(options),
-      },
+      }
     );
   }
 
   /** To edit your response to a slash command. If a messageId is not provided it will default to editing the original response. */
   async editSlashResponse(
     token: string,
-    options: DiscordenoEditWebhookMessage,
+    options: DiscordenoEditWebhookMessage
   ) {
     if (options.content && options.content.length > 2000) {
       throw Error(Errors.MESSAGE_MAX_LENGTH);
@@ -131,18 +131,18 @@ export class InteractionHelpers {
       if (options.allowedMentions.users?.length) {
         if (
           options.allowedMentions.parse?.includes(
-            DiscordAllowedMentionsTypes.UserMentions,
+            DiscordAllowedMentionsTypes.UserMentions
           )
         ) {
           options.allowedMentions.parse = options.allowedMentions.parse.filter(
-            (p) => p !== "users",
+            (p) => p !== "users"
           );
         }
 
         if (options.allowedMentions.users.length > 100) {
           options.allowedMentions.users = options.allowedMentions.users.slice(
             0,
-            100,
+            100
           );
         }
       }
@@ -150,18 +150,18 @@ export class InteractionHelpers {
       if (options.allowedMentions.roles?.length) {
         if (
           options.allowedMentions.parse?.includes(
-            DiscordAllowedMentionsTypes.RoleMentions,
+            DiscordAllowedMentionsTypes.RoleMentions
           )
         ) {
           options.allowedMentions.parse = options.allowedMentions.parse.filter(
-            (p) => p !== "roles",
+            (p) => p !== "roles"
           );
         }
 
         if (options.allowedMentions.roles.length > 100) {
           options.allowedMentions.roles = options.allowedMentions.roles.slice(
             0,
-            100,
+            100
           );
         }
       }
@@ -170,15 +170,15 @@ export class InteractionHelpers {
     const result = await this.client.rest.patch(
       options.messageId
         ? endpoints.WEBHOOK_MESSAGE(
-          this.client.applicationId,
-          token,
-          options.messageId,
-        )
+            this.client.applicationId,
+            token,
+            options.messageId
+          )
         : endpoints.INTERACTION_ORIGINAL_ID_TOKEN(
-          this.client.applicationId,
-          token,
-        ),
-      snakelize(options),
+            this.client.applicationId,
+            token
+          ),
+      snakelize(options)
     );
 
     // If the original message was edited, this will not return a message
@@ -192,11 +192,11 @@ export class InteractionHelpers {
     const result = (await this.client.rest.get(
       guildId
         ? endpoints.COMMANDS_GUILD_ID(
-          this.client.applicationId,
-          guildId,
-          commandId,
-        )
-        : endpoints.COMMANDS_ID(this.client.applicationId, commandId),
+            this.client.applicationId,
+            guildId,
+            commandId
+          )
+        : endpoints.COMMANDS_ID(this.client.applicationId, commandId)
     )) as ApplicationCommand;
 
     return {
@@ -212,15 +212,15 @@ export class InteractionHelpers {
       endpoints.COMMANDS_PERMISSION(
         this.client.applicationId,
         guildId,
-        commandId,
-      ),
+        commandId
+      )
     )) as GuildApplicationCommandPermissions;
   }
 
   /** Fetches command permissions for all commands for your application in a guild. Returns an array of GuildApplicationCommandPermissions objects. */
   async getSlashCommandPermissions(guildId: bigint) {
     return (await this.client.rest.get(
-      endpoints.COMMANDS_PERMISSIONS(this.client.applicationId, guildId),
+      endpoints.COMMANDS_PERMISSIONS(this.client.applicationId, guildId)
     )) as GuildApplicationCommandPermissions[];
   }
 
@@ -229,7 +229,7 @@ export class InteractionHelpers {
     const result = (await this.client.rest.get(
       guildId
         ? endpoints.COMMANDS_GUILD(this.client.applicationId, guildId)
-        : endpoints.COMMANDS(this.client.applicationId),
+        : endpoints.COMMANDS(this.client.applicationId)
     )) as ApplicationCommand[];
 
     return new Collection(
@@ -240,7 +240,7 @@ export class InteractionHelpers {
           id: snowflakeToBigint(command.id),
           applicationId: snowflakeToBigint(command.applicationId),
         },
-      ]),
+      ])
     );
   }
 
@@ -250,19 +250,19 @@ export class InteractionHelpers {
   async upsertSlashCommand(
     commandId: bigint,
     options: EditGlobalApplicationCommand,
-    guildId?: bigint,
+    guildId?: bigint
   ) {
     [options] = validateSlashCommands([options]);
 
     return (await this.client.rest.patch(
       guildId
         ? endpoints.COMMANDS_GUILD_ID(
-          this.client.applicationId,
-          guildId,
-          commandId,
-        )
+            this.client.applicationId,
+            guildId,
+            commandId
+          )
         : endpoints.COMMANDS_ID(this.client.applicationId, commandId),
-      options,
+      options
     )) as ApplicationCommand;
   }
 
@@ -273,7 +273,7 @@ export class InteractionHelpers {
    */
   async upsertSlashCommands(
     options: EditGlobalApplicationCommand[],
-    guildId?: bigint,
+    guildId?: bigint
   ) {
     options = validateSlashCommands(options);
 
@@ -281,14 +281,14 @@ export class InteractionHelpers {
       guildId
         ? endpoints.COMMANDS_GUILD(this.client.applicationId, guildId)
         : endpoints.COMMANDS(this.client.applicationId),
-      options,
+      options
     )) as ApplicationCommand[];
   }
 
   /** Returns the initial Interactio response. Functions the same as Get Webhook Message */
   async getOriginalInteractionResponse(token: string) {
     const result = (await this.client.rest.get(
-      endpoints.INTERACTION_ORIGINAL_ID_TOKEN(this.client.applicationId, token),
+      endpoints.INTERACTION_ORIGINAL_ID_TOKEN(this.client.applicationId, token)
     )) as Message;
 
     return new UniversityMessage(this.client, result);
@@ -303,7 +303,7 @@ export class InteractionHelpers {
   async sendInteractionResponse(
     id: bigint,
     token: string,
-    options: DiscordenoInteractionResponse,
+    options: DiscordenoInteractionResponse
   ) {
     // TODO: add more options validations
     if (options.data?.components) validateComponents(options.data?.components);
@@ -311,7 +311,7 @@ export class InteractionHelpers {
     if (this.client.executedSlashCommands.has(token)) {
       return await this.client.rest.post(
         endpoints.WEBHOOK(this.client.applicationId, token),
-        snakelize(options),
+        snakelize(options)
       );
     }
 
@@ -321,7 +321,7 @@ export class InteractionHelpers {
       this.client.emit(
         "DEBUG",
         "loop",
-        `Running setTimeout in send_interaction_response file.`,
+        `Running setTimeout in send_interaction_response file.`
       );
       this.client.executedSlashCommands.delete(token);
     }, 900000);
@@ -338,7 +338,7 @@ export class InteractionHelpers {
 
     return await this.client.rest.post(
       endpoints.INTERACTION_ID_TOKEN(id, token),
-      snakelize(options),
+      snakelize(options)
     );
   }
 
@@ -354,7 +354,7 @@ export class InteractionHelpers {
     const isValid = verify(
       this.hexToUint8Array(publicKey),
       this.hexToUint8Array(signature),
-      new TextEncoder().encode(timestamp + body),
+      new TextEncoder().encode(timestamp + body)
     );
 
     return { isValid, body };
@@ -363,7 +363,7 @@ export class InteractionHelpers {
   /** Converts a hexadecimal string to Uint8Array. */
   hexToUint8Array(hex: string) {
     return new Uint8Array(
-      hex.match(/.{1,2}/g)!.map((val) => parseInt(val, 16)),
+      hex.match(/.{1,2}/g)!.map((val) => parseInt(val, 16))
     );
   }
 }

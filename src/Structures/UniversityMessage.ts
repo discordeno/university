@@ -133,7 +133,7 @@ export class UniversityMessage extends Base {
       ...(payload.content?.match(CHANNEL_MENTION_REGEX) || []).map(
         (text: string) =>
           // converts the <#123> into 123
-          snowflakeToBigint(text.substring(2, text.length - 1)),
+          snowflakeToBigint(text.substring(2, text.length - 1))
       ),
     ];
 
@@ -200,8 +200,9 @@ export class UniversityMessage extends Base {
 
   /** The url link to this message */
   get link() {
-    return `https://discord.com/channels/${this.guildId ||
-      "@me"}/${this.channelId}/${this.id}`;
+    return `https://discord.com/channels/${this.guildId || "@me"}/${
+      this.channelId
+    }/${this.id}`;
   }
 
   /** The role objects for all the roles that were mentioned in this message */
@@ -222,8 +223,8 @@ export class UniversityMessage extends Base {
   get mentionedMembers() {
     return this.guild
       ? this.mentionedUserIds
-        .map((id) => this.guild!.members.get(id)!)
-        .filter((m) => m)
+          .map((id) => this.guild!.members.get(id)!)
+          .filter((m) => m)
       : [];
   }
 
@@ -233,7 +234,7 @@ export class UniversityMessage extends Base {
       this.channelId,
       this.id,
       reason,
-      delayMilliseconds,
+      delayMilliseconds
     );
   }
 
@@ -258,41 +259,43 @@ export class UniversityMessage extends Base {
       this.channelId,
       this.id,
       reactions,
-      ordered,
+      ordered
     );
   }
 
   /** Send a inline reply to this message */
   async reply(content: string | CreateMessage, mentionUser = true) {
-    const contentWithMention: CreateMessage = typeof content === "string"
-      ? {
-        content,
-        allowedMentions: {
-          repliedUser: mentionUser,
-        },
-        messageReference: {
-          messageId: bigintToSnowflake(this.id!),
-          failIfNotExists: false,
-        },
-      }
-      : {
-        ...content,
-        allowedMentions: {
-          ...(content.allowedMentions || {}),
-          repliedUser: mentionUser,
-        },
-        messageReference: {
-          messageId: bigintToSnowflake(this.id!),
-          failIfNotExists: content.messageReference?.failIfNotExists === true,
-        },
-      };
+    const contentWithMention: CreateMessage =
+      typeof content === "string"
+        ? {
+            content,
+            allowedMentions: {
+              repliedUser: mentionUser,
+            },
+            messageReference: {
+              messageId: bigintToSnowflake(this.id!),
+              failIfNotExists: false,
+            },
+          }
+        : {
+            ...content,
+            allowedMentions: {
+              ...(content.allowedMentions || {}),
+              repliedUser: mentionUser,
+            },
+            messageReference: {
+              messageId: bigintToSnowflake(this.id!),
+              failIfNotExists:
+                content.messageReference?.failIfNotExists === true,
+            },
+          };
 
     if (this.guildId) {
       return await this.client.sendMessage(this.channelId!, contentWithMention);
     }
     return await this.client.sendDirectMessage(
       this.authorId!,
-      contentWithMention,
+      contentWithMention
     );
   }
 
@@ -325,7 +328,7 @@ export class UniversityMessage extends Base {
   async alertReply(
     content: string | CreateMessage,
     timeout = 10,
-    reason?: string,
+    reason?: string
   ) {
     return await this.reply(content).then((response) =>
       response.delete(reason, timeout * 1000).catch(console.error)
@@ -342,7 +345,7 @@ export class UniversityMessage extends Base {
     return await this.client.removeReactionEmoji(
       this.channelId,
       this.id,
-      reaction,
+      reaction
     );
   }
 
@@ -352,7 +355,7 @@ export class UniversityMessage extends Base {
       this.channelId,
       this.id,
       reaction,
-      userId,
+      userId
     );
   }
 
@@ -400,8 +403,9 @@ export class UniversityMessage extends Base {
       },
       member: this.member,
       content: this.content,
-      timestamp: this.timestamp ? new Date(this.timestamp).toISOString()
-      : undefined,
+      timestamp: this.timestamp
+        ? new Date(this.timestamp).toISOString()
+        : undefined,
       editedTimestamp: this.editedTimestamp
         ? new Date(this.editedTimestamp).toISOString()
         : undefined,

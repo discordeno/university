@@ -91,7 +91,7 @@ export class GatewayEvents {
     shard.ready = false;
     // All guilds are unavailable at first
     shard.unavailableGuildIds = new Set(
-      payload.guilds.map((g) => snowflakeToBigint(g.id)),
+      payload.guilds.map((g) => snowflakeToBigint(g.id))
     );
     // Set the last available to now
     shard.lastAvailable = Date.now();
@@ -113,7 +113,7 @@ export class GatewayEvents {
       this.client.emit(
         "shardFailedToLoad",
         shard.id,
-        shard.unavailableGuildIds,
+        shard.unavailableGuildIds
       );
       // Force execute the loaded function to prevent infinite loop
       return this.loaded(shard);
@@ -138,7 +138,7 @@ export class GatewayEvents {
         this.client.emit(
           "DEBUG",
           "loop",
-          `3. Running setTimeout in READY file.`,
+          `3. Running setTimeout in READY file.`
         );
         this.loaded(shard);
       }, 2000);
@@ -156,12 +156,12 @@ export class GatewayEvents {
     const discordenoChannel = new UniversityChannel(
       this.client,
       payload,
-      payload.guildId,
+      payload.guildId
     );
     await this.client.cache.set(
       "channels",
       discordenoChannel.id,
-      discordenoChannel,
+      discordenoChannel
     );
 
     this.client.emit("channelCreate", discordenoChannel);
@@ -172,7 +172,7 @@ export class GatewayEvents {
 
     const cachedChannel = await this.client.cache.get(
       "channels",
-      snowflakeToBigint(payload.id),
+      snowflakeToBigint(payload.id)
     );
     if (!cachedChannel) return;
 
@@ -182,7 +182,7 @@ export class GatewayEvents {
     ) {
       const guild = await this.client.cache.get(
         "guilds",
-        cachedChannel.guildId,
+        cachedChannel.guildId
       );
 
       if (guild) {
@@ -197,7 +197,7 @@ export class GatewayEvents {
             if (!member) return;
 
             this.client.emit("voiceChannelLeave", member, vs.channelId);
-          }),
+          })
         );
       }
     }
@@ -215,7 +215,7 @@ export class GatewayEvents {
         this.client.emit(
           "DEBUG",
           "loop",
-          `Running forEach messages loop in CHANNEL_DELTE file.`,
+          `Running forEach messages loop in CHANNEL_DELTE file.`
         );
         if (message.channelId === snowflakeToBigint(payload.id)) {
           this.client.cache.delete("messages", message.id);
@@ -233,22 +233,22 @@ export class GatewayEvents {
 
     const channel = await this.client.cache.get(
       "channels",
-      snowflakeToBigint(payload.channelId),
+      snowflakeToBigint(payload.channelId)
     );
     if (!channel) return;
 
     const guild = payload.guildId
       ? await this.client.cache.get(
-        "guilds",
-        snowflakeToBigint(payload.guildId),
-      )
+          "guilds",
+          snowflakeToBigint(payload.guildId)
+        )
       : undefined;
 
     this.client.emit(
       "channelPinsUpdate",
       channel,
       guild,
-      payload.lastPinTimestamp,
+      payload.lastPinTimestamp
     );
   }
 
@@ -256,19 +256,19 @@ export class GatewayEvents {
     const payload = data.d as Channel;
     const cachedChannel = await this.client.cache.get(
       "channels",
-      snowflakeToBigint(payload.id),
+      snowflakeToBigint(payload.id)
     );
     if (!cachedChannel) return;
 
     const discordenoChannel = new UniversityChannel(
       this.client,
       payload,
-      payload.guildId,
+      payload.guildId
     );
     await this.client.cache.set(
       "channels",
       discordenoChannel.id,
-      discordenoChannel,
+      discordenoChannel
     );
 
     this.client.emit("channelUpdate", discordenoChannel, cachedChannel);
@@ -277,21 +277,21 @@ export class GatewayEvents {
   APPLICATION_COMMAND_CREATE(data: DiscordGatewayPayload) {
     this.client.emit(
       "applicationCommandCreate",
-      data.d as ApplicationCommandCreateUpdateDelete,
+      data.d as ApplicationCommandCreateUpdateDelete
     );
   }
 
   APPLICATION_COMMAND_DELETE(data: DiscordGatewayPayload) {
     this.client.emit(
       "applicationCommandDelete",
-      data.d as ApplicationCommandCreateUpdateDelete,
+      data.d as ApplicationCommandCreateUpdateDelete
     );
   }
 
   APPLICATION_COMMAND_UPDATE(data: DiscordGatewayPayload) {
     this.client.emit(
       "applicationCommandUpdate",
-      data.d as ApplicationCommandCreateUpdateDelete,
+      data.d as ApplicationCommandCreateUpdateDelete
     );
   }
 
@@ -299,13 +299,13 @@ export class GatewayEvents {
     const payload = data.d as GuildBanAddRemove;
     const guild = await this.client.cache.get(
       "guilds",
-      snowflakeToBigint(payload.guildId),
+      snowflakeToBigint(payload.guildId)
     );
     if (!guild) return;
 
     const member = await this.client.cache.get(
       "members",
-      snowflakeToBigint(payload.user.id),
+      snowflakeToBigint(payload.user.id)
     );
     this.client.emit("guildBanAdd", guild, payload.user, member);
   }
@@ -314,13 +314,13 @@ export class GatewayEvents {
     const payload = data.d as GuildBanAddRemove;
     const guild = await this.client.cache.get(
       "guilds",
-      snowflakeToBigint(payload.guildId),
+      snowflakeToBigint(payload.guildId)
     );
     if (!guild) return;
 
     const member = await this.client.cache.get(
       "members",
-      snowflakeToBigint(payload.user.id),
+      snowflakeToBigint(payload.user.id)
     );
     this.client.emit("guildBanRemove", guild, payload.user, member);
   }
@@ -356,7 +356,7 @@ export class GatewayEvents {
 
     const guild = await this.client.cache.get(
       "guilds",
-      snowflakeToBigint(payload.id),
+      snowflakeToBigint(payload.id)
     );
     if (!guild) return;
 
@@ -376,7 +376,7 @@ export class GatewayEvents {
       this.client.emit(
         "DEBUG",
         "loop",
-        `1. Running forEach messages loop in CHANNEL_DELTE file.`,
+        `1. Running forEach messages loop in CHANNEL_DELTE file.`
       );
       if (message.guildId === guild.id) {
         this.client.cache.delete("messages", message.id);
@@ -387,7 +387,7 @@ export class GatewayEvents {
       this.client.emit(
         "DEBUG",
         "loop",
-        `2. Running forEach channels loop in CHANNEL_DELTE file.`,
+        `2. Running forEach channels loop in CHANNEL_DELTE file.`
       );
       if (channel.guildId === guild.id) {
         this.client.cache.delete("channels", channel.id);
@@ -398,7 +398,7 @@ export class GatewayEvents {
       this.client.emit(
         "DEBUG",
         "loop",
-        `3. Running forEach members loop in CHANNEL_DELTE file.`,
+        `3. Running forEach members loop in CHANNEL_DELTE file.`
       );
       if (!member.guilds.has(guild.id)) return;
 
@@ -416,13 +416,13 @@ export class GatewayEvents {
     const payload = data.d as GuildEmojisUpdate;
     const guild = await this.client.cache.get(
       "guilds",
-      snowflakeToBigint(payload.guildId),
+      snowflakeToBigint(payload.guildId)
     );
     if (!guild) return;
 
     const cachedEmojis = guild.emojis;
     guild.emojis = new Collection(
-      payload.emojis.map((emoji) => [snowflakeToBigint(emoji.id!), emoji]),
+      payload.emojis.map((emoji) => [snowflakeToBigint(emoji.id!), emoji])
     );
 
     await this.client.cache.set("guilds", guild.id, guild);
@@ -435,7 +435,7 @@ export class GatewayEvents {
 
     const guild = await this.client.cache.get(
       "guilds",
-      snowflakeToBigint(payload.guildId),
+      snowflakeToBigint(payload.guildId)
     );
     if (!guild) return;
 
@@ -446,7 +446,7 @@ export class GatewayEvents {
     const payload = data.d as GuildMemberAdd;
     const guild = await this.client.cache.get(
       "guilds",
-      snowflakeToBigint(payload.guildId),
+      snowflakeToBigint(payload.guildId)
     );
     if (!guild) return;
 
@@ -454,12 +454,12 @@ export class GatewayEvents {
     const discordenoMember = new UniversityMember(
       this.client,
       payload,
-      guild.id,
+      guild.id
     );
     await this.client.cache.set(
       "members",
       discordenoMember.id,
-      discordenoMember,
+      discordenoMember
     );
 
     this.client.emit("guildMemberAdd", guild, UniversityMember);
@@ -469,14 +469,14 @@ export class GatewayEvents {
     const payload = data.d as GuildMemberRemove;
     const guild = await this.client.cache.get(
       "guilds",
-      snowflakeToBigint(payload.guildId),
+      snowflakeToBigint(payload.guildId)
     );
     if (!guild) return;
 
     guild.memberCount--;
     const member = await this.client.cache.get(
       "members",
-      snowflakeToBigint(payload.user.id),
+      snowflakeToBigint(payload.user.id)
     );
     this.client.emit("guildMemberRemove", guild, payload.user, member);
 
@@ -490,13 +490,13 @@ export class GatewayEvents {
     const payload = data.d as GuildMemberUpdate;
     const guild = await this.client.cache.get(
       "guilds",
-      snowflakeToBigint(payload.guildId),
+      snowflakeToBigint(payload.guildId)
     );
     if (!guild) return;
 
     const cachedMember = await this.client.cache.get(
       "members",
-      snowflakeToBigint(payload.user.id),
+      snowflakeToBigint(payload.user.id)
     );
     const guildMember = cachedMember?.guilds.get(guild.id);
 
@@ -511,12 +511,12 @@ export class GatewayEvents {
     const discordenoMember = new UniversityMember(
       this.client,
       newMemberData,
-      guild.id,
+      guild.id
     );
     await this.client.cache.set(
       "members",
       discordenoMember.id,
-      discordenoMember,
+      discordenoMember
     );
 
     if (guildMember) {
@@ -526,7 +526,7 @@ export class GatewayEvents {
           guild,
           UniversityMember,
           payload.nick!,
-          guildMember.nick ?? undefined,
+          guildMember.nick ?? undefined
         );
       }
 
@@ -540,7 +540,7 @@ export class GatewayEvents {
         this.client.emit(
           "DEBUG",
           "loop",
-          `1. Running forEach loop in GUILD_MEMBER_UPDATE file.`,
+          `1. Running forEach loop in GUILD_MEMBER_UPDATE file.`
         );
         if (!payload.roles.includes(bigintToSnowflake(id))) {
           this.client.emit("roleLost", guild, UniversityMember, id);
@@ -551,14 +551,14 @@ export class GatewayEvents {
         this.client.emit(
           "DEBUG",
           "loop",
-          `2. Running forEach loop in GUILD_MEMBER_UPDATE file.`,
+          `2. Running forEach loop in GUILD_MEMBER_UPDATE file.`
         );
         if (!roleIds.includes(snowflakeToBigint(id))) {
           this.client.emit(
             "roleGained",
             guild,
             UniversityMember,
-            snowflakeToBigint(id),
+            snowflakeToBigint(id)
           );
         }
       });
@@ -568,7 +568,7 @@ export class GatewayEvents {
       "guildMemberUpdate",
       guild,
       UniversityMember,
-      cachedMember,
+      cachedMember
     );
   }
 
@@ -582,22 +582,22 @@ export class GatewayEvents {
         const discordenoMember = new UniversityMember(
           this.client,
           member,
-          guildId,
+          guildId
         );
         await this.client.cache.set(
           "members",
           discordenoMember.id,
-          discordenoMember,
+          discordenoMember
         );
 
         return discordenoMember;
-      }),
+      })
     );
 
     // Check if its necessary to resolve the fetchmembers promise for this chunk or if more chunks will be coming
     if (payload.nonce) {
       const resolve = this.client.fetchAllMembersProcessingRequests.get(
-        payload.nonce,
+        payload.nonce
       );
       if (!resolve) return;
 
@@ -609,10 +609,9 @@ export class GatewayEvents {
         }
 
         return resolve(
-          await this.client.cache.filter(
-            "members",
-            (m) => m.guilds.has(guildId),
-          ),
+          await this.client.cache.filter("members", (m) =>
+            m.guilds.has(guildId)
+          )
         );
       }
     }
@@ -622,7 +621,7 @@ export class GatewayEvents {
     const payload = data.d as GuildRoleCreate;
     const guild = await this.client.cache.get(
       "guilds",
-      snowflakeToBigint(payload.guildId),
+      snowflakeToBigint(payload.guildId)
     );
     if (!guild) return;
 
@@ -637,7 +636,7 @@ export class GatewayEvents {
     const payload = data.d as GuildRoleDelete;
     const guild = await this.client.cache.get(
       "guilds",
-      snowflakeToBigint(payload.guildId),
+      snowflakeToBigint(payload.guildId)
     );
     if (!guild) return;
 
@@ -653,7 +652,7 @@ export class GatewayEvents {
       this.client.emit(
         "DEBUG",
         "loop",
-        `1. Running forEach members loop in GUILD_ROLE_DELETE file.`,
+        `1. Running forEach members loop in GUILD_ROLE_DELETE file.`
       );
       // Not in the relevant guild so just skip.
       if (!member.guilds.has(guild.id)) return;
@@ -662,7 +661,7 @@ export class GatewayEvents {
         this.client.emit(
           "DEBUG",
           "loop",
-          `2. Running forEach loop in CHANNEL_DELTE file.`,
+          `2. Running forEach loop in CHANNEL_DELTE file.`
         );
         // Member does not have this role
         if (!g.roles.includes(roleId)) return;
@@ -677,7 +676,7 @@ export class GatewayEvents {
     const payload = data.d as GuildRoleUpdate;
     const guild = await this.client.cache.get(
       "guilds",
-      snowflakeToBigint(payload.guildId),
+      snowflakeToBigint(payload.guildId)
     );
     if (!guild) return;
 
@@ -695,7 +694,7 @@ export class GatewayEvents {
     const payload = data.d as Guild;
     const oldGuild = await this.client.cache.get(
       "guilds",
-      snowflakeToBigint(payload.id),
+      snowflakeToBigint(payload.id)
     );
     if (!oldGuild) return;
 
@@ -722,7 +721,8 @@ export class GatewayEvents {
         if (!cachedValue && !value) return;
 
         if (Array.isArray(cachedValue) && Array.isArray(value)) {
-          const different = cachedValue.length !== value.length ||
+          const different =
+            cachedValue.length !== value.length ||
             cachedValue.find((val) => !value.includes(val)) ||
             value.find((val) => !cachedValue.includes(val));
           if (!different) return;
@@ -760,13 +760,14 @@ export class GatewayEvents {
       }
     }
     if (!payload) return;
-    const discordenoMember = payload.member && payload.guildId
-      ? new UniversityMember(
-        this.client,
-        payload.member,
-        snowflakeToBigint(payload.guildId),
-      )
-      : undefined;
+    const discordenoMember =
+      payload.member && payload.guildId
+        ? new UniversityMember(
+            this.client,
+            payload.member,
+            snowflakeToBigint(payload.guildId)
+          )
+        : undefined;
     if (!discordenoMember) {
       this.client.emit("interactionDMCreate", payload);
     }
@@ -786,27 +787,27 @@ export class GatewayEvents {
     const payload = data.d as Message;
     const channel = await this.client.cache.get(
       "channels",
-      snowflakeToBigint(payload.channelId),
+      snowflakeToBigint(payload.channelId)
     );
     if (channel) channel.lastMessageId = snowflakeToBigint(payload.id);
 
     const guild = payload.guildId
       ? await this.client.cache.get(
-        "guilds",
-        snowflakeToBigint(payload.guildId),
-      )
+          "guilds",
+          snowflakeToBigint(payload.guildId)
+        )
       : undefined;
     if (payload.member && guild) {
       // If in a guild cache the author as a member
       const discordenoMember = new UniversityMember(
         this.client,
         { ...payload.member, user: payload.author } as GuildMemberWithUser,
-        guild.id,
+        guild.id
       );
       await this.client.cache.set(
         "members",
         discordenoMember.id,
-        discordenoMember,
+        discordenoMember
       );
     }
 
@@ -818,16 +819,16 @@ export class GatewayEvents {
             const discordenoMember = new UniversityMember(
               this.client,
               { ...mention.member, user: mention } as GuildMemberWithUser,
-              guild.id,
+              guild.id
             );
 
             return this.client.cache.set(
               "members",
               snowflakeToBigint(mention.id),
-              discordenoMember,
+              discordenoMember
             );
           }
-        }),
+        })
       );
     }
     const message = new UniversityMessage(this.client, data.d as Message);
@@ -835,7 +836,7 @@ export class GatewayEvents {
     await this.client.cache.set(
       "messages",
       snowflakeToBigint(payload.id),
-      message,
+      message
     );
 
     this.client.emit("messageCreate", message);
@@ -845,7 +846,7 @@ export class GatewayEvents {
     const payload = data.d as MessageDeleteBulk;
     const channel = await this.client.cache.get(
       "channels",
-      snowflakeToBigint(payload.channelId),
+      snowflakeToBigint(payload.channelId)
     );
     if (!channel) return;
 
@@ -854,10 +855,10 @@ export class GatewayEvents {
         this.client.emit(
           "messageDelete",
           { id, channel },
-          await this.client.cache.get("messages", snowflakeToBigint(id)),
+          await this.client.cache.get("messages", snowflakeToBigint(id))
         );
         await this.client.cache.delete("messages", snowflakeToBigint(id));
-      }),
+      })
     );
   }
 
@@ -865,14 +866,14 @@ export class GatewayEvents {
     const payload = data.d as MessageDelete;
     const channel = await this.client.cache.get(
       "channels",
-      snowflakeToBigint(payload.channelId),
+      snowflakeToBigint(payload.channelId)
     );
     if (!channel) return;
 
     this.client.emit(
       "messageDelete",
       { id: payload.id, channel },
-      await this.client.cache.get("messages", snowflakeToBigint(payload.id)),
+      await this.client.cache.get("messages", snowflakeToBigint(payload.id))
     );
 
     await this.client.cache.delete("messages", snowflakeToBigint(payload.id));
@@ -882,14 +883,14 @@ export class GatewayEvents {
     const payload = data.d as MessageReactionAdd;
     const message = await this.client.cache.get(
       "messages",
-      snowflakeToBigint(payload.messageId),
+      snowflakeToBigint(payload.messageId)
     );
 
     if (message) {
       const reactionExisted = message.reactions?.find(
         (reaction) =>
           reaction.emoji.id === payload.emoji.id &&
-          reaction.emoji.name === payload.emoji.name,
+          reaction.emoji.name === payload.emoji.name
       );
 
       if (reactionExisted) reactionExisted.count++;
@@ -907,25 +908,25 @@ export class GatewayEvents {
       await this.client.cache.set(
         "messages",
         snowflakeToBigint(payload.messageId),
-        message,
+        message
       );
     }
 
     if (payload.member && payload.guildId) {
       const guild = await this.client.cache.get(
         "guilds",
-        snowflakeToBigint(payload.guildId),
+        snowflakeToBigint(payload.guildId)
       );
       if (guild) {
         const discordenoMember = new UniversityMember(
           this.client,
           payload.member,
-          guild.id,
+          guild.id
         );
         await this.client.cache.set(
           "members",
           discordenoMember.id,
-          discordenoMember,
+          discordenoMember
         );
       }
     }
@@ -937,7 +938,7 @@ export class GatewayEvents {
     const payload = data.d as MessageReactionRemoveAll;
     const message = await this.client.cache.get(
       "messages",
-      snowflakeToBigint(payload.messageId),
+      snowflakeToBigint(payload.messageId)
     );
 
     if (message?.reactions) {
@@ -946,7 +947,7 @@ export class GatewayEvents {
       await this.client.cache.set(
         "messages",
         snowflakeToBigint(payload.messageId),
-        message,
+        message
       );
     }
 
@@ -957,7 +958,7 @@ export class GatewayEvents {
     const payload = data.d as MessageReactionRemoveEmoji;
     const message = await this.client.cache.get(
       "messages",
-      snowflakeToBigint(payload.messageId),
+      snowflakeToBigint(payload.messageId)
     );
 
     if (message?.reactions) {
@@ -969,7 +970,7 @@ export class GatewayEvents {
               reaction.emoji.id == payload.emoji.id &&
               reaction.emoji.name === payload.emoji.name
             )
-          ),
+          )
       );
 
       if (!message.reactions.length) message.reactions = [];
@@ -982,7 +983,7 @@ export class GatewayEvents {
       payload.emoji,
       snowflakeToBigint(payload.messageId),
       snowflakeToBigint(payload.channelId),
-      payload.guildId ? snowflakeToBigint(payload.guildId) : undefined,
+      payload.guildId ? snowflakeToBigint(payload.guildId) : undefined
     );
   }
 
@@ -990,7 +991,7 @@ export class GatewayEvents {
     const payload = data.d as MessageReactionRemove;
     const message = await this.client.cache.get(
       "messages",
-      snowflakeToBigint(payload.messageId),
+      snowflakeToBigint(payload.messageId)
     );
 
     if (message) {
@@ -998,7 +999,7 @@ export class GatewayEvents {
         (reaction) =>
           // MUST USE == because discord sends null and we use undefined
           reaction.emoji.id == payload.emoji.id &&
-          reaction.emoji.name === payload.emoji.name,
+          reaction.emoji.name === payload.emoji.name
       );
 
       if (reaction) {
@@ -1019,13 +1020,13 @@ export class GatewayEvents {
     const payload = data.d as Message;
     const channel = await this.client.cache.get(
       "channels",
-      snowflakeToBigint(payload.channelId),
+      snowflakeToBigint(payload.channelId)
     );
     if (!channel) return;
 
     const oldMessage = await this.client.cache.get(
       "messages",
-      snowflakeToBigint(payload.id),
+      snowflakeToBigint(payload.id)
     );
     if (!oldMessage) return;
 
@@ -1039,7 +1040,7 @@ export class GatewayEvents {
     await this.client.cache.set(
       "messages",
       snowflakeToBigint(payload.id),
-      message,
+      message
     );
 
     this.client.emit("messageUpdate", message, oldMessage);
@@ -1050,12 +1051,12 @@ export class GatewayEvents {
 
     const oldPresence = await this.client.cache.get(
       "presences",
-      snowflakeToBigint(payload.user.id),
+      snowflakeToBigint(payload.user.id)
     );
     await this.client.cache.set(
       "presences",
       snowflakeToBigint(payload.user.id),
-      payload,
+      payload
     );
 
     this.client.emit("presenceUpdate", payload, oldPresence);
@@ -1070,7 +1071,7 @@ export class GatewayEvents {
 
     const member = await this.client.cache.get(
       "members",
-      snowflakeToBigint(userData.id),
+      snowflakeToBigint(userData.id)
     );
     if (!member) return;
 
@@ -1096,7 +1097,7 @@ export class GatewayEvents {
     await this.client.cache.set(
       "members",
       snowflakeToBigint(userData.id),
-      member,
+      member
     );
 
     this.client.emit("botUpdate", userData);
@@ -1107,7 +1108,7 @@ export class GatewayEvents {
 
     const guild = await this.client.cache.get(
       "guilds",
-      snowflakeToBigint(payload.guildId),
+      snowflakeToBigint(payload.guildId)
     );
     if (!guild) return;
 
@@ -1120,33 +1121,33 @@ export class GatewayEvents {
 
     const guild = await this.client.cache.get(
       "guilds",
-      snowflakeToBigint(payload.guildId),
+      snowflakeToBigint(payload.guildId)
     );
     if (!guild) return;
 
     const member = payload.member
       ? new UniversityMember(this.client, payload.member, guild.id)
       : await this.client.cache.get(
-        "members",
-        snowflakeToBigint(payload.userId),
-      );
+          "members",
+          snowflakeToBigint(payload.userId)
+        );
     if (!member) return;
 
     // No cached state before so lets make one for em
     const cachedState = guild.voiceStates.get(
-      snowflakeToBigint(payload.userId),
+      snowflakeToBigint(payload.userId)
     );
 
     guild.voiceStates.set(
       snowflakeToBigint(payload.userId),
-      new UniversityVoiceState(this.client, guild.id, payload),
+      new UniversityVoiceState(this.client, guild.id, payload)
     );
 
     await this.client.cache.set("guilds", guild.id, guild);
 
     if (
       cachedState?.channelId !==
-        (payload.channelId ? snowflakeToBigint(payload.channelId) : null)
+      (payload.channelId ? snowflakeToBigint(payload.channelId) : null)
     ) {
       // Either joined or moved channels
       if (payload.channelId) {
@@ -1156,14 +1157,14 @@ export class GatewayEvents {
             "voiceChannelSwitch",
             member,
             snowflakeToBigint(payload.channelId),
-            cachedState.channelId,
+            cachedState.channelId
           );
         } else {
           // Was not in a channel before so user just joined
           this.client.emit(
             "voiceChannelJoin",
             member,
-            snowflakeToBigint(payload.channelId),
+            snowflakeToBigint(payload.channelId)
           );
         }
       } // Left the channel
@@ -1181,7 +1182,7 @@ export class GatewayEvents {
     this.client.emit(
       "webhooksUpdate",
       snowflakeToBigint(options.channelId),
-      snowflakeToBigint(options.guildId),
+      snowflakeToBigint(options.guildId)
     );
   }
 
@@ -1215,12 +1216,12 @@ export class GatewayEvents {
     const discordenoChannel = new UniversityChannel(
       this.client,
       payload,
-      payload.guildId,
+      payload.guildId
     );
     await this.client.cache.set(
       "channels",
       discordenoChannel.id,
-      discordenoChannel,
+      discordenoChannel
     );
 
     this.client.emit("threadCreate", UniversityChannel);
@@ -1231,7 +1232,7 @@ export class GatewayEvents {
 
     const cachedChannel = await this.client.cache.get(
       "channels",
-      snowflakeToBigint(payload.id),
+      snowflakeToBigint(payload.id)
     );
     if (!cachedChannel) return;
 
@@ -1240,7 +1241,7 @@ export class GatewayEvents {
       this.client.emit(
         "DEBUG",
         "loop",
-        `Running forEach messages loop in CHANNEL_DELTE file.`,
+        `Running forEach messages loop in CHANNEL_DELTE file.`
       );
       if (message.channelId === snowflakeToBigint(payload.id)) {
         this.client.cache.delete("messages", message.id);
@@ -1258,28 +1259,28 @@ export class GatewayEvents {
         const discordenoChannel = new UniversityChannel(
           this.client,
           thread,
-          payload.guildId,
+          payload.guildId
         );
 
         await this.client.cache.set(
           "channels",
           discordenoChannel.id,
-          discordenoChannel,
+          discordenoChannel
         );
 
         return discordenoChannel;
-      }),
+      })
     );
 
     const threads = new Collection<bigint, UniversityChannel>(
-      discordenoChannels.map((t) => [t.id, t]),
+      discordenoChannels.map((t) => [t.id, t])
     );
 
     this.client.emit(
       "threadListSync",
       threads,
       payload.members,
-      snowflakeToBigint(payload.guildId),
+      snowflakeToBigint(payload.guildId)
     );
   }
 
@@ -1287,7 +1288,7 @@ export class GatewayEvents {
     const payload = data.d as ThreadMembersUpdate;
     const thread = await this.client.cache.get(
       "channels",
-      snowflakeToBigint(payload.id),
+      snowflakeToBigint(payload.id)
     );
     if (!thread) return;
 
@@ -1301,7 +1302,7 @@ export class GatewayEvents {
     const payload = data.d as ThreadMember;
     const thread = await this.client.cache.get(
       "channels",
-      snowflakeToBigint(payload.id),
+      snowflakeToBigint(payload.id)
     );
     if (!thread) return;
 
@@ -1316,19 +1317,19 @@ export class GatewayEvents {
     const payload = data.d as Channel;
     const oldChannel = await this.client.cache.get(
       "channels",
-      snowflakeToBigint(payload.id),
+      snowflakeToBigint(payload.id)
     );
     if (!oldChannel) return;
 
     const discordenoChannel = new UniversityChannel(
       this.client,
       payload,
-      payload.guildId,
+      payload.guildId
     );
     await this.client.cache.set(
       "channels",
       discordenoChannel.id,
-      discordenoChannel,
+      discordenoChannel
     );
 
     this.client.emit("threadUpdate", discordenoChannel, oldChannel);

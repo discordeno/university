@@ -41,24 +41,24 @@ export class UniversityBaseInteraction {
     this.applicationId = payload.applicationId;
     this.type = payload.type;
     this.token = payload.token;
-    if (payload.member)this.member = payload.member as GuildMemberWithUser;
-    if (payload.guildId)this.guildId = payload.guildId;
-    if (payload.channelId)this.channelId = payload.channelId;
-    if (payload.user)this.user = payload.user as User;
+    if (payload.member) this.member = payload.member as GuildMemberWithUser;
+    if (payload.guildId) this.guildId = payload.guildId;
+    if (payload.channelId) this.channelId = payload.channelId;
+    if (payload.user) this.user = payload.user as User;
   }
 
   async send(data: DiscordenoInteractionResponse) {
     return await this.client.helpers.interactions.sendInteractionResponse(
       this.id,
       this.token,
-      data,
+      data
     );
   }
 
   async edit(data: DiscordenoEditWebhookMessage) {
     return await this.client.helpers.interactions.editSlashResponse(
       this.token,
-      data,
+      data
     );
   }
 }

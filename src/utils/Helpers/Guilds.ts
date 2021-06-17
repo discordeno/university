@@ -40,7 +40,7 @@ export class GuildHelpers {
   async createGuild(options: CreateGuild) {
     const result = (await this.client.rest.post(
       endpoints.GUILDS,
-      snakelize(options),
+      snakelize(options)
     )) as Guild;
 
     const guild = new UniversityGuild(this.client, result, 0);
@@ -75,7 +75,7 @@ export class GuildHelpers {
 
     const result = (await this.client.rest.patch(
       endpoints.GUILDS_BASE(guildId),
-      snakelize(options),
+      snakelize(options)
     )) as Guild;
 
     const cached = await this.client.cache.get("guilds", guildId);
@@ -87,15 +87,15 @@ export class GuildHelpers {
           (
             BigInt(result.id) >>
             22n % BigInt(this.client.gateway.botGatewayData.shards)
-          ).toString(),
-        ),
+          ).toString()
+        )
     );
   }
 
   async editWelcomeScreen(guildId: bigint, options: ModifyGuildWelcomeScreen) {
     return (await this.client.rest.patch(
       endpoints.GUILD_WELCOME_SCREEN(guildId),
-      snakelize(options),
+      snakelize(options)
     )) as WelcomeScreen;
   }
 
@@ -103,7 +103,7 @@ export class GuildHelpers {
   async editWidget(
     guildId: bigint,
     enabled: boolean,
-    channelId?: string | null,
+    channelId?: string | null
   ) {
     await this.client.requireBotGuildPermissions(guildId, ["MANAGE_GUILD"]);
 
@@ -121,10 +121,11 @@ export class GuildHelpers {
       endpoints.GUILD_AUDIT_LOGS(guildId),
       snakelize({
         ...options,
-        limit: options?.limit && options.limit >= 1 && options.limit <= 100
-          ? options.limit
-          : 50,
-      }),
+        limit:
+          options?.limit && options.limit >= 1 && options.limit <= 100
+            ? options.limit
+            : 50,
+      })
     )) as AuditLog;
   }
 
@@ -138,7 +139,7 @@ export class GuildHelpers {
     await this.client.requireBotGuildPermissions(guildId, ["BAN_MEMBERS"]);
 
     return (await this.client.rest.get(
-      endpoints.GUILD_BAN(guildId, memberId),
+      endpoints.GUILD_BAN(guildId, memberId)
     )) as Ban;
   }
 
@@ -147,11 +148,11 @@ export class GuildHelpers {
     await this.client.requireBotGuildPermissions(guildId, ["BAN_MEMBERS"]);
 
     const results = (await this.client.rest.get(
-      endpoints.GUILD_BANS(guildId),
+      endpoints.GUILD_BANS(guildId)
     )) as Ban[];
 
     return new Collection<bigint, Ban>(
-      results.map((res) => [snowflakeToBigint(res.user.id), res]),
+      results.map((res) => [snowflakeToBigint(res.user.id), res])
     );
   }
 
@@ -167,7 +168,7 @@ export class GuildHelpers {
     options: { counts?: boolean; addToCache?: boolean } = {
       counts: true,
       addToCache: true,
-    },
+    }
   ) {
     const result = (await this.client.rest.get(endpoints.GUILDS_BASE(guildId), {
       with_counts: options.counts,
@@ -178,8 +179,8 @@ export class GuildHelpers {
       result,
       Number(
         (BigInt(guildId) >> 22n) %
-          BigInt(this.client.gateway.botGatewayData.shards),
-      ),
+          BigInt(this.client.gateway.botGatewayData.shards)
+      )
     );
 
     if (options.addToCache) {
@@ -192,7 +193,7 @@ export class GuildHelpers {
   /** Returns the guild preview object for the given id. If the bot is not in the guild, then the guild must be Discoverable. */
   async getGuildPreview(guildId: bigint) {
     return (await this.client.rest.get(
-      endpoints.GUILD_PREVIEW(guildId),
+      endpoints.GUILD_PREVIEW(guildId)
     )) as GuildPreview;
   }
 
@@ -209,7 +210,7 @@ export class GuildHelpers {
 
     const result = await this.client.rest.get(
       endpoints.GUILD_PRUNE(guildId),
-      snakelize(options ?? {}),
+      snakelize(options ?? {})
     );
 
     return result.pruned as number;
@@ -220,24 +221,24 @@ export class GuildHelpers {
     return (await this.client.rest.get(endpoints.GUILD_VANITY_URL(guildId))) as
       | (Partial<InviteMetadata> & Pick<InviteMetadata, "uses" | "code">)
       | {
-        code: null;
-      };
+          code: null;
+        };
   }
 
   /** Returns a list of voice region objects for the guild. Unlike the similar /voice route, this returns VIP servers when the guild is VIP-enabled. */
   async getVoiceRegions(guildId: bigint) {
     const result = (await this.client.rest.get(
-      endpoints.GUILD_REGIONS(guildId),
+      endpoints.GUILD_REGIONS(guildId)
     )) as VoiceRegion[];
 
     return new Collection<string, VoiceRegion>(
-      result.map((region) => [region.id, region]),
+      result.map((region) => [region.id, region])
     );
   }
 
   async getWelcomeScreen(guildId: bigint) {
     return (await this.client.rest.get(
-      endpoints.GUILD_WELCOME_SCREEN(guildId),
+      endpoints.GUILD_WELCOME_SCREEN(guildId)
     )) as WelcomeScreen;
   }
 
@@ -252,14 +253,14 @@ export class GuildHelpers {
     }
 
     return (await this.client.rest.get(
-      `${endpoints.GUILD_WIDGET(guildId)}.json`,
+      `${endpoints.GUILD_WIDGET(guildId)}.json`
     )) as GuildWidgetDetails;
   }
 
   /** Returns the widget image URL for the guild. */
   async getWidgetImageURL(
     guildId: bigint,
-    options?: GetGuildWidgetImageQuery & { force?: boolean },
+    options?: GetGuildWidgetImageQuery & { force?: boolean }
   ) {
     if (!options?.force) {
       const guild = await this.client.cache.get("guilds", guildId);
@@ -269,8 +270,9 @@ export class GuildHelpers {
       }
     }
 
-    return `${endpoints.GUILD_WIDGET(guildId)}.png?style=${options?.style ??
-      "shield"}`;
+    return `${endpoints.GUILD_WIDGET(guildId)}.png?style=${
+      options?.style ?? "shield"
+    }`;
   }
 
   /** Returns the guild widget object. Requires the MANAGE_GUILD permission. */
@@ -278,7 +280,7 @@ export class GuildHelpers {
     await this.client.requireBotGuildPermissions(guildId, ["MANAGE_GUILD"]);
 
     return (await this.client.rest.get(
-      endpoints.GUILD_WIDGET(guildId),
+      endpoints.GUILD_WIDGET(guildId)
     )) as GuildWidget;
   }
 
@@ -290,19 +292,19 @@ export class GuildHelpers {
       size?: DiscordImageSize;
       format?: DiscordImageFormat;
       animated?: boolean;
-    },
+    }
   ) {
     return options.banner
       ? formatImageURL(
-        endpoints.GUILD_BANNER(
-          id,
-          typeof options.banner === "string"
-            ? options.banner
-            : iconBigintToHash(options.banner, options.animated ?? true),
-        ),
-        options.size || 128,
-        options.format,
-      )
+          endpoints.GUILD_BANNER(
+            id,
+            typeof options.banner === "string"
+              ? options.banner
+              : iconBigintToHash(options.banner, options.animated ?? true)
+          ),
+          options.size || 128,
+          options.format
+        )
       : undefined;
   }
 
@@ -314,19 +316,19 @@ export class GuildHelpers {
       size?: DiscordImageSize;
       format?: DiscordImageFormat;
       animated?: boolean;
-    },
+    }
   ) {
     return options.icon
       ? formatImageURL(
-        endpoints.GUILD_ICON(
-          id,
-          typeof options.icon === "string"
-            ? options.icon
-            : iconBigintToHash(options.icon, options.animated ?? true),
-        ),
-        options.size || 128,
-        options.format,
-      )
+          endpoints.GUILD_ICON(
+            id,
+            typeof options.icon === "string"
+              ? options.icon
+              : iconBigintToHash(options.icon, options.animated ?? true)
+          ),
+          options.size || 128,
+          options.format
+        )
       : undefined;
   }
 
@@ -338,19 +340,19 @@ export class GuildHelpers {
       size?: DiscordImageSize;
       format?: DiscordImageFormat;
       animated?: boolean;
-    },
+    }
   ) {
     return options.splash
       ? formatImageURL(
-        endpoints.GUILD_SPLASH(
-          id,
-          typeof options.splash === "string"
-            ? options.splash
-            : iconBigintToHash(options.splash, options.animated ?? true),
-        ),
-        options.size || 128,
-        options.format,
-      )
+          endpoints.GUILD_SPLASH(
+            id,
+            typeof options.splash === "string"
+              ? options.splash
+              : iconBigintToHash(options.splash, options.animated ?? true)
+          ),
+          options.size || 128,
+          options.format
+        )
       : undefined;
   }
 
