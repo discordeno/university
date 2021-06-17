@@ -18,7 +18,7 @@ export class RoleHelpers {
   }
 
   /** Add a role to the member */
-  async aUniversityRole(
+  async addRole(
     guildId: bigint,
     memberId: bigint,
     roleId: bigint,

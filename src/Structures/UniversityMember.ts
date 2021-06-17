@@ -186,8 +186,8 @@ export class UniversityMember extends Base {
   }
 
   /** Add a role to the member */
-  async aUniversityRole(guildId: bigint, roleId: bigint, reason?: string) {
-    return await this.client.aUniversityRole(guildId, this.id, roleId, reason);
+  async addRole(guildId: bigint, roleId: bigint, reason?: string) {
+    return await this.client.addRole(guildId, this.id, roleId, reason);
   }
 
   /** Remove a role from the member */

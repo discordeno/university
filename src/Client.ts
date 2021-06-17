@@ -3,6 +3,7 @@ import {
   Collection,
   CreateGuildBan,
   CreateGuildRole,
+  StatusUpdate,
   CreateMessage,
   DiscordBitwisePermissionFlags,
   DiscordGatewayIntents,
@@ -390,13 +391,13 @@ export class Client extends EventEmitter {
   }
 
   /** Add a role to the member */
-  async aUniversityRole(
+  async addRole(
     guildId: bigint,
     id: bigint,
     roleId: bigint,
     reason?: string
   ) {
-    return await this.helpers.roles.aUniversityRole(
+    return await this.helpers.roles.addRole(
       guildId,
       id,
       roleId,
@@ -926,6 +927,15 @@ export class Client extends EventEmitter {
       memberHighestRole.id,
       compareRoleId
     );
+  }
+
+  //EDIT BOT
+  editBotStatus(data: Omit<StatusUpdate,"afk"|"since">) {
+    return this.helpers.editBotStatus(data)
+  }
+
+  editBotProfile(data: { username?: string | undefined; botAvatarURL?: string | undefined; }) {
+    return this.helpers.editBotProfile(data)
   }
 }
 
