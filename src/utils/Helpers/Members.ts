@@ -36,7 +36,7 @@ export class MemberHelpers {
   /** The users custom avatar or the default avatar if you don't have a member object. */
   avatarURL(
     userId: bigint,
-    discriminator: number,
+    discriminator: string,
     options: {
       avatar?: string | bigint;
       size?: DiscordImageSize;

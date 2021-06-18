@@ -21,7 +21,7 @@ export class UniversityMember extends Base {
   /** The username of the member */
   username!: string;
   /** The user's 4-digit discord-tag */
-  discriminator!: number;
+  discriminator!: string;
   /** The users avatar hash */
   avatar: bigint;
   /** The guild related data mapped by guild id */
@@ -59,7 +59,7 @@ export class UniversityMember extends Base {
 
   update(payload: GuildMemberWithUser, guildId: bigint) {
     this.username = payload.user.username;
-    this.discriminator = Number(payload.user.discriminator);
+    this.discriminator = payload.user.discriminator;
     if (payload.user.email) this.email = payload.user.email;
     this.locale = payload.user.locale;
     this.flags = payload.user.flags;
