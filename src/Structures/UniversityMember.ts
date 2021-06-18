@@ -112,11 +112,7 @@ export class UniversityMember extends Base {
 
   /** The discriminator of the member */
   get discriminator() {
-    let str = `${this.discrim}`
-    while (str.length<4) {
-      str=`0${str}`
-    }
-    return str
+    return this.discrim.toString().padStart(4,"0")
   }
 
   /** Whether the user belongs to an OAuth2 application */
