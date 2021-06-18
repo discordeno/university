@@ -112,7 +112,7 @@ export class UniversityMember extends Base {
 
   /** The discriminator of the member */
   get discriminator() {
-    return this.discrim.toString().padStart(4,"0")
+    return this.discrim.toString().padStart(4, "0");
   }
 
   /** Whether the user belongs to an OAuth2 application */
