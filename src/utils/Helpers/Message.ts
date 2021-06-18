@@ -328,7 +328,7 @@ export class MessageHelpers {
       ]);
 
       if (content.tts) requiredPerms.add("SEND_TTS_MESSAGES");
-      if (content.embed) requiredPerms.add("EMBED_LINKS");
+      if (content.embed || content.embeds) requiredPerms.add("EMBED_LINKS");
       if (
         content.messageReference?.messageId ||
         content.allowedMentions?.repliedUser
