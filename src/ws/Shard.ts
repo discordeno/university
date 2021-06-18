@@ -107,7 +107,6 @@ export class Shard {
     // Need to clear the old heartbeat interval
     const oldShard = this.gateway.get(this.id);
     if (oldShard) {
-      console.log("asfd", 1);
       oldShard.closeWS(3065, "Reidentifying closure of old shard");
       clearInterval(oldShard.heartbeat.intervalId);
     }
