@@ -21,6 +21,7 @@ import {
 } from "../../../deps.ts";
 import Client from "../../Client.ts";
 import UniversityMessage from "../../Structures/UniversityMessage.ts";
+import UniversityEmbed from "../../Structures/UniversityEmbed.ts";
 
 export class MessageHelpers {
   /** The client itself. */
@@ -328,7 +329,7 @@ export class MessageHelpers {
       ]);
 
       if (content.tts) requiredPerms.add("SEND_TTS_MESSAGES");
-      if (content.embed) requiredPerms.add("EMBED_LINKS");
+      if (content.embed || content.embeds) requiredPerms.add("EMBED_LINKS");
       if (
         content.messageReference?.messageId ||
         content.allowedMentions?.repliedUser
