@@ -55,7 +55,7 @@ export class MemberHelpers {
           options.size || 128,
           options.format
         )
-      : endpoints.USER_DEFAULT_AVATAR(Number(discriminator) % 5);
+      : endpoints.USER_DEFAULT_AVATAR(discriminator % 5);
   }
 
   /** Ban a user from the guild and optionally delete previous messages sent by the user. Requires the BAN_MEMBERS permission. */

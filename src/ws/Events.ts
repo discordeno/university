@@ -1078,7 +1078,7 @@ export class GatewayEvents {
     // Update username
     member.username = userData.username;
     // Update discriminator
-    member.discriminator = Number(userData.discriminator);
+    member.discrim = Number(userData.discriminator);
 
     // Check if a avatar is available
     const hash = userData.avatar
