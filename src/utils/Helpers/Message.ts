@@ -20,6 +20,7 @@ import {
   validateLength,
 } from "../../../deps.ts";
 import Client from "../../Client.ts";
+import UniversityEmbed from "../../Structures/UniversityEmbed.ts";
 import UniversityMessage from "../../Structures/UniversityMessage.ts";
 
 export class MessageHelpers {
@@ -125,7 +126,7 @@ export class MessageHelpers {
   async editMessage(
     channelId: bigint,
     messageId: bigint,
-    content: string | EditMessage
+    content: string | EditMessage | UniversityEmbed | UniversityEmbed[]
   ) {
     const message = await this.client.cache.get("messages", messageId);
 
@@ -144,6 +145,8 @@ export class MessageHelpers {
     }
 
     if (typeof content === "string") content = { content };
+    if (Array.isArray(content)) content = { embeds: content };
+    if (content instanceof UniversityEmbed) content = { embeds: [content] };
 
     if (content.components?.length) {
       validateComponents(content.components);
@@ -304,8 +307,13 @@ export class MessageHelpers {
   }
 
   /** Send a message to the channel. Requires SEND_MESSAGES permission. */
-  async sendMessage(channelId: bigint, content: string | CreateMessage) {
+  async sendMessage(
+    channelId: bigint,
+    content: string | CreateMessage | UniversityEmbed | UniversityEmbed[]
+  ) {
     if (typeof content === "string") content = { content };
+    if (Array.isArray(content)) content = { embeds: content };
+    if (content instanceof UniversityEmbed) content = { embeds: [content] };
 
     const channel = await this.client.cache.get("channels", channelId);
     if (channel) {
