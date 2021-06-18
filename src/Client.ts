@@ -391,18 +391,8 @@ export class Client extends EventEmitter {
   }
 
   /** Add a role to the member */
-  async addRole(
-    guildId: bigint,
-    id: bigint,
-    roleId: bigint,
-    reason?: string
-  ) {
-    return await this.helpers.roles.addRole(
-      guildId,
-      id,
-      roleId,
-      reason
-    );
+  async addRole(guildId: bigint, id: bigint, roleId: bigint, reason?: string) {
+    return await this.helpers.roles.addRole(guildId, id, roleId, reason);
   }
 
   /** Remove a role from the member */
@@ -930,12 +920,15 @@ export class Client extends EventEmitter {
   }
 
   //EDIT BOT
-  editBotStatus(data: Omit<StatusUpdate,"afk"|"since">) {
-    return this.helpers.editBotStatus(data)
+  editBotStatus(data: Omit<StatusUpdate, "afk" | "since">) {
+    return this.helpers.editBotStatus(data);
   }
 
-  editBotProfile(data: { username?: string | undefined; botAvatarURL?: string | undefined; }) {
-    return this.helpers.editBotProfile(data)
+  editBotProfile(data: {
+    username?: string | undefined;
+    botAvatarURL?: string | undefined;
+  }) {
+    return this.helpers.editBotProfile(data);
   }
 }
 
