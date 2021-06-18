@@ -21,7 +21,6 @@ import {
 } from "../../../deps.ts";
 import Client from "../../Client.ts";
 import UniversityMessage from "../../Structures/UniversityMessage.ts";
-import UniversityEmbed from "../../Structures/UniversityEmbed.ts";
 
 export class MessageHelpers {
   /** The client itself. */
