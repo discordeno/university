@@ -21,7 +21,7 @@ export class UniversityMember extends Base {
   /** The username of the member */
   username!: string;
   /** The user's 4-digit discord-tag */
-  discriminator!: string;
+  discrim!: number;
   /** The users avatar hash */
   avatar: bigint;
   /** The guild related data mapped by guild id */
@@ -59,7 +59,7 @@ export class UniversityMember extends Base {
 
   update(payload: GuildMemberWithUser, guildId: bigint) {
     this.username = payload.user.username;
-    this.discriminator = payload.user.discriminator;
+    this.discrim = Number(payload.user.discriminator);
     if (payload.user.email) this.email = payload.user.email;
     this.locale = payload.user.locale;
     this.flags = payload.user.flags;
@@ -94,7 +94,7 @@ export class UniversityMember extends Base {
   get avatarURL() {
     return this.client.avatarURL(
       this.id,
-      this.discriminator,
+      this.discrim,
       this.avatar,
       this.animatedAvatar
     );
@@ -108,6 +108,15 @@ export class UniversityMember extends Base {
   /** The username#discriminator tag for this member */
   get tag() {
     return `${this.username!}#${this.discriminator!}`;
+  }
+
+  /** The discriminator of the member */
+  get discriminator() {
+    let str = `${this.discrim}`
+    while (str.length<4) {
+      str=`0${str}`
+    }
+    return str
   }
 
   /** Whether the user belongs to an OAuth2 application */
@@ -142,7 +151,7 @@ export class UniversityMember extends Base {
   }) {
     return this.client.avatarURL(
       this.id,
-      this.discriminator,
+      this.discrim,
       this.avatar!,
       this.animatedAvatar,
       options?.size,

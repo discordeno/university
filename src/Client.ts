@@ -361,7 +361,7 @@ export class Client extends EventEmitter {
 
   avatarURL(
     userId: bigint,
-    discriminator: string,
+    discriminator: number,
     avatar: bigint,
     animated: boolean,
     size?: DiscordImageSize,
