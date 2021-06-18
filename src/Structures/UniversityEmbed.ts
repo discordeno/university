@@ -1,4 +1,9 @@
-import { EmbedAuthor, EmbedField, EmbedFooter, EmbedImage } from "../../deps.ts";
+import {
+  EmbedAuthor,
+  EmbedField,
+  EmbedFooter,
+  EmbedImage,
+} from "../../deps.ts";
 
 const embedLimits = {
   title: 256,
@@ -53,7 +58,9 @@ export default class UniversityEmbed {
   }
 
   setAuthor(name: string, icon?: string, url?: string) {
-    const finalName = this.enforceLimits ? this.fitData(name, embedLimits.authorName) : name;
+    const finalName = this.enforceLimits
+      ? this.fitData(name, embedLimits.authorName)
+      : name;
     this.author = { name: finalName, iconUrl: icon, url };
 
     return this;
