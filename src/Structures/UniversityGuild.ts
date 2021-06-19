@@ -369,6 +369,10 @@ export class UniversityGuild extends Base {
     return await this.client.ban(this.id, memberId, options);
   }
 
+  async editBotNickname(nickname: string | null) {
+    return await this.client.helpers.members.editBotNickname(this.id,nickname)
+  }
+
   /** Remove the ban for a user. Requires BAN_MEMBERS permission */
   async unban(memberId: bigint) {
     return await this.client.unban(this.id, memberId);
