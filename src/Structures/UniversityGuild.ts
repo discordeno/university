@@ -369,6 +369,7 @@ export class UniversityGuild extends Base {
     return await this.client.ban(this.id, memberId, options);
   }
 
+  /** Edits the bot's nickname in this guild. Requires the CHANGE_NICKNAME permission. */
   async editBotNickname(nickname: string | null) {
     return await this.client.helpers.members.editBotNickname(this.id,nickname)
   }
