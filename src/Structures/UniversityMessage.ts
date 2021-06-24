@@ -170,8 +170,8 @@ export class UniversityMessage extends Base {
 
   /** The message ping */
   get ping() {
-    return Date.now()-this.timestamp
-  } 
+    return Date.now() - this.timestamp;
+  }
 
   /** Whether this message mentions everyone */
   get mentionEveryone() {
