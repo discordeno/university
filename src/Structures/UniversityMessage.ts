@@ -168,6 +168,11 @@ export class UniversityMessage extends Base {
     return this.bitfield.tts;
   }
 
+  /** The message ping */
+  get ping() {
+    return Date.now()-this.timestamp
+  } 
+
   /** Whether this message mentions everyone */
   get mentionEveryone() {
     return this.bitfield.mentionEveryone;
