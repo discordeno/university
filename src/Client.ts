@@ -888,7 +888,6 @@ export class Client extends EventEmitter {
 
     const role = guild.roles.get(roleId);
     const otherRole = guild.roles.get(otherRoleId);
-    console.log(roleId,!!role,otherRoleId,!!otherRole)
     if (!role || !otherRole) throw new Error(Errors.ROLE_NOT_FOUND);
 
     // Rare edge case handling
