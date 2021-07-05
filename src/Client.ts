@@ -839,7 +839,6 @@ export class Client extends EventEmitter {
       typeof guildOrId === "bigint"
         ? await this.cache.get("guilds", guildOrId)
         : guildOrId;
-
     if (!guild) throw new Error(Errors.GUILD_NOT_FOUND);
 
     // Get the roles from the member
@@ -849,7 +848,9 @@ export class Client extends EventEmitter {
         : memberOrId
     )?.guilds.get(guild.id)?.roles;
     // This member has no roles so the highest one is the @everyone role
-    if (!memberRoles) return guild.roles.get(guild.id)!;
+    if (!memberRoles) {
+      return guild.roles.get(guild.id)!;
+    }
 
     let memberHighestRole: UniversityRole | undefined;
 
@@ -868,7 +869,6 @@ export class Client extends EventEmitter {
         memberHighestRole = role;
       }
     }
-
     // The member has at least one role so memberHighestRole must exist
     return memberHighestRole!;
   }
@@ -888,6 +888,7 @@ export class Client extends EventEmitter {
 
     const role = guild.roles.get(roleId);
     const otherRole = guild.roles.get(otherRoleId);
+    console.log(roleId,!!role,otherRoleId,!!otherRole)
     if (!role || !otherRole) throw new Error(Errors.ROLE_NOT_FOUND);
 
     // Rare edge case handling
@@ -914,7 +915,7 @@ export class Client extends EventEmitter {
     const memberHighestRole = await this.highestRole(guild, memberId);
     return this.higherRolePosition(
       guild.id,
-      memberHighestRole.id,
+      BigInt(memberHighestRole.id),
       compareRoleId
     );
   }
