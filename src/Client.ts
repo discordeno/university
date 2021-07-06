@@ -554,7 +554,6 @@ export class Client extends EventEmitter {
     if (!guild || !member) return 8n;
 
     let permissions = 0n;
-    console.log(member.guilds.get(guild.id)?.roles)
     // Calculate the role permissions bits, @everyone role is not in memberRoleIds so we need to pass guildId manualy
     permissions |=
       [...(member.guilds.get(guild.id)?.roles || []), guild.id]
