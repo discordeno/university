@@ -209,6 +209,8 @@ export class MemberHelpers {
     const guild = await this.client.cache.get("guilds", guildId);
     if (!guild && !options?.force) return;
 
+    const member = await this.client.cache.get("members",id)
+    if (member && member.guilds.get(guildId)) return member
     const data = (await this.client.rest.get(
       endpoints.GUILD_MEMBER(guildId, id)
     )) as GuildMemberWithUser;
