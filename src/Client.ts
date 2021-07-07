@@ -549,9 +549,8 @@ export class Client extends EventEmitter {
         : guildOrId;
     const member =
       typeof memberOrId === "bigint"
-        ? await this.cache.get("members", memberOrId)
+        ? guild ? await this.helpers.members.getMember(guild.id,memberOrId) : null
         : memberOrId;
-
     if (!guild || !member) return 8n;
 
     let permissions = 0n;
@@ -565,7 +564,6 @@ export class Client extends EventEmitter {
           bits! |= BigInt(perms?.bits!);
           return bits;
         }, 0n) || 0n;
-
     // If the memberId is equal to the guild ownerId he automatically has every permission so we add ADMINISTRATOR permission
     if (guild.ownerId === member.id) permissions |= 8n;
     // Return the members permission bits as a string
@@ -751,12 +749,12 @@ export class Client extends EventEmitter {
   }
 
   /** Throws an error if the bot does not have all permissions */
-  requireBotGuildPermissions(
+  async requireBotGuildPermissions(
     guild: bigint | UniversityGuild,
     permissions: PermissionStrings[]
   ) {
     // Since Bot is a normal member we can use the throwOnMissingGuildPermission() function
-    return this.requireGuildPermissions(guild, this.botId, permissions);
+    return await this.requireGuildPermissions(guild, this.botId, permissions);
   }
 
   /** Throws an error if this member has not all of the given permissions */
@@ -839,7 +837,6 @@ export class Client extends EventEmitter {
       typeof guildOrId === "bigint"
         ? await this.cache.get("guilds", guildOrId)
         : guildOrId;
-
     if (!guild) throw new Error(Errors.GUILD_NOT_FOUND);
 
     // Get the roles from the member
@@ -849,7 +846,9 @@ export class Client extends EventEmitter {
         : memberOrId
     )?.guilds.get(guild.id)?.roles;
     // This member has no roles so the highest one is the @everyone role
-    if (!memberRoles) return guild.roles.get(guild.id)!;
+    if (!memberRoles) {
+      return guild.roles.get(guild.id)!;
+    }
 
     let memberHighestRole: UniversityRole | undefined;
 
@@ -868,7 +867,6 @@ export class Client extends EventEmitter {
         memberHighestRole = role;
       }
     }
-
     // The member has at least one role so memberHighestRole must exist
     return memberHighestRole!;
   }
@@ -914,7 +912,7 @@ export class Client extends EventEmitter {
     const memberHighestRole = await this.highestRole(guild, memberId);
     return this.higherRolePosition(
       guild.id,
-      memberHighestRole.id,
+      BigInt(memberHighestRole.id),
       compareRoleId
     );
   }
