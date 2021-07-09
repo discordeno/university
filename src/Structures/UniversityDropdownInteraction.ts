@@ -5,10 +5,13 @@ import Client from "../Client.ts";
 export class UniversityDropdownInteraction extends BaseInteraction {
   /** Interaction data */
   data: SelectMenuData;
+  /**  The message the select menu was attached to */
+  message: UniversityMessage;
 
   constructor(client: Client, payload: Interaction) {
     super(client, payload);
     this.data = payload.data as SelectMenuData;
+    this.message = new UniversityMessage(client, payload.message as Message);
   }
 }
 
