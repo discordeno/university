@@ -549,7 +549,9 @@ export class Client extends EventEmitter {
         : guildOrId;
     const member =
       typeof memberOrId === "bigint"
-        ? guild ? await this.helpers.members.getMember(guild.id,memberOrId) : null
+        ? guild
+          ? await this.helpers.members.getMember(guild.id, memberOrId)
+          : null
         : memberOrId;
     if (!guild || !member) return 8n;
 
